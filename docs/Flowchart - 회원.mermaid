@@ -4,6 +4,11 @@ flowchart TB
     A([사용자]) --> B{회원 여부}
 
     B ---Yes:::red--> C[로그인]
+    C --> G{권한 별<br>기능}
+    G ---Admin--> G1[CRUD<br>+<br>MEMBER 권한 관리<br>+<br>탈퇴자 탈퇴 철회]
+    G ---Member--> G2[CRUD]
+    G ---Withdrawal--> G3[R - 타인 게시글]
+    G ---Anonymous--> G3[R - 타인 게시글]
     C --> E([로그아웃])
     C --> F[탈퇴] --> F1{30일 경과} 
     F1 ---도달:::red--> F2[게시글 삭제] --> F3([계정 완전 삭제])
