@@ -3,7 +3,7 @@ flowchart TB
 
     A([사용자]) --> B{회원 여부}
 
-    B ---Yes:::red--> C[로그인]
+    B ---Yes:::red------> C[로그인]
     C --> G{권한 별<br>기능}
     G ---Admin--> G1[CRUD<br>+<br>MEMBER 권한 관리<br>+<br>탈퇴자 탈퇴 철회]
     G ---Member--> G2[CRUD]
