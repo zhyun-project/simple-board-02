@@ -1,0 +1,13 @@
+flowchart TB
+    A([사람]) --> B{회원 여부}
+    B --&nbsp;&nbsp;Yes&nbsp;&nbsp;--> C[로그인]
+    C --> E([로그아웃])
+    C --> F[탈퇴] --> FA{30일 경과} 
+    FA -- &nbsp;&nbsp;Yes&nbsp;&nbsp; --> FB([계정 완전 삭제])
+    FA -- &nbsp;&nbsp;No&nbsp;&nbsp; --> FC([탈퇴 철회 가능])
+    
+    B --&nbsp;&nbsp;No&nbsp;&nbsp;-->  D[회원가입] 
+    D --> DA[이메일 중복확인] --> DB[이메일 인증]--> DD[가입 완료]
+    D --> DC[닉네임 중복확인] ---> DD
+    DD --> C
+
