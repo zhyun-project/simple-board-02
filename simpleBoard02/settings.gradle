@@ -1,4 +1,4 @@
 rootProject.name = 'simpleBoard02'
-include 'server-user'
-include 'server-article'
+include 'server-b-user'
+include 'server-c-article'
 

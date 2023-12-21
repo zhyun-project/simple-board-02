@@ -51,12 +51,12 @@ subprojects {
     }
 }
 
-project(":server-user") {
+project(":server-b-user") {
     bootJar { enabled = true }
     jar { enabled = false}
 }
 
-project(":server-article") {
+project(":server-c-article") {
     bootJar { enabled = true }
     jar { enabled = false}
 }
