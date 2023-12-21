@@ -1,0 +1,4 @@
+rootProject.name = 'simpleBoard02'
+include 'server-user'
+include 'server-article'
+
