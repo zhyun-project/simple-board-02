@@ -51,6 +51,11 @@ subprojects {
     }
 }
 
+project(":server-a-gateway") {
+    bootJar { enabled = true }
+    jar { enabled = false}
+}
+
 project(":server-b-user") {
     bootJar { enabled = true }
     jar { enabled = false}
