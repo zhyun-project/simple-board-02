@@ -28,15 +28,19 @@ public class PrintLog <Repository> {
         log.info("");
         log.info("💁 All Data Logging ------------------------------------------------------------------------------------------------------------------------------------------------------------┐");
         
-        if (repository instanceof RoleRepository)
+        if (repository instanceof RoleRepository) {
             print(((RoleRepository) repository).findAll());
-        
-        if (repository instanceof UserRepository)
+        }
+        else if (repository instanceof UserRepository) {
             print(((UserRepository) repository).findAll());
-        
-        if (repository instanceof EmailAuthRedisRepository) {
+        }
+        else if (repository instanceof EmailAuthRedisRepository) {
             print(((EmailAuthRedisRepository) repository).findAll());
             ((EmailAuthRedisRepository) repository).deleteAll();
+        }
+        else if (repository instanceof SessionUserRedisRepository) {
+            print(((SessionUserRedisRepository) repository).findAll());
+            ((SessionUserRedisRepository) repository).deleteAll();
         }
         
         log.info("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘");
