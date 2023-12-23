@@ -1,6 +1,8 @@
 # Created by https://www.toptal.com/developers/gitignore/api/windows,java,git,redis,gradle,intellij+iml,intellij+all,intellij
 # Edit at https://www.toptal.com/developers/gitignore?templates=windows,java,git,redis,gradle,intellij+iml,intellij+all,intellij
 
+**/h2
+
 ### Git ###
 # Created by git for backups. To disable backups in Git:
 # $ git config --global mergetool.keepBackup false
