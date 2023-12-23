@@ -14,7 +14,7 @@ public class PrintLog <Repository> {
         this.repository = repository;
     }
     
-    public <T> void print(List<T> data) {
+    private <T> void print(List<T> data) {
         data.forEach(item -> log.info("\t\t{}", item));
     }
     
@@ -25,9 +25,6 @@ public class PrintLog <Repository> {
         
         if (repository instanceof RoleRepository)
             print(((RoleRepository) repository).findAll());
-        
-        if (repository instanceof AuthRepository)
-            print(((AuthRepository) repository).findAll());
         
         if (repository instanceof UserRepository)
             print(((UserRepository) repository).findAll());
