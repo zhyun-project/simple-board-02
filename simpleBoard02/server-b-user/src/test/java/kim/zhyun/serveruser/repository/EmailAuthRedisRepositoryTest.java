@@ -1,11 +1,13 @@
 package kim.zhyun.serveruser.repository;
 
 import kim.zhyun.serveruser.entity.EmailAuth;
+import kim.zhyun.serveruser.repository.container.RedisTestContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
+@ExtendWith(RedisTestContainer.class)
 @SpringBootTest
 class EmailAuthRedisRepositoryTest extends PrintLog<EmailAuthRedisRepository> {
     private final String ID   = "gimwlgus@gmail.com";
