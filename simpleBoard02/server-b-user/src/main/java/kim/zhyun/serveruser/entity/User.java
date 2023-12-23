@@ -39,7 +39,4 @@ public class User {
     @OneToOne
     private Role role;
     
-    @OneToOne
-    private Auth auth;
-    
 }
