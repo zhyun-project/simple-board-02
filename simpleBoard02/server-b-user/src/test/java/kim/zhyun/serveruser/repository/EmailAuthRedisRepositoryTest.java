@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
+@DisplayName("Redis Email Auth Storage 테스트")
 @ExtendWith(RedisTestContainer.class)
 @SpringBootTest
 class EmailAuthRedisRepositoryTest extends PrintLog<EmailAuthRedisRepository> {
