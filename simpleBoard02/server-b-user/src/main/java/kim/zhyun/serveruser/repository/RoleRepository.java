@@ -7,7 +7,7 @@ import java.util.Optional;
 
 public interface RoleRepository extends ReadRepository<Role, Long> {
     
-    Optional<Role> findByRole(String role);
+    Optional<Role> findByRoleIgnoreCase(String role);
     boolean existsByRole(String role);
     
 }
