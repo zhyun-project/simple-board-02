@@ -14,6 +14,10 @@ public class PrintLog <Repository> {
         this.repository = repository;
     }
     
+    private <T> void print(Iterable<T> data) {
+        data.forEach(item -> log.info("\t\t{}", item));
+    }
+    
     private <T> void print(List<T> data) {
         data.forEach(item -> log.info("\t\t{}", item));
     }
@@ -21,6 +25,7 @@ public class PrintLog <Repository> {
     @AfterEach
     @BeforeEach
     public void printLog() {
+        log.info("");
         log.info("💁 All Data Logging ------------------------------------------------------------------------------------------------------------------------------------------------------------┐");
         
         if (repository instanceof RoleRepository)
@@ -29,7 +34,13 @@ public class PrintLog <Repository> {
         if (repository instanceof UserRepository)
             print(((UserRepository) repository).findAll());
         
+        if (repository instanceof EmailAuthRedisRepository) {
+            print(((EmailAuthRedisRepository) repository).findAll());
+            ((EmailAuthRedisRepository) repository).deleteAll();
+        }
+        
         log.info("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘");
+        log.info("");
     }
     
 }
