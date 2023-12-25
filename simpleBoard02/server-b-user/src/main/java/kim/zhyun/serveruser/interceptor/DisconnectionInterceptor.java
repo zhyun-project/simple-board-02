@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import kim.zhyun.serveruser.entity.SessionUser;
-import kim.zhyun.serveruser.service.NicknameStorageService;
+import kim.zhyun.serveruser.service.NicknameService;
 import kim.zhyun.serveruser.service.SessionUserRedisService;
 import kim.zhyun.serveruser.service.impl.NicknameStorageServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.Optional;
 @Component
 public class DisconnectionInterceptor implements HandlerInterceptor {
     private final SessionUserRedisService sessionUserRedisService;
-    private final NicknameStorageService nicknameStorageService;
+    private final NicknameService nicknameService;
     
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -35,7 +35,7 @@ public class DisconnectionInterceptor implements HandlerInterceptor {
             // 2. nickname storage : 1에서 조회한 nickname 삭제
             String nickname = optionalSessionUser.get().getNickname();
             if (nickname != null && !nickname.isBlank()) {
-                nicknameStorageService.deleteNickname(nickname);
+                nicknameService.deleteNickname(nickname);
             }
             
             // 3. session_id storage : session_id 삭제

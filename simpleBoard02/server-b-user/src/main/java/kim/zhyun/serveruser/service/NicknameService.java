@@ -1,6 +1,6 @@
 package kim.zhyun.serveruser.service;
 
-public interface NicknameStorageService {
+public interface NicknameService {
     
     boolean existNickname(String nickname, String sessionId);
     boolean availableNickname(String nickname, String sessionId);

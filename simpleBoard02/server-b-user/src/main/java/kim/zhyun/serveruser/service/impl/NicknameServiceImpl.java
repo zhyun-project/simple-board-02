@@ -1,8 +1,8 @@
 package kim.zhyun.serveruser.service.impl;
 
 import kim.zhyun.serveruser.entity.SessionUser;
-import kim.zhyun.serveruser.repository.SessionUserRedisRepository;
-import kim.zhyun.serveruser.service.NicknameStorageService;
+import kim.zhyun.serveruser.repository.SessionUserRepository;
+import kim.zhyun.serveruser.service.NicknameService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -14,9 +14,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter @Setter
 @Component
-public class NicknameStorageServiceImpl implements NicknameStorageService {
+public class NicknameServiceImpl implements NicknameService {
     private final RedisTemplate<String, String> template;
-    private final SessionUserRedisRepository sessionUserRedisRepository;
+    private final SessionUserRepository sessionUserRepository;
     
     /**
      * 예약된 nickname인지 조회
@@ -24,7 +24,7 @@ public class NicknameStorageServiceImpl implements NicknameStorageService {
      */
     @Override
     public boolean existNickname(String nickname, String sessionId) {
-        Optional<SessionUser> optionalSessionUser = sessionUserRedisRepository.findById(sessionId);
+        Optional<SessionUser> optionalSessionUser = sessionUserRepository.findById(sessionId);
         if (optionalSessionUser.isPresent()) {
             
             SessionUser sessionUser = optionalSessionUser.get();
@@ -33,7 +33,7 @@ public class NicknameStorageServiceImpl implements NicknameStorageService {
             if (userNickname != null && !userNickname.isBlank()) {
                 deleteNickname(userNickname);
                 sessionUser.setNickname(null);
-                sessionUserRedisRepository.save(sessionUser);
+                sessionUserRepository.save(sessionUser);
             }
             
         }

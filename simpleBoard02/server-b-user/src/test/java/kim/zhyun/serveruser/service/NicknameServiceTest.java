@@ -19,20 +19,20 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayName("Redis Nicname Storage 테스트")
 @ExtendWith(RedisTestContainer.class)
 @SpringBootTest
-class NicknameStorageServiceTest {
+class NicknameServiceTest {
     private final String NICKNAME_RESERVED = "화이트그리숨엇슈";
     private final String NICKNAME_RESERVED_NOT = "그리숨엇슈🎁";
     private final String SESSION_ID_RESERVATION_PERSON = "6C62377C34168BB6DD496E8578447D78";
     private final String SESSION_ID_RESERVATION_PERSON_NOT = "4JK8377C34168BAS7G496E8578678GE2";
 
-    private final NicknameStorageService nicknameStorageService;
-    private final SessionUserRedisService sessionUserRedisService;
+    private final NicknameService nicknameService;
+    private final SessionUserService sessionUserService;
     private final RedisTemplate<String, String> redisTemplate;
-    public NicknameStorageServiceTest(@Autowired NicknameStorageService nicknameStorageService,
-                                      @Autowired SessionUserRedisService sessionUserRedisService,
-                                      @Autowired RedisTemplate<String, String> redisTemplate) {
-        this.nicknameStorageService = nicknameStorageService;
-        this.sessionUserRedisService = sessionUserRedisService;
+    public NicknameServiceTest(@Autowired NicknameService nicknameService,
+                               @Autowired SessionUserService sessionUserService,
+                               @Autowired RedisTemplate<String, String> redisTemplate) {
+        this.nicknameService = nicknameService;
+        this.sessionUserService = sessionUserService;
         this.redisTemplate = redisTemplate;
     }
     
@@ -40,7 +40,7 @@ class NicknameStorageServiceTest {
     @Test
     void exist_by_nickname_1() {
         // when
-        boolean result1 = nicknameStorageService.existNickname(NICKNAME_RESERVED_NOT, SESSION_ID_RESERVATION_PERSON_NOT);
+        boolean result1 = nicknameService.existNickname(NICKNAME_RESERVED_NOT, SESSION_ID_RESERVATION_PERSON_NOT);
         
         // then
         assertFalse(result1);
@@ -50,7 +50,7 @@ class NicknameStorageServiceTest {
     @Test
     void exist_by_nickname_2() {
         // when
-        boolean result2 = nicknameStorageService.existNickname(NICKNAME_RESERVED, SESSION_ID_RESERVATION_PERSON_NOT);
+        boolean result2 = nicknameService.existNickname(NICKNAME_RESERVED, SESSION_ID_RESERVATION_PERSON_NOT);
         
         // then
         assertTrue(result2);
@@ -60,7 +60,7 @@ class NicknameStorageServiceTest {
     @Test
     void exist_by_nickname_3() {
         // when
-        boolean result3 = nicknameStorageService.existNickname(NICKNAME_RESERVED_NOT, SESSION_ID_RESERVATION_PERSON);
+        boolean result3 = nicknameService.existNickname(NICKNAME_RESERVED_NOT, SESSION_ID_RESERVATION_PERSON);
         
         // then
         assertFalse(result3);
@@ -70,7 +70,7 @@ class NicknameStorageServiceTest {
     @Test
     void exist_by_nickname_4() {
         // when
-        boolean result4 = nicknameStorageService.existNickname(NICKNAME_RESERVED, SESSION_ID_RESERVATION_PERSON);
+        boolean result4 = nicknameService.existNickname(NICKNAME_RESERVED, SESSION_ID_RESERVATION_PERSON);
         
         // then
         assertFalse(result4);
@@ -80,7 +80,7 @@ class NicknameStorageServiceTest {
     @Test
     void not_available_by_nickname() {
         // when
-        boolean result = nicknameStorageService.availableNickname(NICKNAME_RESERVED, SESSION_ID_RESERVATION_PERSON_NOT);
+        boolean result = nicknameService.availableNickname(NICKNAME_RESERVED, SESSION_ID_RESERVATION_PERSON_NOT);
         
         // then
         assertFalse(result);
@@ -90,9 +90,9 @@ class NicknameStorageServiceTest {
     @Test
     void available_by_nickname() {
         // when
-        boolean result1 = nicknameStorageService.availableNickname(NICKNAME_RESERVED_NOT, SESSION_ID_RESERVATION_PERSON_NOT);
-        boolean result2 = nicknameStorageService.availableNickname(NICKNAME_RESERVED_NOT, SESSION_ID_RESERVATION_PERSON);
-        boolean result3 = nicknameStorageService.availableNickname(NICKNAME_RESERVED, SESSION_ID_RESERVATION_PERSON);
+        boolean result1 = nicknameService.availableNickname(NICKNAME_RESERVED_NOT, SESSION_ID_RESERVATION_PERSON_NOT);
+        boolean result2 = nicknameService.availableNickname(NICKNAME_RESERVED_NOT, SESSION_ID_RESERVATION_PERSON);
+        boolean result3 = nicknameService.availableNickname(NICKNAME_RESERVED, SESSION_ID_RESERVATION_PERSON);
         
         // then
         assertTrue(result1);
@@ -105,27 +105,27 @@ class NicknameStorageServiceTest {
     @Test
     void delete_by_nickname() {
         // when
-        nicknameStorageService.deleteNickname(NICKNAME_RESERVED);
+        nicknameService.deleteNickname(NICKNAME_RESERVED);
         
         // then
-        assertFalse(nicknameStorageService.existNickname(NICKNAME_RESERVED, ""));
+        assertFalse(nicknameService.existNickname(NICKNAME_RESERVED, ""));
     }
     
     @DisplayName("닉네임 예약 목록에서 삭제 - 없는 닉네임")
     @Test
     void delete_by_nickname_reserved_not() {
         // when
-        nicknameStorageService.deleteNickname(NICKNAME_RESERVED_NOT);
+        nicknameService.deleteNickname(NICKNAME_RESERVED_NOT);
         
         // then
-        assertFalse(nicknameStorageService.existNickname(NICKNAME_RESERVED_NOT, ""));
+        assertFalse(nicknameService.existNickname(NICKNAME_RESERVED_NOT, ""));
     }
     
     
     @BeforeEach
     void save_init_data() {
-        nicknameStorageService.saveNickname(NICKNAME_RESERVED, SESSION_ID_RESERVATION_PERSON);
-        sessionUserRedisService.save(SessionUser.builder()
+        nicknameService.saveNickname(NICKNAME_RESERVED, SESSION_ID_RESERVATION_PERSON);
+        sessionUserService.save(SessionUser.builder()
                 .sessionId(SESSION_ID_RESERVATION_PERSON)
                 .nickname(NICKNAME_RESERVED).build());
         print();
@@ -134,7 +134,7 @@ class NicknameStorageServiceTest {
     @AfterEach
     void print_after_log() {
         print();
-        nicknameStorageService.deleteNickname(NICKNAME_RESERVED);
+        nicknameService.deleteNickname(NICKNAME_RESERVED);
     }
     
     private void print() {
