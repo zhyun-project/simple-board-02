@@ -18,13 +18,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @DisplayName("Redis Session Id Storage 테스트")
 @ExtendWith(RedisTestContainer.class)
 @SpringBootTest
-class SessionUserRedisRepositoryTest extends PrintLog<SessionUserRedisRepository>{
+class SessionUserRepositoryTest extends PrintLog<SessionUserRepository>{
     private final String ID = "6C62377C34168BB6DD496E8578447D78";
     
-    private final SessionUserRedisRepository sessionUserRedisRepository;
-    public SessionUserRedisRepositoryTest(@Autowired SessionUserRedisRepository sessionUserRedisRepository) {
-        super(sessionUserRedisRepository);
-        this.sessionUserRedisRepository = sessionUserRedisRepository;
+    private final SessionUserRepository sessionUserRepository;
+    public SessionUserRepositoryTest(@Autowired SessionUserRepository sessionUserRepository) {
+        super(sessionUserRepository);
+        this.sessionUserRepository = sessionUserRepository;
     }
     
     @DisplayName("전체 데이터 조회")
@@ -38,15 +38,37 @@ class SessionUserRedisRepositoryTest extends PrintLog<SessionUserRedisRepository
         String email = "gimwlgus@gmail.com";
         
         // when
-        Optional<SessionUser> optionalSessionId = sessionUserRedisRepository.findById(ID);
+        Optional<SessionUser> optionalSessionId = sessionUserRepository.findById(ID);
         SessionUser sessionUser = optionalSessionId.get();
         sessionUser.setEmail(email);
-        sessionUserRedisRepository.save(sessionUser);
+        sessionUserRepository.save(sessionUser);
         
         // then
-        SessionUser result = sessionUserRedisRepository.findById(ID).get();
+        SessionUser result = sessionUserRepository.findById(ID).get();
         assertEquals(result.getEmail(), email);
         assertEquals(result.getSessionId(), ID);
+    }
+    
+    
+    @DisplayName("email verification true 업데이트")
+    @Test
+    void update_email_verification() {
+        // given
+        boolean updateEmailVerificatoin = true;
+        
+        // when
+        Optional<SessionUser> optionalSessionId = sessionUserRepository.findById(ID);
+        SessionUser sessionUser = optionalSessionId.get();
+        
+        boolean beforeEmailVerification = sessionUser.isEmailVerification();
+        
+        sessionUser.setEmailVerification(updateEmailVerificatoin);
+        sessionUserRepository.save(sessionUser);
+        
+        // then
+        SessionUser result = sessionUserRepository.findById(ID).get();
+        assertNotEquals(result.isEmailVerification(), beforeEmailVerification);
+        assertEquals(result.isEmailVerification(), updateEmailVerificatoin);
     }
     
     
@@ -57,13 +79,13 @@ class SessionUserRedisRepositoryTest extends PrintLog<SessionUserRedisRepository
         String nickname = "얼거스";
         
         // when
-        Optional<SessionUser> optionalSessionId = sessionUserRedisRepository.findById(ID);
+        Optional<SessionUser> optionalSessionId = sessionUserRepository.findById(ID);
         SessionUser sessionUser = optionalSessionId.get();
         sessionUser.setNickname(nickname);
-        sessionUserRedisRepository.save(sessionUser);
+        sessionUserRepository.save(sessionUser);
         
         // then
-        SessionUser result = sessionUserRedisRepository.findById(ID).get();
+        SessionUser result = sessionUserRepository.findById(ID).get();
         assertEquals(result.getNickname(), nickname);
         assertEquals(result.getSessionId(), ID);
     }
@@ -72,18 +94,18 @@ class SessionUserRedisRepositoryTest extends PrintLog<SessionUserRedisRepository
     @Test
     void delete() {
         // when
-        assertFalse(sessionUserRedisRepository.findById(ID).isEmpty());
-        sessionUserRedisRepository.deleteById(ID);
+        assertFalse(sessionUserRepository.findById(ID).isEmpty());
+        sessionUserRepository.deleteById(ID);
         
         // then
-        assertTrue(sessionUserRedisRepository.findById(ID).isEmpty());
+        assertTrue(sessionUserRepository.findById(ID).isEmpty());
     }
     
     @DisplayName("session id 조회 - true")
     @Test
     void find_by_id() {
         // when
-        assertTrue(sessionUserRedisRepository.existsById(ID));
+        assertTrue(sessionUserRepository.existsById(ID));
     }
     
     
@@ -93,9 +115,9 @@ class SessionUserRedisRepositoryTest extends PrintLog<SessionUserRedisRepository
                 .sessionId(ID)
                 .build();
         
-        sessionUserRedisRepository.save(given);
+        sessionUserRepository.save(given);
         
-        sessionUserRedisRepository.findAll()
+        sessionUserRepository.findAll()
                 .forEach(item -> log.info("saved init data ==> {}", item));
     }
 }

@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kim.zhyun.serveruser.entity.SessionUser;
 import kim.zhyun.serveruser.service.NicknameStorageService;
-import kim.zhyun.serveruser.service.SessionUserRedisService;
+import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -112,7 +112,7 @@ class DisconnectionInterceptorTest {
         
         @InjectMocks    private ConnectionInterceptor connectionInterceptor;
         @InjectMocks    private DisconnectionInterceptor disconnectionInterceptor;
-        @Mock           private SessionUserRedisService sessionUserRedisService;
+        @Mock           private SessionUserService sessionUserService;
         @Mock           private NicknameStorageService nicknameStorageService;
         
         @DisplayName("모든 interceptor에서 SessionService 호출이 한군데에서만 발생하는지 검증")
@@ -166,7 +166,7 @@ class DisconnectionInterceptorTest {
                 MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
                 String sessionId = mockHttpServletRequest.getSession().getId();
                 
-                when(sessionUserRedisService.findById(sessionId)).thenReturn(Optional.empty());
+                when(sessionUserService.findById(sessionId)).thenReturn(Optional.empty());
                 
                 connectionInterceptor.preHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object());
                 connectionInterceptor.postHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object(), null);
@@ -177,7 +177,7 @@ class DisconnectionInterceptorTest {
                 disconnectionInterceptor.afterCompletion(mockHttpServletRequest, new MockHttpServletResponse(), new Object(), null);
                 
                 // then
-                verify(sessionUserRedisService, times(1)).findById(sessionId);
+                verify(sessionUserService, times(1)).findById(sessionId);
             }
         }
         
@@ -241,16 +241,16 @@ class DisconnectionInterceptorTest {
                             .sessionId(sessionId)
                             .nickname(reservedNickname).build());
             
-                    when(sessionUserRedisService.findById(sessionId)).thenReturn(resultSavedSessionUserContainNickname);
+                    when(sessionUserService.findById(sessionId)).thenReturn(resultSavedSessionUserContainNickname);
                     doNothing().when(nicknameStorageService).deleteNickname(reservedNickname);
-                    doNothing().when(sessionUserRedisService).deleteById(sessionId);
+                    doNothing().when(sessionUserService).deleteById(sessionId);
                 
                     disconnectionInterceptor.preHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object());
                     
                     // then
-                    verify(sessionUserRedisService, times(1)).findById(sessionId);
+                    verify(sessionUserService, times(1)).findById(sessionId);
                     verify(nicknameStorageService, times(1)).deleteNickname(reservedNickname);
-                    verify(sessionUserRedisService, times(1)).deleteById(sessionId);
+                    verify(sessionUserService, times(1)).deleteById(sessionId);
                 }
             }
             
@@ -308,15 +308,15 @@ class DisconnectionInterceptorTest {
                     var resultSavedSessionUser = Optional.of(SessionUser.builder()
                             .sessionId(sessionId).build());
                     
-                    when(sessionUserRedisService.findById(sessionId)).thenReturn(resultSavedSessionUser);
-                    doNothing().when(sessionUserRedisService).deleteById(sessionId);
+                    when(sessionUserService.findById(sessionId)).thenReturn(resultSavedSessionUser);
+                    doNothing().when(sessionUserService).deleteById(sessionId);
                     
                     disconnectionInterceptor.preHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object());
                     
                     // then
-                    verify(sessionUserRedisService, times(1)).findById(sessionId);
+                    verify(sessionUserService, times(1)).findById(sessionId);
                     verify(nicknameStorageService,  times(0)).deleteNickname("");
-                    verify(sessionUserRedisService, times(1)).deleteById(sessionId);
+                    verify(sessionUserService, times(1)).deleteById(sessionId);
                 }
             }
             
