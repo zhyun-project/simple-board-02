@@ -3,7 +3,7 @@ package kim.zhyun.serveruser.service.impl;
 import kim.zhyun.serveruser.data.NicknameDto;
 import kim.zhyun.serveruser.entity.SessionUser;
 import kim.zhyun.serveruser.repository.SessionUserRepository;
-import kim.zhyun.serveruser.service.NicknameService;
+import kim.zhyun.serveruser.service.NicknameReserveService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -15,7 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter @Setter
 @Component
-public class NicknameServiceImpl implements NicknameService {
+public class NicknameReserveServiceImpl implements NicknameReserveService {
     private final RedisTemplate<String, String> template;
     private final SessionUserRepository sessionUserRepository;
     

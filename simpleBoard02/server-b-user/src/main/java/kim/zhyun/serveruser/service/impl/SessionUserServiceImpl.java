@@ -22,12 +22,9 @@ public class SessionUserServiceImpl implements SessionUserService {
     
     @Override
     public SessionUser findById(String id) {
-        Optional<SessionUser> optional = sessionUserRepository.findById(id);
-        
-        if (optional.isEmpty())
-            throw new NotFoundSessionException(NOT_FOUND_SESSION);
-        
-        return optional.get();
+        return sessionUserRepository.findById(id)
+                .orElseGet(() -> sessionUserRepository.save(SessionUser.builder()
+                        .sessionId(id).build()));
     }
     
     @Override

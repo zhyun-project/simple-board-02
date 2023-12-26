@@ -3,7 +3,7 @@ package kim.zhyun.serveruser.repository;
 import kim.zhyun.serveruser.data.NicknameDto;
 import kim.zhyun.serveruser.entity.SessionUser;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
-import kim.zhyun.serveruser.service.NicknameService;
+import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -28,13 +28,13 @@ class NicknameStorageTest {
     private final String SESSION_ID_RESERVATION_PERSON = "6C62377C34168BB6DD496E8578447D78";
     private final String SESSION_ID_RESERVATION_PERSON_NOT = "4JK8377C34168BAS7G496E8578678GE2";
 
-    private final NicknameService nicknameService;
+    private final NicknameReserveService nicknameReserveService;
     private final SessionUserService sessionUserService;
     private final RedisTemplate<String, String> redisTemplate;
-    public NicknameStorageTest(@Autowired NicknameService nicknameService,
+    public NicknameStorageTest(@Autowired NicknameReserveService nicknameReserveService,
                                @Autowired SessionUserService sessionUserService,
                                @Autowired RedisTemplate<String, String> redisTemplate) {
-        this.nicknameService = nicknameService;
+        this.nicknameReserveService = nicknameReserveService;
         this.sessionUserService = sessionUserService;
         this.redisTemplate = redisTemplate;
     }
@@ -48,7 +48,7 @@ class NicknameStorageTest {
                 .sessionId(SESSION_ID_RESERVATION_PERSON_NOT).build();
         
         // when
-        boolean result1 = nicknameService.existNickname(dto);
+        boolean result1 = nicknameReserveService.existNickname(dto);
         
         // then
         assertFalse(result1);
@@ -63,7 +63,7 @@ class NicknameStorageTest {
                 .sessionId(SESSION_ID_RESERVATION_PERSON_NOT).build();
         
         // when
-        boolean result2 = nicknameService.existNickname(dto);
+        boolean result2 = nicknameReserveService.existNickname(dto);
         
         // then
         assertTrue(result2);
@@ -78,7 +78,7 @@ class NicknameStorageTest {
                 .sessionId(SESSION_ID_RESERVATION_PERSON).build();
         
         // when
-        boolean result3 = nicknameService.existNickname(dto);
+        boolean result3 = nicknameReserveService.existNickname(dto);
         
         // then
         assertFalse(result3);
@@ -93,7 +93,7 @@ class NicknameStorageTest {
                 .sessionId(SESSION_ID_RESERVATION_PERSON).build();
         
         // when
-        boolean result4 = nicknameService.existNickname(dto);
+        boolean result4 = nicknameReserveService.existNickname(dto);
         
         // then
         assertFalse(result4);
@@ -108,7 +108,7 @@ class NicknameStorageTest {
                 .sessionId(SESSION_ID_RESERVATION_PERSON_NOT).build();
         
         // when
-        boolean result = nicknameService.availableNickname(dto);
+        boolean result = nicknameReserveService.availableNickname(dto);
         
         // then
         assertFalse(result);
@@ -129,9 +129,9 @@ class NicknameStorageTest {
                 .sessionId(SESSION_ID_RESERVATION_PERSON).build();
         
         // when
-        boolean result1 = nicknameService.availableNickname(dto1);
-        boolean result2 = nicknameService.availableNickname(dto2);
-        boolean result3 = nicknameService.availableNickname(dto3);
+        boolean result1 = nicknameReserveService.availableNickname(dto1);
+        boolean result2 = nicknameReserveService.availableNickname(dto2);
+        boolean result3 = nicknameReserveService.availableNickname(dto3);
         
         // then
         assertTrue(result1);
@@ -149,10 +149,10 @@ class NicknameStorageTest {
                 .sessionId("").build();
         
         // when
-        nicknameService.deleteNickname(dto);
+        nicknameReserveService.deleteNickname(dto);
         
         // then
-        assertFalse(nicknameService.existNickname(dto));
+        assertFalse(nicknameReserveService.existNickname(dto));
     }
     
     @DisplayName("닉네임 예약 목록에서 삭제 - 없는 닉네임")
@@ -164,10 +164,10 @@ class NicknameStorageTest {
                 .sessionId("").build();
         
         // when
-        nicknameService.deleteNickname(dto);
+        nicknameReserveService.deleteNickname(dto);
         
         // then
-        assertFalse(nicknameService.existNickname(dto));
+        assertFalse(nicknameReserveService.existNickname(dto));
     }
     
     
@@ -177,7 +177,7 @@ class NicknameStorageTest {
                 .nickname(NICKNAME_RESERVED)
                 .sessionId(SESSION_ID_RESERVATION_PERSON).build();
         
-        nicknameService.saveNickname(dto);
+        nicknameReserveService.saveNickname(dto);
         sessionUserService.save(SessionUser.builder()
                 .sessionId(SESSION_ID_RESERVATION_PERSON)
                 .nickname(NICKNAME_RESERVED).build());
@@ -187,7 +187,7 @@ class NicknameStorageTest {
     @AfterEach
     void print_after_log() {
         print();
-        nicknameService.deleteNickname(NicknameDto.of(NICKNAME_RESERVED));
+        nicknameReserveService.deleteNickname(NicknameDto.of(NICKNAME_RESERVED));
     }
     
     private void print() {

@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kim.zhyun.serveruser.data.NicknameDto;
 import kim.zhyun.serveruser.entity.SessionUser;
-import kim.zhyun.serveruser.service.NicknameService;
+import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -21,8 +21,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -114,7 +112,7 @@ class DisconnectionInterceptorTest {
         @InjectMocks    private ConnectionInterceptor connectionInterceptor;
         @InjectMocks    private DisconnectionInterceptor disconnectionInterceptor;
         @Mock           private SessionUserService sessionUserService;
-        @Mock           private NicknameService nicknameService;
+        @Mock           private NicknameReserveService nicknameReserveService;
         
         @DisplayName("모든 interceptor에서 SessionService 호출이 한군데에서만 발생하는지 검증")
         @Nested
@@ -240,7 +238,7 @@ class DisconnectionInterceptorTest {
                     
                     when(sessionUserService.existsById(sessionId)).thenReturn(true);
                     when(sessionUserService.findById(sessionId)).thenReturn(resultSavedSessionUserContainNickname);
-                    doNothing().when(nicknameService).deleteNickname(NicknameDto.of(reservedNickname));
+                    doNothing().when(nicknameReserveService).deleteNickname(NicknameDto.of(reservedNickname));
                     doNothing().when(sessionUserService).deleteById(sessionId);
                 
                     disconnectionInterceptor.preHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object());
@@ -248,7 +246,7 @@ class DisconnectionInterceptorTest {
                     // then
                     verify(sessionUserService, times(1)).existsById(sessionId);
                     verify(sessionUserService, times(1)).findById(sessionId);
-                    verify(nicknameService, times(1)).deleteNickname(NicknameDto.of(reservedNickname));
+                    verify(nicknameReserveService, times(1)).deleteNickname(NicknameDto.of(reservedNickname));
                     verify(sessionUserService, times(1)).deleteById(sessionId);
                 }
             }
@@ -316,7 +314,7 @@ class DisconnectionInterceptorTest {
                     // then
                     verify(sessionUserService, times(1)).existsById(sessionId);
                     verify(sessionUserService, times(1)).findById(sessionId);
-                    verify(nicknameService,  times(0)).deleteNickname(NicknameDto.of(""));
+                    verify(nicknameReserveService,  times(0)).deleteNickname(NicknameDto.of(""));
                     verify(sessionUserService, times(1)).deleteById(sessionId);
                 }
             }
