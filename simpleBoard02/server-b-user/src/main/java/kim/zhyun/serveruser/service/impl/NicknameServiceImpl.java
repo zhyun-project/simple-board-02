@@ -1,5 +1,6 @@
 package kim.zhyun.serveruser.service.impl;
 
+import kim.zhyun.serveruser.data.NicknameDto;
 import kim.zhyun.serveruser.entity.SessionUser;
 import kim.zhyun.serveruser.repository.SessionUserRepository;
 import kim.zhyun.serveruser.service.NicknameService;
@@ -23,50 +24,50 @@ public class NicknameServiceImpl implements NicknameService {
      * - nickname 중복 확인 통과 후 다시 조회하는 경우, 먼저 예약 된 nickname 삭제
      */
     @Override
-    public boolean existNickname(String nickname, String sessionId) {
-        Optional<SessionUser> optionalSessionUser = sessionUserRepository.findById(sessionId);
+    public boolean existNickname(NicknameDto dto) {
+        Optional<SessionUser> optionalSessionUser = sessionUserRepository.findById(dto.getSessionId());
         if (optionalSessionUser.isPresent()) {
             
             SessionUser sessionUser = optionalSessionUser.get();
             String userNickname = sessionUser.getNickname();
 
             if (userNickname != null && !userNickname.isBlank()) {
-                deleteNickname(userNickname);
+                deleteNickname(NicknameDto.of(userNickname));
                 sessionUser.setNickname(null);
                 sessionUserRepository.save(sessionUser);
             }
             
         }
         
-        return template.hasKey(nickname);
+        return template.hasKey(dto.getNickname());
     }
     
     /**
      * 사용 가능한 nickname인지 조회
      */
     @Override
-    public boolean availableNickname(String nickname, String sessionId) {
-        if (!existNickname(nickname, sessionId))
+    public boolean availableNickname(NicknameDto dto) {
+        if (!existNickname(dto))
             return true;
         
-        return template.opsForSet().isMember(nickname, sessionId);
+        return template.opsForSet().isMember(dto.getNickname(), dto.getSessionId());
     }
     
     /**
      * nickname 예약
      */
     @Override
-    public void saveNickname(String nickname, String sessionId) {
-        deleteNickname(nickname);
-        template.opsForSet().add(nickname, sessionId);
+    public void saveNickname(NicknameDto dto) {
+        deleteNickname(dto);
+        template.opsForSet().add(dto.getNickname(), dto.getSessionId());
     }
     
     /**
      * nickname 삭제
      */
     @Override
-    public void deleteNickname(String nickname) {
-        template.delete(nickname);
+    public void deleteNickname(NicknameDto dto) {
+        template.delete(dto.getNickname());
     }
     
 }

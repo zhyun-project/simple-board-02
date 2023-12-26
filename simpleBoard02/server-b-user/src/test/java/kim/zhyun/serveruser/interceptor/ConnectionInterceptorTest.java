@@ -133,11 +133,6 @@ class ConnectionInterceptorTest {
             connectionInterceptor.postHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object(), null);
             connectionInterceptor.afterCompletion(mockHttpServletRequest, new MockHttpServletResponse(), new Object(), null);
             
-            disconnectionInterceptor.preHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object());
-            disconnectionInterceptor.postHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object(), null);
-            disconnectionInterceptor.afterCompletion(mockHttpServletRequest, new MockHttpServletResponse(), new Object(), null);
-            
-            
             // then
             SessionUser source = SessionUser.builder().sessionId(sessionId).build();
             

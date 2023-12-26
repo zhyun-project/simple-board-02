@@ -3,6 +3,7 @@ package kim.zhyun.serveruser.interceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import kim.zhyun.serveruser.data.NicknameDto;
 import kim.zhyun.serveruser.entity.SessionUser;
 import kim.zhyun.serveruser.service.NicknameService;
 import kim.zhyun.serveruser.service.SessionUserService;
@@ -10,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
-
-import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -28,13 +27,13 @@ public class DisconnectionInterceptor implements HandlerInterceptor {
         log.info("delete nickname cache - session id: {}", sessionId);
 
         // 1. session_id storage : nickname 값 조회
-        Optional<SessionUser> optionalSessionUser = sessionUserService.findById(sessionId);
-        if (optionalSessionUser.isPresent()) {
-            
+        if (sessionUserService.existsById(sessionId)) {
+            SessionUser sessionUser = sessionUserService.findById(sessionId);
+
             // 2. nickname storage : 1에서 조회한 nickname 삭제
-            String nickname = optionalSessionUser.get().getNickname();
+            String nickname = sessionUser.getNickname();
             if (nickname != null && !nickname.isBlank()) {
-                nicknameService.deleteNickname(nickname);
+                nicknameService.deleteNickname(NicknameDto.of(nickname));
             }
             
             // 3. session_id storage : session_id 삭제

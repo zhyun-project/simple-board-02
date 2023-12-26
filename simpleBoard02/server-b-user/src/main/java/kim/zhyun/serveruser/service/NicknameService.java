@@ -1,10 +1,12 @@
 package kim.zhyun.serveruser.service;
 
+import kim.zhyun.serveruser.data.NicknameDto;
+
 public interface NicknameService {
     
-    boolean existNickname(String nickname, String sessionId);
-    boolean availableNickname(String nickname, String sessionId);
-    void saveNickname(String nickname, String sessionId);
-    void deleteNickname(String nickname);
+    boolean existNickname(NicknameDto dto);
+    boolean availableNickname(NicknameDto dto);
+    void saveNickname(NicknameDto dto);
+    void deleteNickname(NicknameDto dto);
     
 }
