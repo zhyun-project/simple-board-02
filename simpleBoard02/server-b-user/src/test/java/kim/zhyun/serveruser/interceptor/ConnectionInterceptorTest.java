@@ -3,7 +3,7 @@ package kim.zhyun.serveruser.interceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kim.zhyun.serveruser.entity.SessionUser;
-import kim.zhyun.serveruser.service.SessionUserRedisService;
+import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -92,7 +92,7 @@ class ConnectionInterceptorTest {
         
         @InjectMocks    private ConnectionInterceptor connectionInterceptor;
         @InjectMocks    private DisconnectionInterceptor disconnectionInterceptor;
-        @Mock           private SessionUserRedisService sessionUserRedisService;
+        @Mock           private SessionUserService sessionUserService;
         
         @DisplayName("/sign-up post 접근 - 2번째 파라미터 : session id가 redis에 저장돼있는지 유무")
         @Test
@@ -127,22 +127,17 @@ class ConnectionInterceptorTest {
             MockHttpServletRequest mockHttpServletRequest = new MockHttpServletRequest();
             String sessionId = mockHttpServletRequest.getSession().getId();
             
-            when(sessionUserRedisService.existsById(sessionId)).thenReturn(sessionIdExistInRedis);
+            when(sessionUserService.existsById(sessionId)).thenReturn(sessionIdExistInRedis);
             
             connectionInterceptor.preHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object());
             connectionInterceptor.postHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object(), null);
             connectionInterceptor.afterCompletion(mockHttpServletRequest, new MockHttpServletResponse(), new Object(), null);
             
-            disconnectionInterceptor.preHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object());
-            disconnectionInterceptor.postHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object(), null);
-            disconnectionInterceptor.afterCompletion(mockHttpServletRequest, new MockHttpServletResponse(), new Object(), null);
-            
-            
             // then
             SessionUser source = SessionUser.builder().sessionId(sessionId).build();
             
-            verify(sessionUserRedisService, times(1)).existsById(sessionId);
-            verify(sessionUserRedisService, times(sessionIdExistInRedis ? 0 : 1)).save(source);
+            verify(sessionUserService, times(1)).existsById(sessionId);
+            verify(sessionUserService, times(sessionIdExistInRedis ? 0 : 1)).save(source);
         }
     }
     

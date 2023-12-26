@@ -18,6 +18,10 @@ public class SessionUser {
     private String sessionId;
     
     private String email;
+    
+    @Builder.Default
+    private boolean emailVerification = false;
+    
     private String nickname;
     
     
@@ -30,6 +34,7 @@ public class SessionUser {
         
         if (!Objects.equals(sessionId, that.sessionId)) return false;
         if (!Objects.equals(email, that.email)) return false;
+        if (!Objects.equals(emailVerification, that.emailVerification)) return false;
         return Objects.equals(nickname, that.nickname);
     }
     

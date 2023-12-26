@@ -34,13 +34,9 @@ public class PrintLog <Repository> {
         else if (repository instanceof UserRepository) {
             print(((UserRepository) repository).findAll());
         }
-        else if (repository instanceof EmailAuthRedisRepository) {
-            print(((EmailAuthRedisRepository) repository).findAll());
-            ((EmailAuthRedisRepository) repository).deleteAll();
-        }
-        else if (repository instanceof SessionUserRedisRepository) {
-            print(((SessionUserRedisRepository) repository).findAll());
-            ((SessionUserRedisRepository) repository).deleteAll();
+        else if (repository instanceof SessionUserRepository) {
+            print(((SessionUserRepository) repository).findAll());
+            ((SessionUserRepository) repository).deleteAll();
         }
         
         log.info("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘");
