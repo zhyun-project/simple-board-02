@@ -2,7 +2,7 @@ package kim.zhyun.serveruser.service.impl;
 
 import kim.zhyun.serveruser.data.EmailAuthDto;
 import kim.zhyun.serveruser.data.SessionUserEmailUpdate;
-import kim.zhyun.serveruser.service.EmailAuthService;
+import kim.zhyun.serveruser.service.EmailService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class EmailAuthServiceImpl implements EmailAuthService {
+public class EmailServiceImpl implements EmailService {
     private final RedisTemplate<String, String> template;
     private final SessionUserService sessionUserService;
     

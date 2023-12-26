@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import kim.zhyun.serveruser.data.NicknameDto;
 import kim.zhyun.serveruser.entity.SessionUser;
-import kim.zhyun.serveruser.service.NicknameService;
+import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Component
 public class DisconnectionInterceptor implements HandlerInterceptor {
     private final SessionUserService sessionUserService;
-    private final NicknameService nicknameService;
+    private final NicknameReserveService nicknameReserveService;
     
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -33,7 +33,7 @@ public class DisconnectionInterceptor implements HandlerInterceptor {
             // 2. nickname storage : 1에서 조회한 nickname 삭제
             String nickname = sessionUser.getNickname();
             if (nickname != null && !nickname.isBlank()) {
-                nicknameService.deleteNickname(NicknameDto.of(nickname));
+                nicknameReserveService.deleteNickname(NicknameDto.of(nickname));
             }
             
             // 3. session_id storage : session_id 삭제

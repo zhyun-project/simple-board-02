@@ -2,7 +2,7 @@ package kim.zhyun.serveruser.service;
 
 import kim.zhyun.serveruser.data.EmailAuthDto;
 
-public interface EmailAuthService {
+public interface EmailService {
     
     boolean existEmail(EmailAuthDto dto);
     boolean existCode(EmailAuthDto dto);

@@ -2,7 +2,7 @@ package kim.zhyun.serveruser.service;
 
 import kim.zhyun.serveruser.data.NicknameDto;
 
-public interface NicknameService {
+public interface NicknameReserveService {
     
     boolean existNickname(NicknameDto dto);
     boolean availableNickname(NicknameDto dto);

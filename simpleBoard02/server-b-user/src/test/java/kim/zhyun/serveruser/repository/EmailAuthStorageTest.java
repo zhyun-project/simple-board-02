@@ -3,7 +3,7 @@ package kim.zhyun.serveruser.repository;
 import kim.zhyun.serveruser.data.EmailAuthDto;
 import kim.zhyun.serveruser.entity.SessionUser;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
-import kim.zhyun.serveruser.service.EmailAuthService;
+import kim.zhyun.serveruser.service.EmailService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -32,13 +32,13 @@ class EmailAuthStorageTest {
     private String KEY;
     
     private final SessionUserService sessionUserService;
-    private final EmailAuthService emailAuthService;
+    private final EmailService emailService;
     private final RedisTemplate<String, String> redisTemplate;
     public EmailAuthStorageTest(@Autowired SessionUserService sessionUserService,
-                                @Autowired EmailAuthService emailAuthService,
+                                @Autowired EmailService emailService,
                                 @Autowired RedisTemplate<String, String> redisTemplate) {
         this.sessionUserService = sessionUserService;
-        this.emailAuthService = emailAuthService;
+        this.emailService = emailService;
         this.redisTemplate = redisTemplate;
     }
 
@@ -53,7 +53,7 @@ class EmailAuthStorageTest {
         Thread.sleep(30_000);
         
         // when
-        boolean existEmail = emailAuthService.existEmail(dto);
+        boolean existEmail = emailService.existEmail(dto);
         
         // then
         assertFalse(existEmail);
@@ -68,8 +68,8 @@ class EmailAuthStorageTest {
                 .code(CODE_NOT_EXIST).build();
         
         // when
-        boolean existEmail = emailAuthService.existEmail(dto);
-        boolean existCode = emailAuthService.existCode(dto);
+        boolean existEmail = emailService.existEmail(dto);
+        boolean existCode = emailService.existCode(dto);
         
         // then
         assertTrue(existEmail);
@@ -85,15 +85,15 @@ class EmailAuthStorageTest {
                 .code(CODE).build();
         
         // when
-        emailAuthService.saveEmailAuthCode(dto);
+        emailService.saveEmailAuthCode(dto);
         
         // then
-        boolean existEmail = emailAuthService.existEmail(dto);
+        boolean existEmail = emailService.existEmail(dto);
         assertTrue(existEmail);
         
         Thread.sleep(30_000);
         
-        existEmail = emailAuthService.existEmail(dto);
+        existEmail = emailService.existEmail(dto);
         assertFalse(existEmail);
     }
     
@@ -108,10 +108,10 @@ class EmailAuthStorageTest {
                 .code(CODE).build();
         
         // when : 인증 성공
-        emailAuthService.deleteAndUpdateSessionUserEmail(dto, SESSION_ID);
+        emailService.deleteAndUpdateSessionUserEmail(dto, SESSION_ID);
         
         // then
-        boolean existEmail = emailAuthService.existEmail(dto);
+        boolean existEmail = emailService.existEmail(dto);
         boolean emailVerification = sessionUserService.findById(SESSION_ID).isEmailVerification();
 
         assertFalse(existEmail);
@@ -132,7 +132,7 @@ class EmailAuthStorageTest {
         
         sessionUserService.save(sessionUser);
         // 만료시간  : 30초
-        emailAuthService.saveEmailAuthCode(dto);
+        emailService.saveEmailAuthCode(dto);
         
         print();
     }
@@ -140,7 +140,7 @@ class EmailAuthStorageTest {
     @AfterEach
     void print_after_log() {
         print();
-        emailAuthService.deleteAndUpdateSessionUserEmail(EmailAuthDto.builder()
+        emailService.deleteAndUpdateSessionUserEmail(EmailAuthDto.builder()
                 .email(ID).build(),
                 SESSION_ID);
         sessionUserService.deleteById(SESSION_ID);
