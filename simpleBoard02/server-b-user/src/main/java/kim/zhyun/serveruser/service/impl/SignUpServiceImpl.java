@@ -7,10 +7,8 @@ import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class SignUpServiceImpl implements SignUpService {
@@ -26,9 +24,8 @@ public class SignUpServiceImpl implements SignUpService {
             return false;
         
         // session user 저장소에 이메일 등록
-        SessionUser sessionUser = sessionUserService.findById(sessionId);
-        sessionUser.setEmail(email);
-        sessionUserService.save(sessionUser);
+        saveEmailToSessionUserStorage(email, sessionId);
+        
         return true;
     }
     
@@ -52,10 +49,27 @@ public class SignUpServiceImpl implements SignUpService {
         nicknameReserveService.saveNickname(newNicknameInfo);
         
         // session user 저장소에 닉네임 등록
+        saveNicknameToSessionUserStorage(nickname, sessionId);
+        
+        return true;
+    }
+    
+    /**
+     * session user 저장소에 이메일 등록
+     */
+    private void saveEmailToSessionUserStorage(String email, String sessionId) {
+        SessionUser sessionUser = sessionUserService.findById(sessionId);
+        sessionUser.setEmail(email);
+        sessionUserService.save(sessionUser);
+    }
+    
+    /**
+     * session user 저장소에 닉네임 등록
+     */
+    private void saveNicknameToSessionUserStorage(String nickname, String sessionId) {
         SessionUser sessionUser = sessionUserService.findById(sessionId);
         sessionUser.setNickname(nickname);
         sessionUserService.save(sessionUser);
-        return true;
     }
     
 }
