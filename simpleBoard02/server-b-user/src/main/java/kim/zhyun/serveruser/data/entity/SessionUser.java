@@ -1,4 +1,4 @@
-package kim.zhyun.serveruser.entity;
+package kim.zhyun.serveruser.data.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;

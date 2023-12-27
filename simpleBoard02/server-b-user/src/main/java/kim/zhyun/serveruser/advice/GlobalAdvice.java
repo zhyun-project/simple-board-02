@@ -19,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import static kim.zhyun.serveruser.data.type.ResponseMessage.VALID_EXCEPTION;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.VALID_EXCEPTION;
 
 @RestControllerAdvice
 public class GlobalAdvice extends ResponseEntityExceptionHandler {

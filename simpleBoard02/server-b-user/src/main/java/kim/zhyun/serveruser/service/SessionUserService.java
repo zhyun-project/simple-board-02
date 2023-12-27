@@ -2,9 +2,7 @@ package kim.zhyun.serveruser.service;
 
 import kim.zhyun.serveruser.data.SessionUserEmailUpdate;
 import kim.zhyun.serveruser.data.SessionUserNicknameUpdate;
-import kim.zhyun.serveruser.entity.SessionUser;
-
-import java.util.Optional;
+import kim.zhyun.serveruser.data.entity.SessionUser;
 
 public interface SessionUserService {
     

@@ -1,7 +1,7 @@
 package kim.zhyun.serveruser.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import kim.zhyun.serveruser.data.type.ResponseMessage;
+import kim.zhyun.serveruser.data.message.ResponseMessage;
 import lombok.*;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;

@@ -1,7 +1,7 @@
 package kim.zhyun.serveruser.repository;
 
 import kim.zhyun.serveruser.data.EmailAuthDto;
-import kim.zhyun.serveruser.entity.SessionUser;
+import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
 import kim.zhyun.serveruser.service.EmailService;
 import kim.zhyun.serveruser.service.SessionUserService;

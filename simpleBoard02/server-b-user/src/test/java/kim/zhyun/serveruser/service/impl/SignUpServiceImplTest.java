@@ -1,7 +1,7 @@
 package kim.zhyun.serveruser.service.impl;
 
 import kim.zhyun.serveruser.data.NicknameDto;
-import kim.zhyun.serveruser.entity.SessionUser;
+import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
 import kim.zhyun.serveruser.service.NicknameReserveService;

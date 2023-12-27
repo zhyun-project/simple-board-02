@@ -1,7 +1,6 @@
 package kim.zhyun.serveruser.repository;
 
-import kim.zhyun.serveruser.entity.Role;
-import org.springframework.data.jpa.repository.JpaRepository;
+import kim.zhyun.serveruser.data.entity.Role;
 
 import java.util.Optional;
 

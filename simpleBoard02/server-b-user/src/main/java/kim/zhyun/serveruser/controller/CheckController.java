@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static kim.zhyun.serveruser.data.type.ResponseMessage.*;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.*;
 
 
 @Tag(name = "이메일 인증, 이메일 중복 확인, 닉네임 중복 확인 API")

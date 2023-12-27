@@ -1,4 +1,4 @@
-package kim.zhyun.serveruser.data.type;
+package kim.zhyun.serveruser.data.message;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

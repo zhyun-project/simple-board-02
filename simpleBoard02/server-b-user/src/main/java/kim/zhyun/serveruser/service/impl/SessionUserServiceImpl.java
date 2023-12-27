@@ -1,18 +1,13 @@
 package kim.zhyun.serveruser.service.impl;
 
-import kim.zhyun.serveruser.advice.NotFoundSessionException;
 import kim.zhyun.serveruser.data.SessionUserEmailUpdate;
 import kim.zhyun.serveruser.data.SessionUserNicknameUpdate;
-import kim.zhyun.serveruser.entity.SessionUser;
+import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.repository.SessionUserRepository;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-
-import static kim.zhyun.serveruser.data.type.ExceptionType.NOT_FOUND_SESSION;
 
 @Slf4j
 @RequiredArgsConstructor
