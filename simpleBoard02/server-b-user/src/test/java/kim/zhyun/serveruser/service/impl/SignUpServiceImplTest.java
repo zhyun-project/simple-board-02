@@ -17,10 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-/**
- * 서비스 로직 검증 방법
- * 1. mock - inject mock , verify 확인
- */
 @Slf4j
 @ExtendWith(RedisTestContainer.class)
 @SpringBootTest
