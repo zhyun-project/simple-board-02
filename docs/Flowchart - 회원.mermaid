@@ -10,7 +10,6 @@ flowchart TB
     D1 --> D11{이메일 중복확인}
     D11 -.->|중복| D1
     D11 -->|신규| D2{인증 코드 이메일 발송}
-    D2 -.->|메일 수신 불가| D1
     D2 --->|메일 발송 성공| D22{이메일 인증}
     D22 -.->|실패| D2
     D22 -->|성공| D4[다른 항목 기입]
@@ -37,6 +36,6 @@ flowchart TB
 
     click D3 "https://blog.zhyun.kim/415"
 
-    linkStyle 7,9,11 stroke-width:2px,fill:none,stroke:red;
-    linkStyle 16,18 stroke-width:2px,fill:none,stroke:red;
+    linkStyle 7,10 stroke-width:2px,fill:none,stroke:red;
+    linkStyle 15,17 stroke-width:2px,fill:none,stroke:red;
     
