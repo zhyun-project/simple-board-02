@@ -24,6 +24,14 @@ import static kim.zhyun.serveruser.data.message.ResponseMessage.VALID_EXCEPTION;
 @RestControllerAdvice
 public class GlobalAdvice extends ResponseEntityExceptionHandler {
     
+    @ExceptionHandler(MailAuthException.class)
+    public ResponseEntity<Object> mailException(MailAuthException e) {
+        return ResponseEntity
+                .badRequest().body(ApiResponse.<List<ValidExceptionResponse>>builder()
+                        .status(false)
+                        .message(e.getExceptionType()).build());
+    }
+    
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> constraintViolationException(ConstraintViolationException e) {
         List<ValidExceptionResponse> errorList = new ArrayList<>();

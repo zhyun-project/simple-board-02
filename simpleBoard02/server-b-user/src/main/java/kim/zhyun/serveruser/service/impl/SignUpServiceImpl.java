@@ -1,13 +1,18 @@
 package kim.zhyun.serveruser.service.impl;
 
+import kim.zhyun.serveruser.advice.MailAuthException;
+import kim.zhyun.serveruser.data.EmailAuthCodeRequest;
 import kim.zhyun.serveruser.data.NicknameDto;
 import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.repository.UserRepository;
+import kim.zhyun.serveruser.service.EmailService;
 import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import static kim.zhyun.serveruser.data.type.ExceptionType.REQUIRE_MAIL_DUPLICATE_CHECK;
 
 @RequiredArgsConstructor
 @Service
@@ -15,6 +20,7 @@ public class SignUpServiceImpl implements SignUpService {
     private final UserRepository userRepository;
     private final NicknameReserveService nicknameReserveService;
     private final SessionUserService sessionUserService;
+    private final EmailService emailService;
     
     @Override
     public boolean availableEmail(String email, String sessionId) {
@@ -52,6 +58,18 @@ public class SignUpServiceImpl implements SignUpService {
         saveNicknameToSessionUserStorage(nickname, sessionId);
         
         return true;
+    }
+    
+    @Override
+    public void sendEmailAuthCode(String sessionId, EmailAuthCodeRequest request) {
+        // 1. email 중복검사 확인
+        SessionUser sessionUser = sessionUserService.findById(sessionId);
+        
+        if (sessionUser.getEmail() == null || !sessionUser.getEmail().equals(request.getEmail()))
+            throw new MailAuthException(REQUIRE_MAIL_DUPLICATE_CHECK);
+        
+        // 2. 메일 발송
+        emailService.sendEmailAuthCode(request.getEmail());
     }
     
     /**

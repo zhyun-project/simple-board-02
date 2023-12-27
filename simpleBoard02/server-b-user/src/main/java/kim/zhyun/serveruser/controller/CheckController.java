@@ -3,8 +3,11 @@ package kim.zhyun.serveruser.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import kim.zhyun.serveruser.data.ApiResponse;
+import kim.zhyun.serveruser.data.EmailAuthCodeRequest;
+import kim.zhyun.serveruser.data.EmailAuthDto;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -59,13 +62,14 @@ public class CheckController {
 
     @Operation(summary = "이메일로 인증코드 전송")
     @PostMapping("/auth")
-    public void sendEmail() {
-    
+    public void sendEmail(HttpServletRequest request,
+                          @Valid @RequestBody EmailAuthCodeRequest userRequest) {
+        signupService.sendEmailAuthCode(request.getSession().getId(), userRequest);
     }
     
     @Operation(summary = "메일 인증")
     @GetMapping("/auth")
-    public void sendEmail(@RequestParam(name = "code") String code) {
+    public void authEmailCode(@RequestParam(name = "code") String code) {
     
     }
     
