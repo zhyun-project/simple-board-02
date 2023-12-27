@@ -5,9 +5,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import kim.zhyun.serveruser.data.ApiResponse;
 import kim.zhyun.serveruser.data.EmailAuthCodeRequest;
-import kim.zhyun.serveruser.data.EmailAuthDto;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -69,8 +69,14 @@ public class CheckController {
     
     @Operation(summary = "메일 인증")
     @GetMapping("/auth")
-    public void authEmailCode(@RequestParam(name = "code") String code) {
-    
+    public ResponseEntity<ApiResponse<Void>> authEmailCode(HttpServletRequest request,
+                              @RequestParam(name = "code")
+                              @NotBlank(message = "코드를 입력해 주세요.") String code) {
+        signupService.verifyEmailAuthCode(request.getSession().getId(), code);
+        
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .status(true)
+                .message(VERIFY_EMAIL_AUTH_SUCCESS).build());
     }
     
 }

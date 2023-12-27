@@ -2,6 +2,7 @@ package kim.zhyun.serveruser.service.impl;
 
 import kim.zhyun.serveruser.advice.MailAuthException;
 import kim.zhyun.serveruser.data.EmailAuthCodeRequest;
+import kim.zhyun.serveruser.data.EmailAuthDto;
 import kim.zhyun.serveruser.data.NicknameDto;
 import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.repository.UserRepository;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import static kim.zhyun.serveruser.data.type.ExceptionType.REQUIRE_MAIL_DUPLICATE_CHECK;
+import static kim.zhyun.serveruser.data.type.ExceptionType.VERIFY_EMAIL_AUTH_CODE_EXPIRED;
 
 @RequiredArgsConstructor
 @Service
@@ -70,6 +72,25 @@ public class SignUpServiceImpl implements SignUpService {
         
         // 2. 메일 발송
         emailService.sendEmailAuthCode(request.getEmail());
+    }
+    
+    @Override
+    public void verifyEmailAuthCode(String sessionId, String code) {
+        String email = sessionUserService.findById(sessionId).getEmail();
+        EmailAuthDto requestInfo = EmailAuthDto.builder()
+                .email(email)
+                .code(code).build();
+
+        // 코드 불일치 case 1 : 만료된 경우
+        if (!emailService.existEmail(requestInfo))
+            throw new MailAuthException(VERIFY_EMAIL_AUTH_CODE_EXPIRED);
+        
+        // 코드 불일치 case 2 : 코드 잘못 입력
+        if (!emailService.existCode(requestInfo))
+            throw new MailAuthException(VERIFY_EMAIL_AUTH_CODE_EXPIRED);
+        
+        // 인증 성공
+        emailService.deleteAndUpdateSessionUserEmail(requestInfo, sessionId);
     }
     
     /**

@@ -14,6 +14,8 @@ public enum ResponseMessage {
 
     SIGN_UP_CHECK_VALUE_IS_EMPTY("값을 입력해주세요."),
     VALID_EXCEPTION("입력 값이 올바르지 않습니다."),
+    
+    VERIFY_EMAIL_AUTH_SUCCESS("인증되었습니다."),
     ;
     
     private final String message;

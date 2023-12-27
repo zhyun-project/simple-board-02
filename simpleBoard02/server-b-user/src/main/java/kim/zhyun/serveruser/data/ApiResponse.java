@@ -3,7 +3,10 @@ package kim.zhyun.serveruser.data;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import kim.zhyun.serveruser.data.message.ResponseMessage;
 import kim.zhyun.serveruser.data.type.ExceptionType;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 import static kim.zhyun.serveruser.data.type.ExceptionType.RESPONSE_API_MESSAGE_INPUT_FAULT;

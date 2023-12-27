@@ -6,4 +6,5 @@ public interface SignUpService {
     boolean availableEmail(String email, String sessionId);
     boolean availableNickname(String nickname, String sessionId);
     void sendEmailAuthCode(String sessionId, EmailAuthCodeRequest request);
+    void verifyEmailAuthCode(String sessionId, String code);
 }
