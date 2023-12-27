@@ -19,7 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static kim.zhyun.serveruser.data.type.ExceptionType.MAIL_SEND_FAIL;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.MAIL_SEND_FAIL;
 
 @Slf4j
 @RequiredArgsConstructor

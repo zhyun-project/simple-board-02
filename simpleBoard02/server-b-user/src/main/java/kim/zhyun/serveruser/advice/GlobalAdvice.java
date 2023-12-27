@@ -29,7 +29,7 @@ public class GlobalAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .badRequest().body(ApiResponse.<List<ValidExceptionResponse>>builder()
                         .status(false)
-                        .message(e.getExceptionType()).build());
+                        .message(e.getExceptionMessage()).build());
     }
     
     @ExceptionHandler(ConstraintViolationException.class)

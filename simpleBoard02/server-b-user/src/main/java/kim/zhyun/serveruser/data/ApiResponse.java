@@ -2,14 +2,14 @@ package kim.zhyun.serveruser.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import kim.zhyun.serveruser.data.message.ResponseMessage;
-import kim.zhyun.serveruser.data.type.ExceptionType;
+import kim.zhyun.serveruser.data.message.ExceptionMessage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
-import static kim.zhyun.serveruser.data.type.ExceptionType.RESPONSE_API_MESSAGE_INPUT_FAULT;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.RESPONSE_API_MESSAGE_INPUT_FAULT;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,8 +26,8 @@ public class ApiResponse <T> {
         if (message instanceof ResponseMessage)
             return ((ResponseMessage) message).getMessage();
         
-        if (message instanceof ExceptionType)
-            return ((ExceptionType) message).getDescription();
+        if (message instanceof ExceptionMessage)
+            return ((ExceptionMessage) message).getDescription();
         
         throw new RuntimeException(RESPONSE_API_MESSAGE_INPUT_FAULT.getDescription());
     }

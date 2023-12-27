@@ -13,8 +13,7 @@ import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import static kim.zhyun.serveruser.data.type.ExceptionType.REQUIRE_MAIL_DUPLICATE_CHECK;
-import static kim.zhyun.serveruser.data.type.ExceptionType.VERIFY_EMAIL_AUTH_CODE_EXPIRED;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
 
 @RequiredArgsConstructor
 @Service
@@ -87,7 +86,7 @@ public class SignUpServiceImpl implements SignUpService {
         
         // 코드 불일치 case 2 : 코드 잘못 입력
         if (!emailService.existCode(requestInfo))
-            throw new MailAuthException(VERIFY_EMAIL_AUTH_CODE_EXPIRED);
+            throw new MailAuthException(VERIFY_FAIL_EMAIL_AUTH_CODE);
         
         // 인증 성공
         emailService.deleteAndUpdateSessionUserEmail(requestInfo, sessionId);

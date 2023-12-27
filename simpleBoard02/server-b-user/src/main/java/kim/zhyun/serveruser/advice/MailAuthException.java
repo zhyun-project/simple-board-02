@@ -1,15 +1,15 @@
 package kim.zhyun.serveruser.advice;
 
-import kim.zhyun.serveruser.data.type.ExceptionType;
+import kim.zhyun.serveruser.data.message.ExceptionMessage;
 import lombok.Getter;
 
 @Getter
 public class MailAuthException extends RuntimeException {
-    private final ExceptionType exceptionType;
+    private final ExceptionMessage exceptionMessage;
     
-    public MailAuthException(ExceptionType exceptionType) {
-        super(exceptionType.getDescription());
-        this.exceptionType = exceptionType;
+    public MailAuthException(ExceptionMessage exceptionMessage) {
+        super(exceptionMessage.getDescription());
+        this.exceptionMessage = exceptionMessage;
     }
     
 }
