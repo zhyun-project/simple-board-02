@@ -1,0 +1,10 @@
+### 이메일 중복 확인
+GET http://localhost:8090/check?email=gimwlgus@dasum.net
+
+### 이메일 전송
+POST http://localhost:8090/check/auth
+Content-Type: application/json
+
+{
+  "email": "gimwlgus@dasum.net"
+}
