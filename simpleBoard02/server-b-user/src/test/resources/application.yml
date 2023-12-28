@@ -1,4 +1,7 @@
 spring:
+  config:
+    import: classpath:password.yml
+
   datasource:
     url: jdbc:h2:./server-b-user/h2/member-test;AUTO_SERVER=true;mode=MYSQL;
     username: sa
@@ -16,6 +19,24 @@ spring:
         show_sql: true
         format_sql: true
         highlight_sql: true
+
+  mail:
+    protocol: smtp
+    host: smtp.gmail.com
+    port: 465
+    username: gimwlgus@gmail.com
+    password: ${email.password.gmail}
+    default-encoding: UTF-8
+    properties:
+      debug: true
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+            trust: smtp.gmail.com
+          starttls:
+            enable: true
 
 logging:
   level:
