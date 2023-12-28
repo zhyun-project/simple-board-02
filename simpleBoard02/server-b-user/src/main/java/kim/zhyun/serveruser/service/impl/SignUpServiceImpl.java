@@ -84,7 +84,7 @@ public class SignUpServiceImpl implements SignUpService {
         if (!emailService.existEmail(requestInfo))
             throw new MailAuthException(VERIFY_EMAIL_AUTH_CODE_EXPIRED);
         
-        // 코드 불일치 case 2 : 코드 잘못 입력
+        // 코드 불일치 case 2 : 코드 불일치
         if (!emailService.existCode(requestInfo))
             throw new MailAuthException(VERIFY_FAIL_EMAIL_AUTH_CODE);
         

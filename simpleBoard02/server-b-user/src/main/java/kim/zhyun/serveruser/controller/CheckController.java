@@ -67,7 +67,7 @@ public class CheckController {
         signupService.sendEmailAuthCode(request.getSession().getId(), userRequest);
     }
     
-    @Operation(summary = "메일 인증")
+    @Operation(summary = "메일 인증코드 검증")
     @GetMapping("/auth")
     public ResponseEntity<ApiResponse<Void>> authEmailCode(HttpServletRequest request,
                               @RequestParam(name = "code")
