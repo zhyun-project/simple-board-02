@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import kim.zhyun.serveruser.data.ApiResponse;
 import kim.zhyun.serveruser.data.EmailAuthCodeRequest;
+import kim.zhyun.serveruser.data.message.ResponseMessage;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.validator.constraints.Length;
@@ -37,27 +38,26 @@ public class CheckController {
                                                                 String nickname) {
         String sessionId = request.getSession().getId();
         
+        boolean result = false;
+        ResponseMessage message = SIGN_UP_CHECK_VALUE_IS_EMPTY;
+        
         // email 중복확인
         if (email != null) {
-            return ResponseEntity.ok(ApiResponse.<Void>builder()
-                    .status(true)
-                    .message(signupService.availableEmail(email, sessionId)
-                            ? SIGN_UP_AVAILABLE_EMAIL
-                            : SIGN_UP_UNAVAILABLE_EMAIL).build());
+            result = signupService.availableEmail(email, sessionId);
+            message = result ? SIGN_UP_AVAILABLE_EMAIL
+                             : SIGN_UP_UNAVAILABLE_EMAIL;
         }
         
         // 닉네임 중복확인
         if (nickname != null) {
-            return ResponseEntity.ok(ApiResponse.<Void>builder()
-                    .status(true)
-                    .message(signupService.availableNickname(nickname, sessionId)
-                            ? SIGN_UP_AVAILABLE_NICKNAME
-                            : SIGN_UP_UNAVAILABLE_NICKNAME).build());
+            result = signupService.availableNickname(nickname, sessionId);
+            message = result ? SIGN_UP_AVAILABLE_NICKNAME
+                             : SIGN_UP_UNAVAILABLE_NICKNAME;
         }
         
         return ResponseEntity.ok(ApiResponse.<Void>builder()
-                        .status(false)
-                        .message(SIGN_UP_CHECK_VALUE_IS_EMPTY).build());
+                .status(result)
+                .message(message).build());
     }
 
     @Operation(summary = "이메일로 인증코드 전송")

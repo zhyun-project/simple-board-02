@@ -72,7 +72,7 @@ class CheckControllerTest {
         
         mvc.perform(get("/check").param("nickname", NICKNAME))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("status").value(true))
+                .andExpect(jsonPath("status").value(false))
                 .andExpect(jsonPath("message").value(SIGN_UP_UNAVAILABLE_NICKNAME.getMessage()))
                 .andDo(print());
         
@@ -117,7 +117,7 @@ class CheckControllerTest {
         
         mvc.perform(get("/check").param("email", EMAIL))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("status").value(true))
+                .andExpect(jsonPath("status").value(false))
                 .andExpect(jsonPath("message").value(SIGN_UP_UNAVAILABLE_EMAIL.getMessage()))
                 .andDo(print());
         
