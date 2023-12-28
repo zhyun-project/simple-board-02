@@ -7,6 +7,7 @@ import kim.zhyun.serveruser.repository.SessionUserRepository;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class SessionUserServiceImpl implements SessionUserService {
     private final SessionUserRepository sessionUserRepository;
+    
+    @Value("${sign-up.key.email}")      private String KEY_EMAIL;
+    @Value("${sign-up.key.nickname}")   private String KEY_NICKNAME;
     
     @Override
     public SessionUser findById(String id) {
@@ -35,7 +39,7 @@ public class SessionUserServiceImpl implements SessionUserService {
     @Override
     public SessionUser updateEmail(SessionUserEmailUpdate update) {
         SessionUser source = findById(update.getId());
-        source.setEmail(update.getEmail());
+        source.setEmail(update.getEmail().replace(KEY_EMAIL, ""));
         source.setEmailVerification(update.isEmailVerification());
         return save(source);
     }
@@ -43,7 +47,7 @@ public class SessionUserServiceImpl implements SessionUserService {
     @Override
     public SessionUser updateNickname(SessionUserNicknameUpdate update) {
         SessionUser source = findById(update.getId());
-        source.setNickname(update.getNickname());
+        source.setNickname(update.getNickname().replace(KEY_NICKNAME, ""));
         return save(source);
     }
     
