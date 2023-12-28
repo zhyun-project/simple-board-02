@@ -287,4 +287,97 @@ class CheckControllerTest {
             verify(signupService, times(1)).sendEmailAuthCode(sessionId, given);
         }
     }
+    
+    @Nested
+    @DisplayName("인증 코드 검증")
+    class VerifyEmailAuthCodeTest {
+        
+        @DisplayName("fail : 코드 입력 안됨")
+        @Test
+        void send_email_fail_not_input_email() throws Exception {
+            // given
+            MockHttpSession session = new MockHttpSession();
+            String sessionId = session.getId();
+            
+            // when-then
+            mvc.perform(get("/check/auth")
+                            .param("code", "")
+                            .session(session))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(VALID_EXCEPTION))
+                    .andExpect(jsonPath("$.result.[0].field").value("code"))
+                    .andExpect(jsonPath("$.result.[0].message").value(VALID_EMAIL_CODE_EXCEPTION_MESSAGE))
+                    .andDo(print());
+            
+            verify(signupService, times(0)).verifyEmailAuthCode(sessionId, "");
+        }
+        
+        @DisplayName("fail : 인증 시간 만료")
+        @Test
+        void verify_code_fail_expired() throws Exception {
+            // given
+            MockHttpSession session = new MockHttpSession();
+            String sessionId = session.getId();
+            String code = "ASD7GH";
+            
+            // when-then
+            doThrow(new MailAuthException(VERIFY_EMAIL_AUTH_CODE_EXPIRED)).when(signupService).verifyEmailAuthCode(sessionId, code);
+            
+            mvc.perform(get("/check/auth")
+                            .param("code", code)
+                            .session(session))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(VERIFY_EMAIL_AUTH_CODE_EXPIRED))
+                    .andDo(print());
+            
+            verify(signupService, times(1)).verifyEmailAuthCode(sessionId, code);
+        }
+        
+        @DisplayName("fail : 코드 불일치")
+        @Test
+        void verify_code_fail_not_equals() throws Exception {
+            // given
+            MockHttpSession session = new MockHttpSession();
+            String sessionId = session.getId();
+            String code = "ASD7GH";
+            
+            // when-then
+            doThrow(new MailAuthException(VERIFY_FAIL_EMAIL_AUTH_CODE)).when(signupService).verifyEmailAuthCode(sessionId, code);
+            
+            mvc.perform(get("/check/auth")
+                            .param("code", code)
+                            .session(session))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(VERIFY_FAIL_EMAIL_AUTH_CODE))
+                    .andDo(print());
+            
+            verify(signupService, times(1)).verifyEmailAuthCode(sessionId, code);
+        }
+        
+        @DisplayName("success")
+        @Test
+        void verify_code_success() throws Exception {
+            // given
+            MockHttpSession session = new MockHttpSession();
+            String sessionId = session.getId();
+            String code = "ASD7GH";
+            
+            // when-then
+            doNothing().when(signupService).verifyEmailAuthCode(sessionId, code);
+            
+            mvc.perform(get("/check/auth")
+                            .param("code", code)
+                            .session(session))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.message").value(VERIFY_EMAIL_AUTH_SUCCESS))
+                    .andDo(print());
+            
+            verify(signupService, times(1)).verifyEmailAuthCode(sessionId, code);
+        }
+    }
+    
 }
