@@ -16,6 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.VALID_EMAIL_EXCEPTION_MESSAGE;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.VALID_NICKNAME_EXCEPTION_MESSAGE;
 import static kim.zhyun.serveruser.data.message.ResponseMessage.*;
 
 
@@ -31,15 +33,15 @@ public class CheckController {
     @GetMapping
     public ResponseEntity<ApiResponse<Void>> duplicateCheck(HttpServletRequest request,
                                                             @RequestParam(name = "email", required = false)
-                                                            @Email(message = "올바른 이메일 주소를 입력해주세요.", regexp = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$")
+                                                            @Email(message = VALID_EMAIL_EXCEPTION_MESSAGE, regexp = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$")
                                                             String email,
                                                             @RequestParam(name = "nickname", required = false)
-                                                                @Length(min = 1, max = 6, message = "1글자 이상, 6글자 이하로 입력해주세요.")
+                                                                @Length(min = 1, max = 6, message = VALID_NICKNAME_EXCEPTION_MESSAGE)
                                                                 String nickname) {
         String sessionId = request.getSession().getId();
         
         boolean result = false;
-        ResponseMessage message = SIGN_UP_CHECK_VALUE_IS_EMPTY;
+        String message = SIGN_UP_CHECK_VALUE_IS_EMPTY;
         
         // email 중복확인
         if (email != null) {

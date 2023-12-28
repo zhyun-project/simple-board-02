@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.StreamSupport;
 
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.REQUIRED_REQUEST_BODY;
-import static kim.zhyun.serveruser.data.message.ResponseMessage.VALID_EXCEPTION;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.VALID_EXCEPTION;
 
 @RestControllerAdvice
 public class GlobalAdvice extends ResponseEntityExceptionHandler {

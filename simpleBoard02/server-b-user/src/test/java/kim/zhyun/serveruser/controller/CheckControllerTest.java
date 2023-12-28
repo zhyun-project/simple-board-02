@@ -16,8 +16,7 @@ import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.REQUIRED_REQUEST_BODY;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.REQUIRE_MAIL_DUPLICATE_CHECK;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
 import static kim.zhyun.serveruser.data.message.ResponseMessage.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.*;
@@ -55,7 +54,7 @@ class CheckControllerTest {
         mvc.perform(get("/check"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("status").value(false))
-                .andExpect(jsonPath("message").value(SIGN_UP_CHECK_VALUE_IS_EMPTY.getMessage()))
+                .andExpect(jsonPath("message").value(SIGN_UP_CHECK_VALUE_IS_EMPTY))
                 .andDo(print());
         
         verify(signupService, times(0)).availableEmail(anyString(), anyString());
@@ -72,7 +71,7 @@ class CheckControllerTest {
         mvc.perform(get("/check").param("nickname", NICKNAME).session(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("status").value(true))
-                .andExpect(jsonPath("message").value(SIGN_UP_AVAILABLE_NICKNAME.getMessage()))
+                .andExpect(jsonPath("message").value(SIGN_UP_AVAILABLE_NICKNAME))
                 .andDo(print());
     }
     
@@ -87,7 +86,7 @@ class CheckControllerTest {
                         .session(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("status").value(false))
-                .andExpect(jsonPath("message").value(SIGN_UP_UNAVAILABLE_NICKNAME.getMessage()))
+                .andExpect(jsonPath("message").value(SIGN_UP_UNAVAILABLE_NICKNAME))
                 .andDo(print());
         
         verify(signupService, times(0)).availableEmail(EMAIL, sessionId);
@@ -100,9 +99,9 @@ class CheckControllerTest {
         mvc.perform(get("/check").param("nickname", ""))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(false))
-                .andExpect(jsonPath("$.message").value(VALID_EXCEPTION.getMessage()))
+                .andExpect(jsonPath("$.message").value(VALID_EXCEPTION))
                 .andExpect(jsonPath("$.result.[0].field").value("nickname"))
-                .andExpect(jsonPath("$.result.[0].message").value("1글자 이상, 6글자 이하로 입력해주세요."))
+                .andExpect(jsonPath("$.result.[0].message").value(VALID_NICKNAME_EXCEPTION_MESSAGE))
                 .andDo(print());
         
         verify(signupService, times(0)).availableEmail(anyString(), anyString());
@@ -117,7 +116,7 @@ class CheckControllerTest {
         mvc.perform(get("/check").param("email", EMAIL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("status").value(true))
-                .andExpect(jsonPath("message").value(SIGN_UP_AVAILABLE_EMAIL.getMessage()))
+                .andExpect(jsonPath("message").value(SIGN_UP_AVAILABLE_EMAIL))
                 .andDo(print());
         
         verify(signupService, times(1)).availableEmail(anyString(), anyString());
@@ -132,7 +131,7 @@ class CheckControllerTest {
         mvc.perform(get("/check").param("email", EMAIL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("status").value(false))
-                .andExpect(jsonPath("message").value(SIGN_UP_UNAVAILABLE_EMAIL.getMessage()))
+                .andExpect(jsonPath("message").value(SIGN_UP_UNAVAILABLE_EMAIL))
                 .andDo(print());
         
         verify(signupService, times(1)).availableEmail(anyString(), anyString());
@@ -145,7 +144,7 @@ class CheckControllerTest {
         mvc.perform(get("/check").param("email", ""))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(false))
-                .andExpect(jsonPath("$.message").value(VALID_EXCEPTION.getMessage()))
+                .andExpect(jsonPath("$.message").value(VALID_EXCEPTION))
                 .andExpect(jsonPath("$.result.[0].field").value("email"))
                 .andExpect(jsonPath("$.result.[0].message").value(EMAIL_VALID_EXCEPTION_MESSAGE))
                 .andDo(print());
@@ -160,7 +159,7 @@ class CheckControllerTest {
         mvc.perform(get("/check").param("email", "오호@."))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(false))
-                .andExpect(jsonPath("$.message").value(VALID_EXCEPTION.getMessage()))
+                .andExpect(jsonPath("$.message").value(VALID_EXCEPTION))
                 .andExpect(jsonPath("$.result.[0].field").value("email"))
                 .andExpect(jsonPath("$.result.[0].message").value(EMAIL_VALID_EXCEPTION_MESSAGE))
                 .andDo(print());
@@ -177,7 +176,7 @@ class CheckControllerTest {
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(false))
-                .andExpect(jsonPath("$.message").value(REQUIRED_REQUEST_BODY.getMessage()))
+                .andExpect(jsonPath("$.message").value(REQUIRED_REQUEST_BODY))
                 .andDo(print());
         
         verify(signupService, times(0)).sendEmailAuthCode("", null);
@@ -195,7 +194,7 @@ class CheckControllerTest {
                         .content(mapper.writeValueAsString(given)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(false))
-                .andExpect(jsonPath("$.message").value(VALID_EXCEPTION.getMessage()))
+                .andExpect(jsonPath("$.message").value(VALID_EXCEPTION))
                 .andExpect(jsonPath("$.result.[0].field").value("email"))
                 .andExpect(jsonPath("$.result.[0].message").value(EMAIL_VALID_EXCEPTION_MESSAGE))
                 .andDo(print());
@@ -215,7 +214,7 @@ class CheckControllerTest {
                         .content(mapper.writeValueAsString(given)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(false))
-                .andExpect(jsonPath("$.message").value(VALID_EXCEPTION.getMessage()))
+                .andExpect(jsonPath("$.message").value(VALID_EXCEPTION))
                 .andExpect(jsonPath("$.result.[0].field").value("email"))
                 .andExpect(jsonPath("$.result.[0].message").value(EMAIL_VALID_EXCEPTION_MESSAGE))
                 .andDo(print());
@@ -242,7 +241,7 @@ class CheckControllerTest {
                         .session(session))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(false))
-                .andExpect(jsonPath("$.message").value(REQUIRE_MAIL_DUPLICATE_CHECK.getMessage()))
+                .andExpect(jsonPath("$.message").value(REQUIRE_MAIL_DUPLICATE_CHECK))
                 .andDo(print());
         
         verify(signupService, times(1)).sendEmailAuthCode(sessionId, given);
@@ -266,7 +265,7 @@ class CheckControllerTest {
                         .session(session))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value(true))
-                .andExpect(jsonPath("$.message").value(SEND_EMAIL_AUTH_CODE.getMessage()))
+                .andExpect(jsonPath("$.message").value(SEND_EMAIL_AUTH_CODE))
                 .andDo(print());
         
         verify(signupService, times(1)).sendEmailAuthCode(sessionId, given);
