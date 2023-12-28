@@ -87,7 +87,6 @@ class ConnectionInterceptorTest {
     
     @Nested
     @DisplayName("SessionService Call Test")
-    @AutoConfigureMockMvc
     class ConnectedSessionTest {
         
         @InjectMocks    private ConnectionInterceptor connectionInterceptor;
