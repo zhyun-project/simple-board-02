@@ -3,13 +3,18 @@ package kim.zhyun.serveruser.repository.container;
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 
+@Testcontainers
 public class RedisTestContainer implements BeforeAllCallback {
     
     private static final String REDIS_IMAGE = "redis";
     private static final int REDIS_PORT = 6379;
+    
+    @Container
     private GenericContainer redis;
     
     @Override
