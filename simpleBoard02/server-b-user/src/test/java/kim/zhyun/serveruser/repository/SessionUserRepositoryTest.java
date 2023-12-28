@@ -3,18 +3,19 @@ package kim.zhyun.serveruser.repository;
 import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.testcontainers.shaded.org.checkerframework.checker.index.qual.IndexOrHigh;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
+@Order(0)
 @DisplayName("Redis Session Id Storage 테스트")
 @ExtendWith(RedisTestContainer.class)
 @SpringBootTest
