@@ -1,23 +1,21 @@
 package kim.zhyun.serveruser.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import kim.zhyun.serveruser.data.type.ResponseMessage;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@Getter @Builder
 @JsonInclude(NON_NULL)
 public class ApiResponse <T> {
     
-    @Getter private Boolean status;
-    @Getter private T result;
+    private Boolean status;
+    private String message;
+    private T result;
     
-    private ResponseMessage message;
-    
-    public String getMessage() {
-        return message.getMessage();
-    }
 }

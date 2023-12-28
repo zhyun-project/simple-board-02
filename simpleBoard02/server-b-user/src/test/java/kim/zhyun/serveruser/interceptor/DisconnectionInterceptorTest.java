@@ -3,7 +3,7 @@ package kim.zhyun.serveruser.interceptor;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kim.zhyun.serveruser.data.NicknameDto;
-import kim.zhyun.serveruser.entity.SessionUser;
+import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
@@ -106,7 +106,6 @@ class DisconnectionInterceptorTest {
     
     @Nested
     @DisplayName("SessionService Call Test")
-    @AutoConfigureMockMvc
     class DisconnectedSessionTest {
         
         @InjectMocks    private ConnectionInterceptor connectionInterceptor;

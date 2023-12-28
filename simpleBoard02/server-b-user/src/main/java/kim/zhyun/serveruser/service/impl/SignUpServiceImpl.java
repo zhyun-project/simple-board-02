@@ -1,13 +1,19 @@
 package kim.zhyun.serveruser.service.impl;
 
+import kim.zhyun.serveruser.advice.MailAuthException;
+import kim.zhyun.serveruser.data.EmailAuthCodeRequest;
+import kim.zhyun.serveruser.data.EmailAuthDto;
 import kim.zhyun.serveruser.data.NicknameDto;
-import kim.zhyun.serveruser.entity.SessionUser;
+import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.repository.UserRepository;
+import kim.zhyun.serveruser.service.EmailService;
 import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
 
 @RequiredArgsConstructor
 @Service
@@ -15,6 +21,7 @@ public class SignUpServiceImpl implements SignUpService {
     private final UserRepository userRepository;
     private final NicknameReserveService nicknameReserveService;
     private final SessionUserService sessionUserService;
+    private final EmailService emailService;
     
     @Override
     public boolean availableEmail(String email, String sessionId) {
@@ -54,12 +61,44 @@ public class SignUpServiceImpl implements SignUpService {
         return true;
     }
     
+    @Override
+    public void sendEmailAuthCode(String sessionId, EmailAuthCodeRequest request) {
+        // 1. email 중복검사 확인
+        SessionUser sessionUser = sessionUserService.findById(sessionId);
+        
+        if (sessionUser.getEmail() == null || !sessionUser.getEmail().equals(request.getEmail()))
+            throw new MailAuthException(REQUIRE_MAIL_DUPLICATE_CHECK);
+        
+        // 2. 메일 발송
+        emailService.sendEmailAuthCode(request.getEmail());
+    }
+    
+    @Override
+    public void verifyEmailAuthCode(String sessionId, String code) {
+        String email = sessionUserService.findById(sessionId).getEmail();
+        EmailAuthDto requestInfo = EmailAuthDto.builder()
+                .email(email)
+                .code(code).build();
+
+        // 코드 불일치 case 1 : 만료된 경우
+        if (!emailService.existEmail(requestInfo))
+            throw new MailAuthException(VERIFY_EMAIL_AUTH_CODE_EXPIRED);
+        
+        // 코드 불일치 case 2 : 코드 불일치
+        if (!emailService.existCode(requestInfo))
+            throw new MailAuthException(VERIFY_FAIL_EMAIL_AUTH_CODE);
+        
+        // 인증 성공
+        emailService.deleteAndUpdateSessionUserEmail(requestInfo, sessionId);
+    }
+    
     /**
      * session user 저장소에 이메일 등록
      */
     private void saveEmailToSessionUserStorage(String email, String sessionId) {
         SessionUser sessionUser = sessionUserService.findById(sessionId);
         sessionUser.setEmail(email);
+        sessionUser.setEmailVerification(false);
         sessionUserService.save(sessionUser);
     }
     

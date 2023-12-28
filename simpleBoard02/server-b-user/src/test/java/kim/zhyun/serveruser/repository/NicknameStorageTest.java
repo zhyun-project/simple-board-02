@@ -1,15 +1,12 @@
 package kim.zhyun.serveruser.repository;
 
 import kim.zhyun.serveruser.data.NicknameDto;
-import kim.zhyun.serveruser.entity.SessionUser;
+import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
 import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Slf4j
+@Order(0)
 @DisplayName("Redis Nickname Storage 테스트")
 @ExtendWith(RedisTestContainer.class)
 @SpringBootTest

@@ -1,24 +1,23 @@
 package kim.zhyun.serveruser.service.impl;
 
-import kim.zhyun.serveruser.advice.NotFoundSessionException;
 import kim.zhyun.serveruser.data.SessionUserEmailUpdate;
 import kim.zhyun.serveruser.data.SessionUserNicknameUpdate;
-import kim.zhyun.serveruser.entity.SessionUser;
+import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.repository.SessionUserRepository;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-
-import static kim.zhyun.serveruser.data.type.ExceptionType.NOT_FOUND_SESSION;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class SessionUserServiceImpl implements SessionUserService {
     private final SessionUserRepository sessionUserRepository;
+    
+    @Value("${sign-up.key.email}")      private String KEY_EMAIL;
+    @Value("${sign-up.key.nickname}")   private String KEY_NICKNAME;
     
     @Override
     public SessionUser findById(String id) {
@@ -40,7 +39,7 @@ public class SessionUserServiceImpl implements SessionUserService {
     @Override
     public SessionUser updateEmail(SessionUserEmailUpdate update) {
         SessionUser source = findById(update.getId());
-        source.setEmail(update.getEmail());
+        source.setEmail(update.getEmail().replace(KEY_EMAIL, ""));
         source.setEmailVerification(update.isEmailVerification());
         return save(source);
     }
@@ -48,7 +47,7 @@ public class SessionUserServiceImpl implements SessionUserService {
     @Override
     public SessionUser updateNickname(SessionUserNicknameUpdate update) {
         SessionUser source = findById(update.getId());
-        source.setNickname(update.getNickname());
+        source.setNickname(update.getNickname().replace(KEY_NICKNAME, ""));
         return save(source);
     }
     

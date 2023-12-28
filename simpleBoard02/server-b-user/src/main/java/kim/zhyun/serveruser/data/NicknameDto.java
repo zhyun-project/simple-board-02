@@ -1,6 +1,5 @@
 package kim.zhyun.serveruser.data;
 
-import kim.zhyun.serveruser.entity.SessionUser;
 import lombok.*;
 
 import java.util.Objects;

@@ -2,6 +2,9 @@ server:
   port: 8090
 
 spring:
+  config:
+    import: classpath:password.yml
+
   h2:
     console:
       path: /h2-console
@@ -24,6 +27,29 @@ spring:
         show_sql: true
         format_sql: true
         highlight_sql: true
+
+  mail:
+    protocol: smtp
+    host: smtp.gmail.com
+    port: 465
+    username: gimwlgus@gmail.com
+    password: ${email.password.gmail}
+    default-encoding: UTF-8
+    properties:
+      debug: true
+      mail:
+        smtp:
+          auth: true
+          ssl:
+            enable: true
+            trust: smtp.gmail.com
+          starttls:
+            enable: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 logging:
   level:

@@ -2,7 +2,7 @@ package kim.zhyun.serveruser.repository;
 
 import kim.zhyun.serveruser.config.JpaConfig;
 import kim.zhyun.serveruser.data.type.RoleType;
-import kim.zhyun.serveruser.entity.Role;
+import kim.zhyun.serveruser.data.entity.Role;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

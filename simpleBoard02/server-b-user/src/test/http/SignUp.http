@@ -1,0 +1,17 @@
+### 닉네임 중복 확인
+GET http://localhost:8090/check?nickname=얼거스
+
+### 이메일 중복 확인
+GET http://localhost:8090/check?email=gimwlgus@daum.net
+
+### 이메일 전송
+POST http://localhost:8090/check/auth
+Content-Type: application/json
+
+{
+  "email": "gimwlgus@daum.net"
+}
+
+### 이메일 인증 코드 검증
+GET http://localhost:8090/check/auth?code=54aee4
+
