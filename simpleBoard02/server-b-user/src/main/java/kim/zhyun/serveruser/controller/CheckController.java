@@ -62,9 +62,13 @@ public class CheckController {
 
     @Operation(summary = "이메일로 인증코드 전송")
     @PostMapping("/auth")
-    public void sendEmail(HttpServletRequest request,
+    public ResponseEntity<ApiResponse<Void>> sendEmail(HttpServletRequest request,
                           @Valid @RequestBody EmailAuthCodeRequest userRequest) {
         signupService.sendEmailAuthCode(request.getSession().getId(), userRequest);
+        
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .status(true)
+                .message(SEND_EMAIL_AUTH_CODE).build());
     }
     
     @Operation(summary = "메일 인증코드 검증")
