@@ -1,3 +1,6 @@
+### 닉네임 중복 확인
+GET http://localhost:8090/check?nickname=얼구스
+
 ### 이메일 중복 확인
 GET http://localhost:8090/check?email=gimwlgus@dasum.net
 
