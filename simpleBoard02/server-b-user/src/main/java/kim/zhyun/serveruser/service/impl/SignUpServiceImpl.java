@@ -98,6 +98,7 @@ public class SignUpServiceImpl implements SignUpService {
     private void saveEmailToSessionUserStorage(String email, String sessionId) {
         SessionUser sessionUser = sessionUserService.findById(sessionId);
         sessionUser.setEmail(email);
+        sessionUser.setEmailVerification(false);
         sessionUserService.save(sessionUser);
     }
     
