@@ -7,6 +7,7 @@ import kim.zhyun.serveruser.data.ValidExceptionResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.REQUIRED_REQUEST_BODY;
 import static kim.zhyun.serveruser.data.message.ResponseMessage.VALID_EXCEPTION;
 
 @RestControllerAdvice
@@ -57,6 +59,14 @@ public class GlobalAdvice extends ResponseEntityExceptionHandler {
                         .status(false)
                         .message(VALID_EXCEPTION)
                         .result(errorList).build());
+    }
+    
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+        return ResponseEntity
+                .badRequest().body(ApiResponse.<List<ValidExceptionResponse>>builder()
+                        .status(false)
+                        .message(REQUIRED_REQUEST_BODY).build());
     }
     
     @Override

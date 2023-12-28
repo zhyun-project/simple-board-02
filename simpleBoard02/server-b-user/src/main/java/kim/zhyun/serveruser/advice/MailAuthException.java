@@ -8,7 +8,7 @@ public class MailAuthException extends RuntimeException {
     private final ExceptionMessage exceptionMessage;
     
     public MailAuthException(ExceptionMessage exceptionMessage) {
-        super(exceptionMessage.getDescription());
+        super(exceptionMessage.getMessage());
         this.exceptionMessage = exceptionMessage;
     }
     

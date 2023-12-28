@@ -8,7 +8,7 @@ public class NotFoundSessionException extends RuntimeException {
     private final ExceptionMessage exceptionMessage;
     
     public NotFoundSessionException(ExceptionMessage exceptionMessage) {
-        super(exceptionMessage.getDescription());
+        super(exceptionMessage.getMessage());
         this.exceptionMessage = exceptionMessage;
     }
     

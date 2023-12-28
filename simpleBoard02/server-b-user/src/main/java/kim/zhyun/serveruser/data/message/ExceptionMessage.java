@@ -13,8 +13,10 @@ public enum ExceptionMessage {
     VERIFY_EMAIL_AUTH_CODE_EXPIRED("인증 번호가 만료되었습니다. 인증을 다시 진행해주세요!"),
     VERIFY_FAIL_EMAIL_AUTH_CODE("인증 번호가 일치하지 않습니다."),
     
+    REQUIRED_REQUEST_BODY("Required request body is missing"),
+    
     RESPONSE_API_MESSAGE_INPUT_FAULT("\"api response message\" 타입이 잘못 입력되었습니다 😮");
     ;
     
-    private final String description;
+    private final String message;
 }

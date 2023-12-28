@@ -27,8 +27,8 @@ public class ApiResponse <T> {
             return ((ResponseMessage) message).getMessage();
         
         if (message instanceof ExceptionMessage)
-            return ((ExceptionMessage) message).getDescription();
+            return ((ExceptionMessage) message).getMessage();
         
-        throw new RuntimeException(RESPONSE_API_MESSAGE_INPUT_FAULT.getDescription());
+        throw new RuntimeException(RESPONSE_API_MESSAGE_INPUT_FAULT.getMessage());
     }
 }
