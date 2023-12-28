@@ -2,10 +2,10 @@ package kim.zhyun.serveruser.service.impl;
 
 import kim.zhyun.serveruser.advice.MailAuthException;
 import kim.zhyun.serveruser.data.EmailAuthCodeRequest;
+import kim.zhyun.serveruser.data.EmailAuthDto;
 import kim.zhyun.serveruser.data.NicknameDto;
 import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.repository.UserRepository;
-import kim.zhyun.serveruser.repository.container.RedisTestContainer;
 import kim.zhyun.serveruser.service.EmailService;
 import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
@@ -13,18 +13,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.REQUIRE_MAIL_DUPLICATE_CHECK;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
 @Slf4j
-@ExtendWith(RedisTestContainer.class)
 @SpringBootTest
 class SignUpServiceImplTest {
     private final String NICKNAME   = "얼거스";
@@ -206,5 +204,89 @@ class SignUpServiceImplTest {
         }
     }
     
+    @DisplayName("인증 코드 검증")
+    @Nested
+    class VerifyEmailAuthCode {
+        
+        @DisplayName("성공")
+        @Test
+        void send_email_auth_code() {
+            // given
+            SessionUser sessionUser = SessionUser.builder()
+                    .sessionId(SESSION_ID)
+                    .email(EMAIL).build();
+            String CODE = "AUTHC0D";
+            EmailAuthDto requestInfo = EmailAuthDto.builder()
+                    .email(EMAIL)
+                    .code(CODE).build();
+            
+            when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
+            when(emailService.existEmail(requestInfo)).thenReturn(true);
+            when(emailService.existCode(requestInfo)).thenReturn(true);
+            
+            // when
+            signupService.verifyEmailAuthCode(SESSION_ID, CODE);
+            
+            // then
+            verify(sessionUserService, times(1)).findById(SESSION_ID);
+            verify(emailService, times(1)).existEmail(requestInfo);
+            verify(emailService, times(1)).existCode(requestInfo);
+            verify(emailService, times(1)).deleteAndUpdateSessionUserEmail(requestInfo, SESSION_ID);
+        }
+        
+        @DisplayName("실패 - 인증 시간 만료")
+        @Test
+        void send_email_auth_code_fail_expired() {
+            // given
+            SessionUser sessionUser = SessionUser.builder()
+                    .sessionId(SESSION_ID)
+                    .email(EMAIL).build();
+            String CODE = "AUTHC0D";
+            EmailAuthDto requestInfo = EmailAuthDto.builder()
+                    .email(EMAIL)
+                    .code(CODE).build();
+            
+            when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
+            when(emailService.existEmail(requestInfo)).thenReturn(false);
+            
+            // when-then
+            assertThrows(VERIFY_EMAIL_AUTH_CODE_EXPIRED,
+                    MailAuthException.class,
+                    () -> signupService.verifyEmailAuthCode(SESSION_ID, CODE));
+            
+            verify(sessionUserService, times(1)).findById(SESSION_ID);
+            verify(emailService, times(1)).existEmail(requestInfo);
+            verify(emailService, times(0)).existCode(requestInfo);
+            verify(emailService, times(0)).deleteAndUpdateSessionUserEmail(requestInfo, SESSION_ID);
+        }
+        
+        @DisplayName("실패 - 인증 코드 불일치")
+        @Test
+        void send_email_auth_code_fail_not_equals() {
+            // given
+            SessionUser sessionUser = SessionUser.builder()
+                    .sessionId(SESSION_ID)
+                    .email(EMAIL).build();
+            String CODE = "AUTHC0D";
+            EmailAuthDto requestInfo = EmailAuthDto.builder()
+                    .email(EMAIL)
+                    .code(CODE).build();
+            
+            when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
+            when(emailService.existEmail(requestInfo)).thenReturn(true);
+            when(emailService.existCode(requestInfo)).thenReturn(false);
+            
+            // when-then
+            assertThrows(VERIFY_FAIL_EMAIL_AUTH_CODE,
+                    MailAuthException.class,
+                    () -> signupService.verifyEmailAuthCode(SESSION_ID, CODE));
+            
+            verify(sessionUserService, times(1)).findById(SESSION_ID);
+            verify(emailService, times(1)).existEmail(requestInfo);
+            verify(emailService, times(1)).existCode(requestInfo);
+            verify(emailService, times(0)).deleteAndUpdateSessionUserEmail(requestInfo, SESSION_ID);
+        }
+        
+    }
     
 }
