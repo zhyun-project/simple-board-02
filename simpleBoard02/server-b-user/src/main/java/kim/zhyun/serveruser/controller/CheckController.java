@@ -16,8 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.VALID_EMAIL_EXCEPTION_MESSAGE;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.VALID_NICKNAME_EXCEPTION_MESSAGE;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
 import static kim.zhyun.serveruser.data.message.ResponseMessage.*;
 
 
@@ -77,7 +76,7 @@ public class CheckController {
     @GetMapping("/auth")
     public ResponseEntity<ApiResponse<Void>> authEmailCode(HttpServletRequest request,
                               @RequestParam(name = "code")
-                              @NotBlank(message = "코드를 입력해 주세요.") String code) {
+                              @NotBlank(message = VALID_EMAIL_CODE_EXCEPTION_MESSAGE) String code) {
         signupService.verifyEmailAuthCode(request.getSession().getId(), code);
         
         return ResponseEntity.ok(ApiResponse.<Void>builder()

@@ -11,6 +11,7 @@ public class ExceptionMessage {
     public static final String VERIFY_EMAIL_AUTH_CODE_EXPIRED = "인증 번호가 만료되었습니다. 인증을 다시 진행해주세요!";
     public static final String VERIFY_FAIL_EMAIL_AUTH_CODE = "인증 번호가 일치하지 않습니다.";
     public static final String VALID_EMAIL_EXCEPTION_MESSAGE = "올바른 이메일 주소를 입력해주세요.";
+    public static final String VALID_EMAIL_CODE_EXCEPTION_MESSAGE = "인증 코드를 입력해 주세요.";
     
     // nickname 관련
     public static final String VALID_NICKNAME_EXCEPTION_MESSAGE = "1글자 이상, 6글자 이하로 입력해주세요.";
