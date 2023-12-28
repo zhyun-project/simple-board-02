@@ -1,12 +1,16 @@
 package kim.zhyun.serveruser.service.impl;
 
+import kim.zhyun.serveruser.advice.MailAuthException;
+import kim.zhyun.serveruser.data.EmailAuthCodeRequest;
 import kim.zhyun.serveruser.data.NicknameDto;
 import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
+import kim.zhyun.serveruser.service.EmailService;
 import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,7 +18,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.REQUIRE_MAIL_DUPLICATE_CHECK;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
 @Slf4j
@@ -29,6 +35,7 @@ class SignUpServiceImplTest {
     @Mock        UserRepository userRepository;
     @Mock        NicknameReserveService nicknameReserveService;
     @Mock        SessionUserService sessionUserService;
+    @Mock        EmailService emailService;
     
     @DisplayName("이메일 사용 불가 - 사용중인 이메일")
     @Test
@@ -143,6 +150,46 @@ class SignUpServiceImplTest {
         verify(sessionUserService, times(1)).save(sessionUser);
         
         assertThat(availableNickname).isTrue();
+    }
+    
+    
+    @DisplayName("인증 코드 메일 발송 - 실패 : 중복검사 하지 않은 email")
+    @Test
+    void send_email_auth_code_fail() {
+        // given
+        SessionUser sessionUser = SessionUser.builder()
+                .sessionId(SESSION_ID).build();
+        EmailAuthCodeRequest requestInfo = EmailAuthCodeRequest.of(EMAIL);
+        
+        // when
+        when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
+        
+        // then
+        assertThrows(REQUIRE_MAIL_DUPLICATE_CHECK,
+                MailAuthException.class,
+                () -> signupService.sendEmailAuthCode(SESSION_ID, requestInfo));
+        
+        verify(sessionUserService, times(1)).findById(SESSION_ID);
+        verify(emailService, times(0)).sendEmailAuthCode(null);
+    }
+    
+    @DisplayName("인증 코드 메일 발송 - 성공")
+    @Test
+    void send_email_auth_code() {
+        // given
+        SessionUser sessionUser = SessionUser.builder()
+                .sessionId(SESSION_ID)
+                .email(EMAIL).build();
+        EmailAuthCodeRequest requestInfo = EmailAuthCodeRequest.of(EMAIL);
+        
+        // when
+        when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
+        
+        signupService.sendEmailAuthCode(SESSION_ID, requestInfo);
+        
+        // then
+        verify(sessionUserService, times(1)).findById(SESSION_ID);
+        verify(emailService, times(1)).sendEmailAuthCode(requestInfo.getEmail());
     }
     
 }
