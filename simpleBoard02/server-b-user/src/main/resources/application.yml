@@ -60,8 +60,9 @@ logging:
 
 sign-up:
   key:
-    email: "EMAIL:" # EmailAuthDto.getEmail()
-    nickname: "NICKNAME:" # NicknameDto.getNickname()
+    session: "SESSION_ID:" # SessionUserServiceImpl
+    email: "EMAIL:"        # EmailAuthDto.getEmail()
+    nickname: "NICKNAME:"  # NicknameDto.getNickname()
   email:
     expire: 60 # TimeUnit: Second
   session:
