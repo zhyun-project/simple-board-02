@@ -15,7 +15,11 @@ public class ExceptionMessage {
     
     // nickname 관련
     public static final String VALID_NICKNAME_EXCEPTION_MESSAGE = "1글자 이상, 6글자 이하로 입력해주세요.";
+    public static final String REQUIRE_NICKNAME_DUPLICATE_CHECK = "닉네임 중복 확인을 먼저 진행해 주세요.";
     
+    // password 관련
+    public static final String VALID_PASSWORD_EXCEPTION_MESSAGE = "4글자 이상 입력해주세요.";
+
     // 공통
     public static final String VALID_EXCEPTION = "입력 값이 올바르지 않습니다.";
     public static final String REQUIRED_REQUEST_BODY = "Required request body is missing";

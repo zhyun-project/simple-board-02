@@ -26,13 +26,16 @@ import static kim.zhyun.serveruser.data.message.ExceptionMessage.VALID_EXCEPTION
 @RestControllerAdvice
 public class GlobalAdvice extends ResponseEntityExceptionHandler {
     
-    @ExceptionHandler(MailAuthException.class)
-    public ResponseEntity<Object> mailException(MailAuthException e) {
+    @ExceptionHandler({
+            MailAuthException.class,
+            SignUpException.class})
+    public ResponseEntity<Object> mailException(RuntimeException e) {
         return ResponseEntity
                 .badRequest().body(ApiResponse.<List<ValidExceptionResponse>>builder()
                         .status(false)
-                        .message(e.getExceptionMessage()).build());
+                        .message(e.getMessage()).build());
     }
+    
     
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> constraintViolationException(ConstraintViolationException e) {
