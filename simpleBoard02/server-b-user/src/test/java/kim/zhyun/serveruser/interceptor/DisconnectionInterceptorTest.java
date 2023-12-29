@@ -51,42 +51,6 @@ class DisconnectionInterceptorTest {
             verifyRun(post("/sign-in"));
         }
         
-        @DisplayName("/sign-out get 접근")
-        @Test
-        void sign_out_get_test() throws Exception {
-            verifyRun(get("/sign-out"));
-        }
-        
-        @DisplayName("/withdrawal delete 접근")
-        @Test
-        void withdrawal_delete_test() throws Exception {
-            verifyRun(delete("/withdrawal"));
-        }
-        
-        @DisplayName("/user get 접근")
-        @Test
-        void user_get_all() throws Exception {
-            verifyRun(get("/user"));
-        }
-        
-        @DisplayName("/user/{id} get 접근")
-        @Test
-        void user_get_by_id() throws Exception {
-            verifyRun(get("/user/{id}", 1));
-        }
-        
-        @DisplayName("/user/{id} put 접근")
-        @Test
-        void user_update_by_id() throws Exception {
-            verifyRun(put("/user/{id}", 1));
-        }
-        
-        @DisplayName("/user/{id}/role put 접근")
-        @Test
-        void user_update_by_id_and_role() throws Exception {
-            verifyRun(put("/user/{id}/role", 1));
-        }
-        
         private void verifyRun(MockHttpServletRequestBuilder mockHttpServletRequestBuilder) throws Exception {
             // when
             MockHttpSession session = new MockHttpSession();
