@@ -1,25 +1,33 @@
 package kim.zhyun.serveruser.service.impl;
 
 import kim.zhyun.serveruser.advice.MailAuthException;
+import kim.zhyun.serveruser.advice.SignUpException;
 import kim.zhyun.serveruser.data.EmailAuthCodeRequest;
 import kim.zhyun.serveruser.data.EmailAuthDto;
 import kim.zhyun.serveruser.data.NicknameDto;
+import kim.zhyun.serveruser.data.SignupRequest;
 import kim.zhyun.serveruser.data.entity.SessionUser;
+import kim.zhyun.serveruser.data.type.RoleType;
+import kim.zhyun.serveruser.repository.RoleRepository;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.service.EmailService;
 import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.mockito.Mockito.*;
 
 @Slf4j
@@ -34,6 +42,7 @@ class SignUpServiceImplTest {
     @Mock        NicknameReserveService nicknameReserveService;
     @Mock        SessionUserService sessionUserService;
     @Mock        EmailService emailService;
+    @Mock        RoleRepository roleRepository;
     
     @Nested
     @DisplayName("이메일 중복 확인")
@@ -289,4 +298,117 @@ class SignUpServiceImplTest {
         
     }
     
+    @DisplayName("회원가입")
+    @Nested
+    class SignUpSave {
+        
+        private final String EMAIL_CHANGED = "test@test.com";
+        private final String NICKNAME_CHANGED = "닉네임변경";
+        
+        private final PasswordEncoder passwordEncoder;
+        public SignUpSave(@Autowired PasswordEncoder passwordEncoder) {
+            this.passwordEncoder = passwordEncoder;
+        }
+        
+        @DisplayName("실패 - 이메일 중복확인 안함")
+        @Test
+        void fail_email_duplicate_pass() {
+            // given
+            SignupRequest signupRequest = SignupRequest.of(EMAIL_CHANGED, NICKNAME_CHANGED, "1234");
+            SessionUser sessionUser = SessionUser.builder()
+                    .sessionId(SESSION_ID)
+                    .email(EMAIL)
+                    .emailVerification(false)
+                    .nickname(NICKNAME).build();
+            
+            when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
+            
+            // when-then
+            assertThrows(REQUIRE_MAIL_DUPLICATE_CHECK,
+                    SignUpException.class,
+                    () -> signupService.saveMember(SESSION_ID, signupRequest));
+            
+            verify(roleRepository, times(0)).findByRole(RoleType.MEMBER.name());
+            verify(sessionUserService, times(0)).deleteById(SESSION_ID);
+        }
+        @DisplayName("실패 - 이메일 불일치")
+        @Test
+        void fail_email_changed() {
+            // given
+            SignupRequest signupRequest = SignupRequest.of(EMAIL_CHANGED, NICKNAME_CHANGED, "1234");
+            SessionUser sessionUser = SessionUser.builder()
+                    .sessionId(SESSION_ID)
+                    .email(EMAIL)
+                    .emailVerification(true)
+                    .nickname(NICKNAME).build();
+            
+            when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
+            
+            // when-then
+            assertThrows(REQUIRE_MAIL_DUPLICATE_CHECK,
+                    SignUpException.class,
+                    () -> signupService.saveMember(SESSION_ID, signupRequest));
+            
+            verify(roleRepository, times(0)).findByRole(RoleType.MEMBER.name());
+            verify(sessionUserService, times(0)).deleteById(SESSION_ID);
+        }
+        
+        @DisplayName("실패 - 닉네임 불일치")
+        @Test
+        void fail_nickname_changed() {
+            // given
+            SignupRequest signupRequest = SignupRequest.of(EMAIL, NICKNAME_CHANGED, "1234");
+            SessionUser sessionUser = SessionUser.builder()
+                    .sessionId(SESSION_ID)
+                    .email(EMAIL)
+                    .emailVerification(true)
+                    .nickname(NICKNAME).build();
+            
+            when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
+            
+            // when-then
+            assertThrows(REQUIRE_NICKNAME_DUPLICATE_CHECK,
+                    SignUpException.class,
+                    () -> signupService.saveMember(SESSION_ID, signupRequest));
+            
+            verify(roleRepository, times(0)).findByRole(RoleType.MEMBER.name());
+            verify(sessionUserService, times(0)).deleteById(SESSION_ID);
+        }
+        
+        @DisplayName("성공")
+        @Test
+        void success() {
+            // given
+            SignupRequest signupRequest = SignupRequest.of(EMAIL, NICKNAME, "1234");
+            SessionUser sessionUser = SessionUser.builder()
+                    .sessionId(SESSION_ID)
+                    .email(EMAIL)
+                    .emailVerification(true)
+                    .nickname(NICKNAME).build();
+            
+            when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
+            
+            // then
+            signupService.saveMember(SESSION_ID, signupRequest);
+            
+            
+            verify(roleRepository, times(1)).findByRole(RoleType.MEMBER.name());
+            verify(sessionUserService, times(1)).deleteById(SESSION_ID);
+        }
+        
+        @DisplayName("비밀번호 인코딩 확인")
+        @Test
+        void test_encoding_password() {
+            // given
+            String origin = "1234";
+            
+            // when
+            String encoded = passwordEncoder.encode(origin);
+            
+            // then
+            assertNotEquals(encoded, origin);
+            log.info("인코딩 전 비밀번호 : {}, 인코딩 후 비밀번호 : {}", origin, encoded);
+        }
+        
+    }
 }
