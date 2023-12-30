@@ -2,8 +2,8 @@ package kim.zhyun.serveruser.advice;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
-import kim.zhyun.serveruser.data.ApiResponse;
-import kim.zhyun.serveruser.data.ValidExceptionResponse;
+import kim.zhyun.serveruser.data.response.ApiResponse;
+import kim.zhyun.serveruser.data.response.ValidExceptionResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +26,9 @@ import static kim.zhyun.serveruser.data.message.ExceptionMessage.VALID_EXCEPTION
 @RestControllerAdvice
 public class GlobalAdvice extends ResponseEntityExceptionHandler {
     
+    /**
+     * custom Exception
+     */
     @ExceptionHandler({
             MailAuthException.class,
             SignUpException.class})
@@ -36,7 +39,9 @@ public class GlobalAdvice extends ResponseEntityExceptionHandler {
                         .message(e.getMessage()).build());
     }
     
-    
+    /**
+     * @Validate Exception
+     */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> constraintViolationException(ConstraintViolationException e) {
         List<ValidExceptionResponse> errorList = new ArrayList<>();
@@ -64,14 +69,9 @@ public class GlobalAdvice extends ResponseEntityExceptionHandler {
                         .result(errorList).build());
     }
     
-    @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        return ResponseEntity
-                .badRequest().body(ApiResponse.<List<ValidExceptionResponse>>builder()
-                        .status(false)
-                        .message(REQUIRED_REQUEST_BODY).build());
-    }
-    
+    /**
+     * @Valid Exception
+     */
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                                   HttpHeaders headers,
@@ -97,6 +97,20 @@ public class GlobalAdvice extends ResponseEntityExceptionHandler {
                         .status(false)
                         .message(VALID_EXCEPTION)
                         .result(list).build());
+    }
+    
+    /**
+     * @RequestBody is null
+     */
+    @Override
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
+                                                                  HttpHeaders headers,
+                                                                  HttpStatusCode status,
+                                                                  WebRequest request) {
+        return ResponseEntity
+                .badRequest().body(ApiResponse.<List<ValidExceptionResponse>>builder()
+                        .status(false)
+                        .message(REQUIRED_REQUEST_BODY).build());
     }
     
 }

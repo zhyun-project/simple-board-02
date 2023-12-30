@@ -56,9 +56,9 @@ public class SignUpServiceImpl implements SignUpService {
                 .nickname(nickname)
                 .sessionId(sessionId).build();
         
-        boolean isReserved = nicknameReserveService.existNickname(newNicknameInfo);
+        boolean isNotAvailable = !nicknameReserveService.availableNickname(newNicknameInfo);
         
-        if (isReserved)
+        if (isNotAvailable)
             return false;
         
         // 닉네임 예약
@@ -127,9 +127,6 @@ public class SignUpServiceImpl implements SignUpService {
     }
     
     
-    private static String getPassword(String password) {
-        return new BCryptPasswordEncoder().encode(password);
-    }
     
     /**
      * session user 저장소에 이메일 등록
@@ -148,6 +145,10 @@ public class SignUpServiceImpl implements SignUpService {
         SessionUser sessionUser = sessionUserService.findById(sessionId);
         sessionUser.setNickname(nickname);
         sessionUserService.save(sessionUser);
+    }
+    
+    private static String getPassword(String password) {
+        return new BCryptPasswordEncoder().encode(password);
     }
     
 }
