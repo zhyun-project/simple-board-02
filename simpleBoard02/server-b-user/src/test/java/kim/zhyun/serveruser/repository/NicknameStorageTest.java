@@ -6,6 +6,7 @@ import kim.zhyun.serveruser.repository.container.RedisTestContainer;
 import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,67 +38,8 @@ class NicknameStorageTest {
         this.redisTemplate = redisTemplate;
     }
     
-    @DisplayName("예약된 닉네임인지 검색 1")
-    @Test
-    void exist_by_nickname_1() {
-        //given
-        NicknameDto dto = NicknameDto.builder()
-                .nickname(NICKNAME_RESERVED_NOT)
-                .sessionId(SESSION_ID_RESERVATION_PERSON_NOT).build();
-        
-        // when
-        boolean result1 = nicknameReserveService.existNickname(dto);
-        
-        // then
-        assertFalse(result1);
-    }
     
-    @DisplayName("예약된 닉네임인지 검색 2")
-    @Test
-    void exist_by_nickname_2() {
-        //given
-        NicknameDto dto = NicknameDto.builder()
-                .nickname(NICKNAME_RESERVED)
-                .sessionId(SESSION_ID_RESERVATION_PERSON_NOT).build();
-        
-        // when
-        boolean result2 = nicknameReserveService.existNickname(dto);
-        
-        // then
-        assertTrue(result2);
-    }
-    
-    @DisplayName("예약된 닉네임인지 검색 3")
-    @Test
-    void exist_by_nickname_3() {
-        //given
-        NicknameDto dto = NicknameDto.builder()
-                .nickname(NICKNAME_RESERVED_NOT)
-                .sessionId(SESSION_ID_RESERVATION_PERSON).build();
-        
-        // when
-        boolean result3 = nicknameReserveService.existNickname(dto);
-        
-        // then
-        assertFalse(result3);
-    }
-    
-    @DisplayName("예약된 닉네임인지 검색 4")
-    @Test
-    void exist_by_nickname_4() {
-        //given
-        NicknameDto dto = NicknameDto.builder()
-                .nickname(NICKNAME_RESERVED)
-                .sessionId(SESSION_ID_RESERVATION_PERSON).build();
-        
-        // when
-        boolean result4 = nicknameReserveService.existNickname(dto);
-        
-        // then
-        assertFalse(result4);
-    }
-    
-    @DisplayName("사용 가능한 닉네임인지 검색 - 불가능 도출")
+    @DisplayName("사용 가능한 닉네임인지 검색 - false : 다른 사람이 선점한 닉네임")
     @Test
     void not_available_by_nickname() {
         //given
@@ -112,29 +54,56 @@ class NicknameStorageTest {
         assertFalse(result);
     }
     
-    @DisplayName("사용 가능한 닉네임인지 검색 - 가능 도출")
+    @DisplayName("사용 가능한 닉네임인지 검색 - true : 예약 안 된 닉네임")
     @Test
-    void available_by_nickname() {
+    void available_nickname() {
         //given
-        NicknameDto dto1 = NicknameDto.builder()
+        NicknameDto dto = NicknameDto.builder()
                 .nickname(NICKNAME_RESERVED_NOT)
                 .sessionId(SESSION_ID_RESERVATION_PERSON_NOT).build();
-        NicknameDto dto2 = NicknameDto.builder()
-                .nickname(NICKNAME_RESERVED_NOT)
-                .sessionId(SESSION_ID_RESERVATION_PERSON).build();
-        NicknameDto dto3 = NicknameDto.builder()
+        
+        // when
+        boolean result = nicknameReserveService.availableNickname(dto);
+        
+        // then
+        assertTrue(result);
+    }
+    
+    @DisplayName("사용 가능한 닉네임인지 검색 - true : 내가 선점한 닉네임")
+    @Test
+    void available_nickname_its_mine() {
+        //given
+        NicknameDto dto = NicknameDto.builder()
                 .nickname(NICKNAME_RESERVED)
                 .sessionId(SESSION_ID_RESERVATION_PERSON).build();
         
         // when
-        boolean result1 = nicknameReserveService.availableNickname(dto1);
-        boolean result2 = nicknameReserveService.availableNickname(dto2);
-        boolean result3 = nicknameReserveService.availableNickname(dto3);
+        boolean result = nicknameReserveService.availableNickname(dto);
         
         // then
-        assertTrue(result1);
-        assertTrue(result2);
-        assertTrue(result3);
+        assertTrue(result);
+    }
+    
+    @DisplayName("사용 가능한 닉네임인지 검색 - true : 닉네임(A)를 선점한 유저(AA)가 닉네임(B)를 조회했을 때 유저(ZZ)가 닉네임(A) 조회")
+    @Test
+    void available_by_nickname_reserve_canceled() {
+        //given
+        NicknameDto dto1 = NicknameDto.builder()
+                .nickname(NICKNAME_RESERVED)
+                .sessionId(SESSION_ID_RESERVATION_PERSON_NOT).build();
+        NicknameDto dto2 = NicknameDto.builder()
+                .nickname(NICKNAME_RESERVED_NOT)
+                .sessionId(SESSION_ID_RESERVATION_PERSON).build();
+        
+        // when
+        boolean targetBefore = nicknameReserveService.availableNickname(dto1);
+        boolean target = nicknameReserveService.availableNickname(dto2);
+        boolean targetAfter = nicknameReserveService.availableNickname(dto1);
+        
+        // then
+        assertFalse(targetBefore);
+        assertTrue(target);
+        assertTrue(targetAfter);
     }
     
     
@@ -142,32 +111,33 @@ class NicknameStorageTest {
     @Test
     void delete_by_nickname() {
         //given
-        NicknameDto dto = NicknameDto.builder()
-                .nickname(NICKNAME_RESERVED)
-                .sessionId("").build();
+        NicknameDto dto = NicknameDto.of(NICKNAME_RESERVED);
         
         // when
         nicknameReserveService.deleteNickname(dto);
         
         // then
-        assertFalse(nicknameReserveService.existNickname(dto));
+        assertFalse(existNickname(dto));
     }
+    
     
     @DisplayName("닉네임 예약 목록에서 삭제 - 없는 닉네임")
     @Test
     void delete_by_nickname_reserved_not() {
         //given
-        NicknameDto dto = NicknameDto.builder()
-                .nickname(NICKNAME_RESERVED)
-                .sessionId("").build();
+        NicknameDto dto = NicknameDto.of("asdasdasdasd");
         
         // when
         nicknameReserveService.deleteNickname(dto);
         
         // then
-        assertFalse(nicknameReserveService.existNickname(dto));
+        assertFalse(existNickname(dto));
     }
     
+    
+    private Boolean existNickname(NicknameDto dto) {
+        return redisTemplate.hasKey(dto.getNickname());
+    }
     
     @BeforeEach
     void save_init_data() {

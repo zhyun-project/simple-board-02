@@ -2,7 +2,6 @@ package kim.zhyun.serveruser.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kim.zhyun.serveruser.data.NicknameDto;
 import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
@@ -200,16 +199,12 @@ class DisconnectionInterceptorTest {
                             .nickname(reservedNickname).build();
                     
                     when(sessionUserService.existsById(sessionId)).thenReturn(true);
-                    when(sessionUserService.findById(sessionId)).thenReturn(resultSavedSessionUserContainNickname);
-                    doNothing().when(nicknameReserveService).deleteNickname(NicknameDto.of(reservedNickname));
                     doNothing().when(sessionUserService).deleteById(sessionId);
                 
                     disconnectionInterceptor.preHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object());
                     
                     // then
                     verify(sessionUserService, times(1)).existsById(sessionId);
-                    verify(sessionUserService, times(1)).findById(sessionId);
-                    verify(nicknameReserveService, times(1)).deleteNickname(NicknameDto.of(reservedNickname));
                     verify(sessionUserService, times(1)).deleteById(sessionId);
                 }
             }
@@ -269,15 +264,12 @@ class DisconnectionInterceptorTest {
                             .sessionId(sessionId).build();
                     
                     when(sessionUserService.existsById(sessionId)).thenReturn(true);
-                    when(sessionUserService.findById(sessionId)).thenReturn(resultSavedSessionUser);
                     doNothing().when(sessionUserService).deleteById(sessionId);
                     
                     disconnectionInterceptor.preHandle(mockHttpServletRequest, new MockHttpServletResponse(), new Object());
                     
                     // then
                     verify(sessionUserService, times(1)).existsById(sessionId);
-                    verify(sessionUserService, times(1)).findById(sessionId);
-                    verify(nicknameReserveService,  times(0)).deleteNickname(NicknameDto.of(""));
                     verify(sessionUserService, times(1)).deleteById(sessionId);
                 }
             }

@@ -8,9 +8,9 @@ public interface SessionUserService {
     
     SessionUser findById(String id);
     boolean existsById(String id);
-    SessionUser save(SessionUser source);
-    SessionUser updateEmail(SessionUserEmailUpdate emailUpdate);
-    SessionUser updateNickname(SessionUserNicknameUpdate emailUpdate);
+    void save(SessionUser source);
+    void updateEmail(SessionUserEmailUpdate emailUpdate);
+    void updateNickname(SessionUserNicknameUpdate emailUpdate);
     void deleteById(String id);
     void initSessionUserExpireTime(String id);
     

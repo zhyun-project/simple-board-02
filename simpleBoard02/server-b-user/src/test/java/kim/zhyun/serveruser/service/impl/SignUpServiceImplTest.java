@@ -14,7 +14,6 @@ import kim.zhyun.serveruser.service.EmailService;
 import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -105,7 +104,7 @@ class SignUpServiceImplTest {
             // then
             verify(userRepository, times(1)).existsByNicknameIgnoreCase(NICKNAME);
             
-            verify(nicknameReserveService, times(0)).existNickname(null);
+            verify(nicknameReserveService, times(0)).availableNickname(null);
             verify(nicknameReserveService, times(0)).saveNickname(null);
             verify(sessionUserService, times(0)).findById(SESSION_ID);
             verify(sessionUserService, times(0)).save(null);
@@ -122,14 +121,14 @@ class SignUpServiceImplTest {
                     .sessionId(SESSION_ID).build();
             
             when(userRepository.existsByNicknameIgnoreCase(NICKNAME)).thenReturn(false);
-            when(nicknameReserveService.existNickname(nicknameInfo)).thenReturn(true);
+            when(nicknameReserveService.availableNickname(nicknameInfo)).thenReturn(false);
             
             // when
             boolean availableNickname = signupService.availableNickname(NICKNAME, SESSION_ID);
             
             // then
             verify(userRepository, times(1)).existsByNicknameIgnoreCase(NICKNAME);
-            verify(nicknameReserveService, times(1)).existNickname(nicknameInfo);
+            verify(nicknameReserveService, times(1)).availableNickname(nicknameInfo);
             
             verify(nicknameReserveService, times(0)).saveNickname(nicknameInfo);
             verify(sessionUserService, times(0)).findById(SESSION_ID);
@@ -150,7 +149,7 @@ class SignUpServiceImplTest {
                     .sessionId(SESSION_ID).build();
             
             when(userRepository.existsByNicknameIgnoreCase(NICKNAME)).thenReturn(false);
-            when(nicknameReserveService.existNickname(nicknameInfo)).thenReturn(false);
+            when(nicknameReserveService.availableNickname(nicknameInfo)).thenReturn(true);
             when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
             
             // when
@@ -160,7 +159,7 @@ class SignUpServiceImplTest {
             sessionUser.setNickname(NICKNAME);
             
             verify(userRepository, times(1)).existsByNicknameIgnoreCase(NICKNAME);
-            verify(nicknameReserveService, times(1)).existNickname(nicknameInfo);
+            verify(nicknameReserveService, times(1)).availableNickname(nicknameInfo);
             verify(nicknameReserveService, times(1)).saveNickname(nicknameInfo);
             verify(sessionUserService, times(1)).findById(SESSION_ID);
             verify(sessionUserService, times(1)).save(sessionUser);

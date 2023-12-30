@@ -1,4 +1,4 @@
-package kim.zhyun.serveruser.data;
+package kim.zhyun.serveruser.data.response;
 
 import lombok.Builder;
 import lombok.Getter;

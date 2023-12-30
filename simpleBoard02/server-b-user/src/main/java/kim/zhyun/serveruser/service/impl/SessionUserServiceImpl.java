@@ -38,23 +38,23 @@ public class SessionUserServiceImpl implements SessionUserService {
     }
     
     @Override
-    public SessionUser save(SessionUser source) {
-        return sessionUserRepository.save(source);
+    public void save(SessionUser source) {
+        sessionUserRepository.save(source);
     }
     
     @Override
-    public SessionUser updateEmail(SessionUserEmailUpdate update) {
+    public void updateEmail(SessionUserEmailUpdate update) {
         SessionUser source = findById(update.getId());
         source.setEmail(update.getEmail().replace(KEY_EMAIL, ""));
         source.setEmailVerification(update.isEmailVerification());
-        return save(source);
+        save(source);
     }
     
     @Override
-    public SessionUser updateNickname(SessionUserNicknameUpdate update) {
+    public void updateNickname(SessionUserNicknameUpdate update) {
         SessionUser source = findById(update.getId());
         source.setNickname(update.getNickname().replace(KEY_NICKNAME, ""));
-        return save(source);
+        save(source);
     }
     
     @Override

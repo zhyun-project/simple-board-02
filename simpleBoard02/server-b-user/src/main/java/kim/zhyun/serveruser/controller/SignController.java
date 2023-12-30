@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import kim.zhyun.serveruser.data.ApiResponse;
+import kim.zhyun.serveruser.data.response.ApiResponse;
 import kim.zhyun.serveruser.data.SignupRequest;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
