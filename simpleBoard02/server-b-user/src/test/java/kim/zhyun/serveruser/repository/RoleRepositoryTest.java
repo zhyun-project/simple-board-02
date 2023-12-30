@@ -1,8 +1,8 @@
 package kim.zhyun.serveruser.repository;
 
 import kim.zhyun.serveruser.config.JpaConfig;
-import kim.zhyun.serveruser.data.type.RoleType;
 import kim.zhyun.serveruser.data.entity.Role;
+import kim.zhyun.serveruser.data.type.RoleType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +10,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("Role DB Test")
@@ -37,24 +36,12 @@ class RoleRepositoryTest extends PrintLog<RoleRepository> {
         String roleName = RoleType.ADMIN.name();
         
         // when
-        Optional<Role> role = roleRepository.findByRoleIgnoreCase(roleName);
+        Role role = roleRepository.findByRole(roleName);
         
         // then
-        assertTrue(role.isPresent());
+        assertThat(role.getRole()).isEqualToIgnoringCase(roleName);
     }
     
-    @DisplayName("role 검색 : findByRole - 성공 (대소문자 섞인 검색어)")
-    @Test
-    void find_role_true_ignore_case() {
-        // given
-        String roleName = "AdmiN";
-        
-        // when
-        Optional<Role> role = roleRepository.findByRoleIgnoreCase(roleName);
-        
-        // then
-        assertTrue(role.isPresent());
-    }
     
     @DisplayName("role 검색 : findByRole - 없는 값 검색")
     @Test
@@ -63,10 +50,10 @@ class RoleRepositoryTest extends PrintLog<RoleRepository> {
         String roleName = "ADMINISTRATOR";
         
         // when
-        Optional<Role> role = roleRepository.findByRoleIgnoreCase(roleName);
+        Role role = roleRepository.findByRole(roleName);
         
         // then
-        assertTrue(role.isEmpty());
+        assertNull(role);
     }
     
     @DisplayName("role 검색 : existByRole - true")

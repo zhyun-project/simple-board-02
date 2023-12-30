@@ -2,6 +2,10 @@ spring:
   config:
     import: classpath:password.yml
 
+  h2:
+    console:
+      enabled: true
+
   datasource:
     url: jdbc:h2:./server-b-user/h2/member-test;AUTO_SERVER=true;mode=MYSQL;
     username: sa
@@ -46,13 +50,16 @@ spring:
 logging:
   level:
     org.hibernate.sql: debug
-    org.hibernate.type: trace
+    org.springframework.security: debug
 
 ---
 
 sign-up:
   key:
-    email: "EMAIL:" # EmailAuthDto.getEmail()
-    nickname: "NICKNAME:" # NicknameDto.getNickname()
+    session: "SESSION_ID:" # SessionUserServiceImpl
+    email: "EMAIL:"        # EmailAuthDto.getEmail()
+    nickname: "NICKNAME:"  # NicknameDto.getNickname()
   email:
     expire: 30
+  session:
+    expire: 5 # TimeUnit: Minute

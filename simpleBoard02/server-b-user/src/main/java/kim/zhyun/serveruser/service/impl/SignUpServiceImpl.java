@@ -1,16 +1,23 @@
 package kim.zhyun.serveruser.service.impl;
 
 import kim.zhyun.serveruser.advice.MailAuthException;
+import kim.zhyun.serveruser.advice.SignUpException;
 import kim.zhyun.serveruser.data.EmailAuthCodeRequest;
 import kim.zhyun.serveruser.data.EmailAuthDto;
 import kim.zhyun.serveruser.data.NicknameDto;
+import kim.zhyun.serveruser.data.SignupRequest;
+import kim.zhyun.serveruser.data.entity.Role;
 import kim.zhyun.serveruser.data.entity.SessionUser;
+import kim.zhyun.serveruser.data.entity.User;
+import kim.zhyun.serveruser.data.type.RoleType;
+import kim.zhyun.serveruser.repository.RoleRepository;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.service.EmailService;
 import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
@@ -18,7 +25,9 @@ import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
 @RequiredArgsConstructor
 @Service
 public class SignUpServiceImpl implements SignUpService {
+    private final RoleRepository roleRepository;
     private final UserRepository userRepository;
+    
     private final NicknameReserveService nicknameReserveService;
     private final SessionUserService sessionUserService;
     private final EmailService emailService;
@@ -90,6 +99,36 @@ public class SignUpServiceImpl implements SignUpService {
         
         // 인증 성공
         emailService.deleteAndUpdateSessionUserEmail(requestInfo, sessionId);
+    }
+    
+    @Override
+    public void saveMember(String sessionId, SignupRequest request) {
+        SessionUser sessionUser = sessionUserService.findById(sessionId);
+        
+        // 중복 확인 하지 않은 email
+        if (sessionUser.getEmail() == null
+                || (!sessionUser.getEmail().equals(request.getEmail()) || !sessionUser.isEmailVerification()))
+            throw new SignUpException(REQUIRE_MAIL_DUPLICATE_CHECK);
+        
+        // 중복 확인 하지 않은 nickname
+        if (sessionUser.getNickname() == null
+                || !sessionUser.getNickname().equals(request.getNickname()))
+            throw new SignUpException(REQUIRE_NICKNAME_DUPLICATE_CHECK);
+        
+        Role role = roleRepository.findByRole(RoleType.MEMBER.name());
+        userRepository.save(User.builder()
+                        .email(request.getEmail())
+                        .nickname(request.getNickname())
+                        .password(getPassword(request.getPassword()))
+                        .role(role)
+                .build());
+        
+        sessionUserService.deleteById(sessionId);
+    }
+    
+    
+    private static String getPassword(String password) {
+        return new BCryptPasswordEncoder().encode(password);
     }
     
     /**

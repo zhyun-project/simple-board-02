@@ -10,9 +10,7 @@ import lombok.*;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @ToString
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter @Builder
+@Getter
 @Entity
 public class Role {
     

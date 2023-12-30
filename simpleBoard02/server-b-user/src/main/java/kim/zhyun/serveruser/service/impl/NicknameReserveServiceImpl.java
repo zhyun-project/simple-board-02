@@ -7,10 +7,12 @@ import kim.zhyun.serveruser.service.NicknameReserveService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @RequiredArgsConstructor
 @Getter @Setter
@@ -18,6 +20,9 @@ import java.util.Optional;
 public class NicknameReserveServiceImpl implements NicknameReserveService {
     private final RedisTemplate<String, String> template;
     private final SessionUserRepository sessionUserRepository;
+    
+    @Value("${sign-up.session.expire}")
+    private long SESSION_EXPIRE_TIME;
     
     /**
      * 예약된 nickname인지 조회
@@ -60,6 +65,7 @@ public class NicknameReserveServiceImpl implements NicknameReserveService {
     public void saveNickname(NicknameDto dto) {
         deleteNickname(dto);
         template.opsForSet().add(dto.getNickname(), dto.getSessionId());
+        template.expire(dto.getNickname(), SESSION_EXPIRE_TIME, TimeUnit.MINUTES);
     }
     
     /**

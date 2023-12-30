@@ -12,5 +12,6 @@ public interface SessionUserService {
     SessionUser updateEmail(SessionUserEmailUpdate emailUpdate);
     SessionUser updateNickname(SessionUserNicknameUpdate emailUpdate);
     void deleteById(String id);
-
+    void initSessionUserExpireTime(String id);
+    
 }

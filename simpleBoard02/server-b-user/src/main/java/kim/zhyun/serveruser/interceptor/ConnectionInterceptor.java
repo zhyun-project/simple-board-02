@@ -29,6 +29,9 @@ public class ConnectionInterceptor implements HandlerInterceptor {
                     .build());
         }
         
+        // session user expire 시간 초기화
+        sessionUserService.initSessionUserExpireTime(sessionId);
+        
         return true;
     }
     
