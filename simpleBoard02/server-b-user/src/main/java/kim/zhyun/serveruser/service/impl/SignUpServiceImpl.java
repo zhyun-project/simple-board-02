@@ -106,11 +106,13 @@ public class SignUpServiceImpl implements SignUpService {
         SessionUser sessionUser = sessionUserService.findById(sessionId);
         
         // 중복 확인 하지 않은 email
-        if (!sessionUser.getEmail().equals(request.getEmail()) || !sessionUser.isEmailVerification())
+        if (sessionUser.getEmail() == null
+                || (!sessionUser.getEmail().equals(request.getEmail()) || !sessionUser.isEmailVerification()))
             throw new SignUpException(REQUIRE_MAIL_DUPLICATE_CHECK);
         
         // 중복 확인 하지 않은 nickname
-        if (!sessionUser.getNickname().equals(request.getNickname()))
+        if (sessionUser.getNickname() == null
+                || !sessionUser.getNickname().equals(request.getNickname()))
             throw new SignUpException(REQUIRE_NICKNAME_DUPLICATE_CHECK);
         
         Role role = roleRepository.findByRole(RoleType.MEMBER.name());
