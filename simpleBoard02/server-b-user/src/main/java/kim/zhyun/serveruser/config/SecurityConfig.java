@@ -1,8 +1,13 @@
 package kim.zhyun.serveruser.config;
 
+import kim.zhyun.serveruser.filter.AuthenticationFilter;
+import kim.zhyun.serveruser.jwt.JwtProvider;
+import kim.zhyun.serveruser.service.MemberService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -14,9 +19,13 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+@RequiredArgsConstructor
 @EnableWebSecurity(debug = true)
 @Configuration
 public class SecurityConfig {
+    private final AuthenticationConfiguration authenticationConfiguration;
+    private final JwtProvider jwtProvider;
+    private final MemberService userService;
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
@@ -28,16 +37,23 @@ public class SecurityConfig {
                 .requestMatchers(
                         mvcMatcher.pattern("/sign-up/**"),
                         mvcMatcher.pattern("/check/**"),
-                        mvcMatcher.pattern("/sign-in/**")).permitAll()
+                        mvcMatcher.pattern("/login/**")).permitAll()
                 .anyRequest().authenticated());
         
         http.httpBasic(withDefaults());
         http.csrf(AbstractHttpConfigurer::disable);
         http.headers(AbstractHttpConfigurer::disable);
         
+        http.addFilter(authenticationFilter());
         
         
         return http.build();
+    }
+    
+    private AuthenticationFilter authenticationFilter() throws Exception {
+        AuthenticationFilter filter = new AuthenticationFilter(userService, jwtProvider);
+        filter.setAuthenticationManager(authenticationConfiguration.getAuthenticationManager());
+        return filter;
     }
     
     

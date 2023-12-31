@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kim.zhyun.serveruser.data.response.ApiResponse;
 import kim.zhyun.serveruser.data.SignupRequest;
+import kim.zhyun.serveruser.service.MemberService;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_UP;
 
 
-@Tag(name = "회원가입, 로그인, 로그아웃, 회원탈퇴 API")
+@Tag(name = "회원가입, 회원탈퇴 API")
 @RequiredArgsConstructor
 @RestController
 public class SignController {
     private final SignUpService signUpService;
+    private final MemberService memberService;
     
     @Operation(summary = "회원가입")
     @PostMapping("/sign-up")
@@ -30,18 +32,6 @@ public class SignController {
                         .status(true)
                         .message(String.format(SUCCESS_FORMAT_SIGN_UP, signupRequest.getNickname()))
                 .build());
-    }
-    
-    @Operation(summary = "로그인")
-    @PostMapping("/sign-in")
-    public void signIn() {
-    
-    }
-    
-    @Operation(summary = "로그아웃")
-    @GetMapping("/sign-out")
-    public void signOut() {
-    
     }
     
     @Operation(summary = "회원탈퇴")

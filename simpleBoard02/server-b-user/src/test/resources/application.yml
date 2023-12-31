@@ -7,7 +7,7 @@ spring:
       enabled: true
 
   datasource:
-    url: jdbc:h2:./server-b-user/h2/member-test;AUTO_SERVER=true;mode=MYSQL;
+    url: jdbc:h2:./h2/member-test;AUTO_SERVER=true;mode=MYSQL;
     username: sa
 
   sql:
