@@ -69,3 +69,8 @@ project(":server-c-article") {
     bootJar { enabled = true }
     jar { enabled = false}
 }
+
+project(":common-constants") {
+    bootJar { enabled = false }
+    jar { enabled = true }
+}
