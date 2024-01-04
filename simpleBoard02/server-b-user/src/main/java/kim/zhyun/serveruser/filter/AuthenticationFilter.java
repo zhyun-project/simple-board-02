@@ -5,9 +5,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.data.SignInRequest;
 import kim.zhyun.serveruser.data.UserDto;
-import kim.zhyun.serveruser.jwt.JwtProvider;
 import kim.zhyun.serveruser.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.io.IOException;
 import java.util.Set;
 
-import static kim.zhyun.constnats.JwtConstants.JWT_HEADER;
+import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -52,7 +52,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             Authentication authResult) throws IOException, ServletException {
         String username = ((User) authResult.getPrincipal()).getUsername();
         UserDto userInfo = userService.findByEmail(username);
-        String token = jwtProvider.createToken(userInfo);
+        String token = jwtProvider.createToken(authResult);
         
         response.addHeader(JWT_HEADER, token);
     }

@@ -38,7 +38,7 @@ public class SessionCheckFilter extends OncePerRequestFilter {
     
     
     private void disconnectProcess(String sessionId) {
-        log.info("delete nickname cache - session id: {}", sessionId);
+        log.debug("delete nickname cache - session id: {}", sessionId);
         
         // session_id storage - session_id 삭제, nickname storage - nickname 예약 삭제
         if (sessionUserService.existsById(sessionId)) {
@@ -47,7 +47,7 @@ public class SessionCheckFilter extends OncePerRequestFilter {
     }
     
     private void connectProcess(String sessionId) {
-        log.info("save session id: {}", sessionId);
+        log.debug("save session id: {}", sessionId);
         
         if (!sessionUserService.existsById(sessionId)) {
             sessionUserService.save(SessionUser.builder()

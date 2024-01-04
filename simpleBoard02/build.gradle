@@ -70,7 +70,7 @@ project(":server-c-article") {
     jar { enabled = false}
 }
 
-project(":common-constants") {
+project(":common-jwt") {
     bootJar { enabled = false }
     jar { enabled = true }
 }

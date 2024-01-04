@@ -1,11 +1,12 @@
 package kim.zhyun.serveruser.config;
 
+import kim.zhyun.jwt.filter.JwtFilter;
+import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.advice.security.SecurityAccessDeniedException;
 import kim.zhyun.serveruser.advice.security.SecurityAuthenticationEntryPoint;
 import kim.zhyun.serveruser.filter.AuthenticationFilter;
 import kim.zhyun.serveruser.filter.ExceptionHandlerFilter;
 import kim.zhyun.serveruser.filter.SessionCheckFilter;
-import kim.zhyun.serveruser.jwt.JwtProvider;
 import kim.zhyun.serveruser.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
@@ -18,6 +19,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
@@ -34,6 +36,7 @@ public class SecurityConfig {
     
     private final SessionCheckFilter sessionCheckFilter;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
+    private final JwtFilter jwtFilter;
     
     private final SecurityAccessDeniedException accessDeniedException;
     private final SecurityAuthenticationEntryPoint authenticationEntryPoint;
@@ -61,7 +64,8 @@ public class SecurityConfig {
         
         http.addFilterBefore(exceptionHandlerFilter, SecurityContextHolderFilter.class);
         http.addFilterBefore(sessionCheckFilter, ExceptionHandlerFilter.class);
-        http.addFilter(authenticationFilter());
+        http.addFilterAt(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilter, AuthenticationFilter.class);
         
         return http.build();
     }
