@@ -1,6 +1,7 @@
 package kim.zhyun.serveruser.config;
 
 import kim.zhyun.serveruser.filter.AuthenticationFilter;
+import kim.zhyun.serveruser.filter.SessionCheckFilter;
 import kim.zhyun.serveruser.jwt.JwtProvider;
 import kim.zhyun.serveruser.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,8 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
@@ -26,6 +29,7 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtProvider jwtProvider;
     private final MemberService userService;
+    private final SessionCheckFilter sessionCheckFilter;
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
@@ -44,6 +48,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.headers(AbstractHttpConfigurer::disable);
         
+        http.addFilterBefore(sessionCheckFilter, SecurityContextHolderFilter.class);
         http.addFilter(authenticationFilter());
         
         

@@ -63,3 +63,7 @@ sign-up:
     expire: 30
   session:
     expire: 5 # TimeUnit: Minute
+
+token:
+  expiration-time: 300 # 5분
+  secret: VGhpc2lzSnd0U2VjcmV0S2V5Rm9yU2ltcGxlQm9hcmQwMlByb2plY3RNYWRlQnlaaHl1bktpbU9yV2xndXNLaW0=
