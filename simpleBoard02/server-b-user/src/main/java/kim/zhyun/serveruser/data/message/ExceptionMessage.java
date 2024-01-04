@@ -20,6 +20,10 @@ public class ExceptionMessage {
     // password 관련
     public static final String VALID_PASSWORD_EXCEPTION_MESSAGE = "4글자 이상 입력해주세요.";
 
+    // 로그인 관련
+    public static final String SIGNIN_FAIL = "일치하는 사용자 정보가 없습니다.";
+    
+    
     // 공통
     public static final String VALID_EXCEPTION = "입력 값이 올바르지 않습니다.";
     public static final String REQUIRED_REQUEST_BODY = "Required request body is missing";

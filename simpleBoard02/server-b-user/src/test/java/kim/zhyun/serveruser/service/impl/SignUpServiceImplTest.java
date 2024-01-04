@@ -327,7 +327,7 @@ class SignUpServiceImplTest {
                     SignUpException.class,
                     () -> signupService.saveMember(SESSION_ID, signupRequest));
             
-            verify(roleRepository, times(0)).findByRole(RoleType.MEMBER.name());
+            verify(roleRepository, times(0)).findByGrade(RoleType.MEMBER.name());
             verify(sessionUserService, times(0)).deleteById(SESSION_ID);
         }
         @DisplayName("실패 - 이메일 불일치")
@@ -348,7 +348,7 @@ class SignUpServiceImplTest {
                     SignUpException.class,
                     () -> signupService.saveMember(SESSION_ID, signupRequest));
             
-            verify(roleRepository, times(0)).findByRole(RoleType.MEMBER.name());
+            verify(roleRepository, times(0)).findByGrade(RoleType.MEMBER.name());
             verify(sessionUserService, times(0)).deleteById(SESSION_ID);
         }
         
@@ -370,7 +370,7 @@ class SignUpServiceImplTest {
                     SignUpException.class,
                     () -> signupService.saveMember(SESSION_ID, signupRequest));
             
-            verify(roleRepository, times(0)).findByRole(RoleType.MEMBER.name());
+            verify(roleRepository, times(0)).findByGrade(RoleType.MEMBER.name());
             verify(sessionUserService, times(0)).deleteById(SESSION_ID);
         }
         
@@ -391,7 +391,7 @@ class SignUpServiceImplTest {
             signupService.saveMember(SESSION_ID, signupRequest);
             
             
-            verify(roleRepository, times(1)).findByRole(RoleType.MEMBER.name());
+            verify(roleRepository, times(1)).findByGrade(RoleType.MEMBER.name());
             verify(sessionUserService, times(1)).deleteById(SESSION_ID);
         }
         

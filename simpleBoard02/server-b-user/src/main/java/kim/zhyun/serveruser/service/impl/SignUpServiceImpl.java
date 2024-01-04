@@ -115,7 +115,7 @@ public class SignUpServiceImpl implements SignUpService {
                 || !sessionUser.getNickname().equals(request.getNickname()))
             throw new SignUpException(REQUIRE_NICKNAME_DUPLICATE_CHECK);
         
-        Role role = roleRepository.findByRole(RoleType.MEMBER.name());
+        Role role = roleRepository.findByGrade(RoleType.MEMBER.name());
         userRepository.save(User.builder()
                         .email(request.getEmail())
                         .nickname(request.getNickname())

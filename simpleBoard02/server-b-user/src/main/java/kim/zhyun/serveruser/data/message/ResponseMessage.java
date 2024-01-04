@@ -17,8 +17,10 @@ public class ResponseMessage {
     public static final String SIGN_UP_AVAILABLE_NICKNAME = "사용 가능한 닉네임입니다.";
     public static final String SIGN_UP_UNAVAILABLE_NICKNAME = "이미 사용중인 닉네임입니다.";
     
-    
     // sign-up 값 체크 기본 응답
     public static final String SIGN_UP_CHECK_VALUE_IS_EMPTY = "값을 입력해주세요.";
+    
+    // 로그인 _ ex. 얼거스(gimwlgus@daum.net)님 로그인 되었습니다
+    public static final String SUCCESS_FORMAT_SIGN_IN = "%s(%s)님 로그인 되었습니다.";
     
 }

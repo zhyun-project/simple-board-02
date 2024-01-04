@@ -11,16 +11,16 @@ spring:
       enabled: true
 
   datasource:
-    url: jdbc:h2:./server-b-user/h2/member;AUTO_SERVER=true;mode=MYSQL;
+    url: jdbc:h2:./simpleBoard02/server-b-user/h2/member;AUTO_SERVER=true;mode=MYSQL;
     username: sa
 
   sql:
     init:
-      mode: always
+      mode: never
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: none
     defer-datasource-initialization: true
     properties:
       hibernate:
@@ -67,3 +67,7 @@ sign-up:
     expire: 60 # TimeUnit: Second
   session:
     expire: 30 # TimeUnit: Minute
+
+token:
+  expiration-time: 86400 # 1일
+  secret: VGhpc2lzSnd0U2VjcmV0S2V5Rm9yU2ltcGxlQm9hcmQwMlByb2plY3RNYWRlQnlaaHl1bktpbU9yV2xndXNLaW0=
