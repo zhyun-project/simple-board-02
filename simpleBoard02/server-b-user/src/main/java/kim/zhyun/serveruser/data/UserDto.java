@@ -1,6 +1,7 @@
 package kim.zhyun.serveruser.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import kim.zhyun.serveruser.data.entity.Role;
 import kim.zhyun.serveruser.data.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,12 +22,14 @@ public class UserDto {
     private String email;
     private String nickname;
     private String password;
+    private Role role;
     
     public static UserDto from(User source) {
         return UserDto.builder()
                 .id(source.getId())
                 .email(source.getEmail())
-                .nickname(source.getEmail()).build();
+                .nickname(source.getEmail())
+                .role(source.getRole()).build();
     }
     
     public static User to(UserDto dto) {
@@ -34,7 +37,8 @@ public class UserDto {
                 .id(dto.getId())
                 .email(dto.getEmail())
                 .nickname(dto.getEmail())
-                .password(dto.getPassword()).build();
+                .password(dto.getPassword())
+                .role(dto.getRole()).build();
     }
     
     @Override
@@ -44,6 +48,8 @@ public class UserDto {
         return Objects.equals(getId(), userDto.getId())
                 && Objects.equals(getEmail(), userDto.getEmail())
                 && Objects.equals(getNickname(), userDto.getNickname())
-                && Objects.equals(getPassword(), userDto.getPassword());
+                && Objects.equals(getPassword(), userDto.getPassword())
+                && Objects.equals(getRole(), userDto.getRole());
     }
+    
 }

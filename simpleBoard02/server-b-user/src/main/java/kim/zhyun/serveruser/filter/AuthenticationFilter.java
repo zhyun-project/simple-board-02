@@ -14,11 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Set;
+
+import static kim.zhyun.constnats.JwtConstants.JWT_HEADER;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -31,12 +34,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             throws AuthenticationException {
         try {
             SignInRequest credential = new ObjectMapper().readValue(request.getInputStream(), SignInRequest.class);
-            
+            String role = userService.findByEmail(credential.getEmail()).getRole().getGrade();
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
                             credential.getEmail(),
                             credential.getPassword(),
-                            new ArrayList<>()));
+                            Set.of(new SimpleGrantedAuthority(role))));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -51,8 +54,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         UserDto userInfo = userService.findByEmail(username);
         String token = jwtProvider.createToken(userInfo);
         
-        response.addHeader("X-TOKEN", token);
-        response.addHeader("X-USER", String.valueOf(userInfo.getId()));
+        response.addHeader(JWT_HEADER, token);
     }
     
 }
