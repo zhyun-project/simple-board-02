@@ -1,6 +1,9 @@
 package kim.zhyun.serveruser.config;
 
+import kim.zhyun.serveruser.advice.security.SecurityAccessDeniedException;
+import kim.zhyun.serveruser.advice.security.SecurityAuthenticationEntryPoint;
 import kim.zhyun.serveruser.filter.AuthenticationFilter;
+import kim.zhyun.serveruser.filter.ExceptionHandlerFilter;
 import kim.zhyun.serveruser.filter.SessionCheckFilter;
 import kim.zhyun.serveruser.jwt.JwtProvider;
 import kim.zhyun.serveruser.service.MemberService;
@@ -28,7 +31,12 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtProvider jwtProvider;
     private final MemberService userService;
+    
     private final SessionCheckFilter sessionCheckFilter;
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
+    
+    private final SecurityAccessDeniedException accessDeniedException;
+    private final SecurityAuthenticationEntryPoint authenticationEntryPoint;
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
@@ -43,13 +51,17 @@ public class SecurityConfig {
                         mvcMatcher.pattern("/login/**")).permitAll()
                 .anyRequest().authenticated());
         
+        http.exceptionHandling(config -> config
+                .accessDeniedHandler(accessDeniedException)
+                .authenticationEntryPoint(authenticationEntryPoint));
+        
         http.httpBasic(withDefaults());
         http.csrf(AbstractHttpConfigurer::disable);
         http.headers(AbstractHttpConfigurer::disable);
         
-        http.addFilterBefore(sessionCheckFilter, SecurityContextHolderFilter.class);
+        http.addFilterBefore(exceptionHandlerFilter, SecurityContextHolderFilter.class);
+        http.addFilterBefore(sessionCheckFilter, ExceptionHandlerFilter.class);
         http.addFilter(authenticationFilter());
-        
         
         return http.build();
     }

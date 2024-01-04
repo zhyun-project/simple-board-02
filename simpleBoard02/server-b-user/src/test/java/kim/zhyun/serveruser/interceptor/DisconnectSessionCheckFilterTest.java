@@ -9,7 +9,6 @@ import kim.zhyun.serveruser.service.MemberService;
 import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,8 +54,6 @@ class DisconnectSessionCheckFilterTest {
         this.redisTemplate = redisTemplate;
     }
 
-    // TODO: disabled 처리
-    @Disabled("security exception 처리 해야됨 TT")
     @DisplayName("/login post 접근")
     @Test
     void sign_in_post_test() throws Exception {
