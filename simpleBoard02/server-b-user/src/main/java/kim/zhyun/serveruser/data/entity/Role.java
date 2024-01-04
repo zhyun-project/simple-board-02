@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Getter;
-import lombok.ToString;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -18,7 +17,7 @@ public class Role {
     private Long id;
     
     @Column(nullable = false, unique = true, updatable = false)
-    private String role;
+    private String grade;
     private String description;
     
 }

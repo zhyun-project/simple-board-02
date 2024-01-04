@@ -41,7 +41,7 @@ public class MemberServiceImpl implements MemberService {
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
-                .roles(user.getRole().getRole())
+                .roles(user.getRole().getGrade())
                 .build();
     }
     

@@ -36,7 +36,7 @@ class RoleRepositoryTest extends PrintLog<RoleRepository> {
         String roleName = RoleType.ADMIN.name();
         
         // when
-        Role role = roleRepository.findByRole(roleName);
+        Role role = roleRepository.findByGrade(roleName);
         
         // then
         assertThat(role.getRole()).isEqualToIgnoringCase(roleName);
@@ -50,7 +50,7 @@ class RoleRepositoryTest extends PrintLog<RoleRepository> {
         String roleName = "ADMINISTRATOR";
         
         // when
-        Role role = roleRepository.findByRole(roleName);
+        Role role = roleRepository.findByGrade(roleName);
         
         // then
         assertNull(role);
@@ -63,7 +63,7 @@ class RoleRepositoryTest extends PrintLog<RoleRepository> {
         String role = RoleType.ADMIN.name();
         
         // when
-        boolean exists = roleRepository.existsByRole(role);
+        boolean exists = roleRepository.existsByGrade(role);
         
         // then
         assertTrue(exists);
@@ -76,7 +76,7 @@ class RoleRepositoryTest extends PrintLog<RoleRepository> {
         String role = "ADMINISTRATOR";
         
         // when
-        boolean exists = roleRepository.existsByRole(role);
+        boolean exists = roleRepository.existsByGrade(role);
         
         // then
         assertThat(exists).isFalse();
