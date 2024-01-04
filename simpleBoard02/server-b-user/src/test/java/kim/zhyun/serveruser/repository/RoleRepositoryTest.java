@@ -39,7 +39,7 @@ class RoleRepositoryTest extends PrintLog<RoleRepository> {
         Role role = roleRepository.findByGrade(roleName);
         
         // then
-        assertThat(role.getRole()).isEqualToIgnoringCase(roleName);
+        assertThat(role.getGrade()).isEqualToIgnoringCase(roleName);
     }
     
     
