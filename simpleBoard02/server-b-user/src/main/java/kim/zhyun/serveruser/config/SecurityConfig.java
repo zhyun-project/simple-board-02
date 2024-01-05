@@ -29,6 +29,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final SecurityAuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
     private final MemberService memberService;
     
@@ -72,7 +73,7 @@ public class SecurityConfig {
     
     private AuthenticationFilter authenticationFilter() throws Exception {
         AuthenticationFilter filter = new AuthenticationFilter(memberService, jwtProvider);
-        filter.setAuthenticationManager(authenticationConfiguration.getAuthenticationManager());
+        filter.setAuthenticationManager(authenticationManager);
         return filter;
     }
     
