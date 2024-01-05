@@ -16,13 +16,15 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 import java.util.Set;
 
+import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_IN;
+import static kim.zhyun.serveruser.utils.FilterApiResponseUtil.sendMessage;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -56,11 +58,16 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
-        String username = ((User) authResult.getPrincipal()).getUsername();
-        UserDto userInfo = userService.findByEmail(username);
         String token = jwtProvider.createToken(authResult);
+        String email = authResult.getName();
+        UserDto userInfo = userService.findByEmail(email);
         
         response.addHeader(JWT_HEADER, token);
+        
+        sendMessage(response,
+                SC_OK,
+                true,
+                String.format(SUCCESS_FORMAT_SIGN_IN, userInfo.getNickname(), userInfo.getEmail()));
     }
     
 }
