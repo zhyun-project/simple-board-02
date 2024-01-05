@@ -17,7 +17,7 @@ import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
@@ -31,6 +31,8 @@ public class SignUpServiceImpl implements SignUpService {
     private final NicknameReserveService nicknameReserveService;
     private final SessionUserService sessionUserService;
     private final EmailService emailService;
+    
+    private final PasswordEncoder passwordEncoder;
     
     @Override
     public boolean availableEmail(String email, String sessionId) {
@@ -147,8 +149,8 @@ public class SignUpServiceImpl implements SignUpService {
         sessionUserService.save(sessionUser);
     }
     
-    private static String getPassword(String password) {
-        return new BCryptPasswordEncoder().encode(password);
+    private String getPassword(String password) {
+        return passwordEncoder.encode(password);
     }
     
 }
