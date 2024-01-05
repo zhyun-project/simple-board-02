@@ -22,6 +22,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (RuntimeException e) {
+            e.printStackTrace();
             sendMessage(response, SC_BAD_REQUEST, false, e.getMessage());
         }
     }
