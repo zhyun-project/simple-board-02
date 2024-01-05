@@ -32,7 +32,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JwtProvider jwtProvider;
-    private final MemberService userService;
+    private final MemberService memberService;
     
     private final SessionCheckFilter sessionCheckFilter;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
@@ -61,7 +61,8 @@ public class SecurityConfig {
         http.httpBasic(withDefaults());
         http.csrf(AbstractHttpConfigurer::disable);
         http.headers(AbstractHttpConfigurer::disable);
-        
+        http.logout(AbstractHttpConfigurer::disable);
+
         http.addFilterBefore(exceptionHandlerFilter, SecurityContextHolderFilter.class);
         http.addFilterBefore(sessionCheckFilter, ExceptionHandlerFilter.class);
         http.addFilterAt(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -71,7 +72,7 @@ public class SecurityConfig {
     }
     
     private AuthenticationFilter authenticationFilter() throws Exception {
-        AuthenticationFilter filter = new AuthenticationFilter(userService, jwtProvider);
+        AuthenticationFilter filter = new AuthenticationFilter(memberService, jwtProvider);
         filter.setAuthenticationManager(authenticationConfiguration.getAuthenticationManager());
         return filter;
     }

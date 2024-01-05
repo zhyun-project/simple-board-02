@@ -10,8 +10,11 @@ import kim.zhyun.serveruser.service.MemberService;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_OUT;
 import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_UP;
 
 
@@ -29,9 +32,19 @@ public class SignController {
         signUpService.saveMember(request.getSession().getId(), signupRequest);
 
         return ResponseEntity.ok(ApiResponse.<Void>builder()
-                        .status(true)
-                        .message(String.format(SUCCESS_FORMAT_SIGN_UP, signupRequest.getNickname()))
-                .build());
+                .status(true)
+                .message(String.format(SUCCESS_FORMAT_SIGN_UP, signupRequest.getNickname())).build());
+    }
+    
+    @Operation(summary = "로그아웃")
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request, Authentication authentication) {
+        String name = authentication.getName();
+        memberService.logout(request.getHeader(JWT_HEADER), name);
+        
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .status(true)
+                .message(String.format(SUCCESS_FORMAT_SIGN_OUT, name)).build());
     }
     
     @Operation(summary = "회원탈퇴")

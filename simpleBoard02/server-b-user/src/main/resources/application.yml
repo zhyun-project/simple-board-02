@@ -16,10 +16,12 @@ spring:
 
   sql:
     init:
+#      mode: always
       mode: never
 
   jpa:
     hibernate:
+#      ddl-auto: create
       ddl-auto: none
     defer-datasource-initialization: true
     properties:

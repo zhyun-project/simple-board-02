@@ -5,4 +5,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface MemberService extends UserDetailsService {
     UserDto findByEmail(String email);
+    void logout(String token, String email);
+    
 }

@@ -3,9 +3,10 @@ package kim.zhyun.jwt.provider;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import kim.zhyun.jwt.data.JwtConstants;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,19 +19,14 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import static kim.zhyun.jwt.data.JwtConstants.JWT_CLAIM_GRADE_SEPARATOR;
-import static kim.zhyun.jwt.data.JwtConstants.JWT_CLAIM_KEY_GRADE;
 import static kim.zhyun.jwt.data.JwtResponseMessage.*;
 
 @Slf4j
+@RequiredArgsConstructor
 @Component
 public class JwtProvider implements InitializingBean {
     
-    @Value("${token.secret}")
-    private String SECRET;
-    @Value("${token.expiration-time}")
-    private long EXPIRATION;
-    
+    private final JwtConstants jwtItems;
     private SecretKey key;
     
     /**
@@ -39,11 +35,11 @@ public class JwtProvider implements InitializingBean {
     public String createToken(Authentication authentication) {
         return Jwts.builder()
                 .subject(authentication.getName())
-                .claim(JWT_CLAIM_KEY_GRADE, authentication
+                .claim(JwtConstants.JWT_CLAIM_KEY_GRADE, authentication
                         .getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.joining(JWT_CLAIM_GRADE_SEPARATOR)))
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                        .collect(Collectors.joining(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR)))
+                .expiration(new Date(System.currentTimeMillis() + jwtItems.expiredTime))
                 .signWith(key)
                 .compact();
     }
@@ -52,12 +48,9 @@ public class JwtProvider implements InitializingBean {
      * jwt -> security context
      */
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parser()
-                .verifyWith(key).build()
-                .parseSignedClaims(token)
-                .getPayload();
+        Claims claims = getClaims(token);
         
-        var authorities = Arrays.stream(claims.get(JWT_CLAIM_KEY_GRADE).toString().split(JWT_CLAIM_GRADE_SEPARATOR))
+        var authorities = Arrays.stream(claims.get(JwtConstants.JWT_CLAIM_KEY_GRADE).toString().split(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR))
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
         
@@ -74,21 +67,37 @@ public class JwtProvider implements InitializingBean {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.info(JWT_INVALID_SIGNATURE);
+            throw new JwtException(JWT_INVALID_SIGNATURE);
         } catch (ExpiredJwtException e) {
-            log.info(JWT_EXPIRED);
+            throw new JwtException(JWT_EXPIRED);
         } catch (UnsupportedJwtException e) {
-            log.info(JWT_UNSUPPORTED);
+            throw new JwtException(JWT_UNSUPPORTED);
         } catch (IllegalArgumentException e) {
-            log.info(JWT_DECODE_FAIL);
+            throw new JwtException(JWT_DECODE_FAIL);
         }
-        return false;
     }
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtItems.secretKey);
         key = Keys.hmacShaKeyFor(keyBytes);
     }
     
+    
+    /**
+     * token에서 email 추출
+     */
+    public String getEmail(String token) {
+        return getClaims(token).getSubject();
+    }
+    
+    /**
+     * token에서 claim 추출
+     */
+    private Claims getClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(key).build()
+                .parseSignedClaims(token)
+                .getPayload();
+    }
 }
