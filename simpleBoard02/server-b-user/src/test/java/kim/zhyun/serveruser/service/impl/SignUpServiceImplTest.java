@@ -19,7 +19,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -42,6 +41,7 @@ class SignUpServiceImplTest {
     @Mock        SessionUserService sessionUserService;
     @Mock        EmailService emailService;
     @Mock        RoleRepository roleRepository;
+    @Mock        PasswordEncoder passwordEncoder;
     
     @Nested
     @DisplayName("이메일 중복 확인")
@@ -304,10 +304,6 @@ class SignUpServiceImplTest {
         private final String EMAIL_CHANGED = "test@test.com";
         private final String NICKNAME_CHANGED = "닉네임변경";
         
-        private final PasswordEncoder passwordEncoder;
-        public SignUpSave(@Autowired PasswordEncoder passwordEncoder) {
-            this.passwordEncoder = passwordEncoder;
-        }
         
         @DisplayName("실패 - 이메일 중복확인 안함")
         @Test
