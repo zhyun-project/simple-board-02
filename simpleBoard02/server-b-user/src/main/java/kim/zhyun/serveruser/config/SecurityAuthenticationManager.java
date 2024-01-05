@@ -1,5 +1,6 @@
 package kim.zhyun.serveruser.config;
 
+import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.data.UserDto;
 import kim.zhyun.serveruser.service.MemberService;
@@ -32,7 +33,10 @@ public class SecurityAuthenticationManager implements AuthenticationManager {
             throw new MemberException(SIGNIN_FAIL);
         
         return new UsernamePasswordAuthenticationToken(
-                userDto.getEmail(),
+                JwtUserDto.builder()
+                        .id(userDto.getId())
+                        .email(userDto.getEmail())
+                        .nickname(userDto.getNickname()).build(),
                 userDto.getPassword(),
                 Set.of(new SimpleGrantedAuthority(userDto.getRole().getGrade())));
     }

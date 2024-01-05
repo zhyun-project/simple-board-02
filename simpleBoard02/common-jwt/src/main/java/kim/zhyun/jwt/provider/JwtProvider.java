@@ -4,6 +4,7 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import kim.zhyun.jwt.data.JwtConstants;
+import kim.zhyun.jwt.data.JwtUserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -11,7 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import static kim.zhyun.jwt.data.JwtConstants.*;
 import static kim.zhyun.jwt.data.JwtResponseMessage.*;
 
 @Slf4j
@@ -34,11 +35,12 @@ public class JwtProvider implements InitializingBean {
      */
     public String createToken(Authentication authentication) {
         return Jwts.builder()
-                .subject(authentication.getName())
-                .claim(JwtConstants.JWT_CLAIM_KEY_GRADE, authentication
-                        .getAuthorities().stream()
+                .subject(((JwtUserDto) authentication.getPrincipal()).getEmail())
+                .claim(JWT_CLAIM_KEY_USER_GRADE,authentication.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.joining(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR)))
+                .claim(JWT_CLAIM_KEY_USER_ID,((JwtUserDto)authentication.getPrincipal()).getId())
+                .claim(JWT_CLAIM_KEY_USER_NICKNAME,((JwtUserDto)authentication.getPrincipal()).getNickname())
                 .expiration(new Date(System.currentTimeMillis() + jwtItems.expiredTime))
                 .signWith(key)
                 .compact();
@@ -50,13 +52,19 @@ public class JwtProvider implements InitializingBean {
     public Authentication getAuthentication(String token) {
         Claims claims = getClaims(token);
         
-        var authorities = Arrays.stream(claims.get(JwtConstants.JWT_CLAIM_KEY_GRADE).toString().split(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR))
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toSet());
+        Long id = claims.get(JWT_CLAIM_KEY_USER_ID, Long.class);
+        String email = claims.getSubject();
+        String nickname = claims.get(JWT_CLAIM_KEY_USER_NICKNAME, String.class);
         
-        User principal = new User(claims.getSubject(), "", authorities);
-        
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+        return new UsernamePasswordAuthenticationToken(
+                JwtUserDto.builder()
+                        .id(id)
+                        .email(email)
+                        .nickname(nickname).build(),
+                token,
+                Arrays.stream(claims.get(JWT_CLAIM_KEY_USER_GRADE).toString().split(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR))
+                        .map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toSet()));
     }
     
     /**

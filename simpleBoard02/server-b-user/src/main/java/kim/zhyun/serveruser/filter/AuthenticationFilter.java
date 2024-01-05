@@ -5,9 +5,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.data.SignInRequest;
-import kim.zhyun.serveruser.data.UserDto;
 import kim.zhyun.serveruser.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,15 +59,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
         String token = jwtProvider.createToken(authResult);
-        String email = authResult.getName();
-        UserDto userInfo = userService.findByEmail(email);
+        JwtUserDto principal = (JwtUserDto) authResult.getPrincipal();
         
         response.addHeader(JWT_HEADER, token);
         
         sendMessage(response,
                 SC_OK,
                 true,
-                String.format(SUCCESS_FORMAT_SIGN_IN, userInfo.getNickname(), userInfo.getEmail()));
+                String.format(SUCCESS_FORMAT_SIGN_IN, principal.getNickname(), principal.getEmail()));
     }
     
 }

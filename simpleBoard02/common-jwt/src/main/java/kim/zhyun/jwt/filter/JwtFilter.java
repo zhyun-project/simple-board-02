@@ -7,6 +7,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import kim.zhyun.jwt.data.JwtConstants;
+import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.jwt.storage.JwtLogoutStorage;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 
+import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.jwt.data.JwtResponseMessage.JWT_EXPIRED;
 
 @Slf4j
@@ -44,8 +46,9 @@ public class JwtFilter extends GenericFilterBean {
             Authentication authentication = provider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             
-            log.info("Security Context에 {} 인증 정보를 저장했습니다. uri: {}",
-                    authentication.getName(),
+            log.info("Security Context에 {}({}) 인증 정보를 저장했습니다. uri: {}",
+                    ((JwtUserDto) authentication.getPrincipal()).getNickname(),
+                    ((JwtUserDto) authentication.getPrincipal()).getEmail(),
                     requestURI);
         }
         
@@ -55,8 +58,8 @@ public class JwtFilter extends GenericFilterBean {
     private String getToken(HttpServletRequest request) {
         String jwt = request.getHeader(JwtConstants.JWT_HEADER);
         
-        if (StringUtils.hasText(jwt) && jwt.startsWith(JwtConstants.JWT_PREFIX)) {
-            return jwt.substring(JwtConstants.JWT_PREFIX.length());
+        if (StringUtils.hasText(jwt) && jwt.startsWith(JWT_PREFIX)) {
+            return jwt.substring(JWT_PREFIX.length());
         }
         
         return null;

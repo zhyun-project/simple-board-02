@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.serveruser.data.response.ApiResponse;
 import kim.zhyun.serveruser.data.SignupRequest;
 import kim.zhyun.serveruser.service.MemberService;
@@ -39,12 +40,12 @@ public class SignController {
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request, Authentication authentication) {
-        String name = authentication.getName();
-        memberService.logout(request.getHeader(JWT_HEADER), name);
+        JwtUserDto principal = (JwtUserDto) authentication.getPrincipal();
+        memberService.logout(request.getHeader(JWT_HEADER), principal.getEmail());
         
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .status(true)
-                .message(String.format(SUCCESS_FORMAT_SIGN_OUT, name)).build());
+                .message(String.format(SUCCESS_FORMAT_SIGN_OUT, principal.getNickname(), principal.getEmail())).build());
     }
     
     @Operation(summary = "회원탈퇴")
