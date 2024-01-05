@@ -1,12 +1,12 @@
 package kim.zhyun.jwt.filter;
 
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import kim.zhyun.jwt.data.JwtConstants;
-import kim.zhyun.jwt.exception.LogoutException;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.jwt.storage.JwtLogoutStorage;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class JwtFilter extends GenericFilterBean {
         if (StringUtils.hasText(jwt) && provider.validateToken(jwt)) {
             
             if (jwtLogoutStorage.isLogoutToken(jwt, provider.getEmail(jwt)))
-                throw new LogoutException(JWT_EXPIRED);
+                throw new JwtException(JWT_EXPIRED);
             
             Authentication authentication = provider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
