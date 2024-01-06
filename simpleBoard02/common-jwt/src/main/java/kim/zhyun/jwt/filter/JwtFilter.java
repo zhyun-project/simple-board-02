@@ -40,10 +40,10 @@ public class JwtFilter extends GenericFilterBean {
         
         if (StringUtils.hasText(jwt) && provider.validateToken(jwt)) {
             
-            if (jwtLogoutStorage.isLogoutToken(jwt, provider.getEmail(jwt)))
+            if (jwtLogoutStorage.isLogoutToken(jwt, provider.emailFrom(jwt)))
                 throw new JwtException(JWT_EXPIRED);
             
-            Authentication authentication = provider.getAuthentication(jwt);
+            Authentication authentication = provider.authenticationFrom(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             
             log.info("Security Context에 {}({}) 인증 정보를 저장했습니다. uri: {}",

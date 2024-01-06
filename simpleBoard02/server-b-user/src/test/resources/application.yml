@@ -60,10 +60,11 @@ sign-up:
     email: "EMAIL:"        # EmailAuthDto.getEmail()
     nickname: "NICKNAME:"  # NicknameDto.getNickname()
   email:
-    expire: 30
+    expire: 30 # TimeUnit: Second
   session:
     expire: 5 # TimeUnit: Minute
 
 token:
-  expiration-time: 300 # 5분
+  expiration-time: 5
+  expiration-time-unit: m # d: Day , h: Hour, m: Minute, s: Second
   secret: VGhpc2lzSnd0U2VjcmV0S2V5Rm9yU2ltcGxlQm9hcmQwMlByb2plY3RNYWRlQnlaaHl1bktpbU9yV2xndXNLaW0=

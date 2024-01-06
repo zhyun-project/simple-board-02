@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.SIGNIN_FAIL;
 
@@ -43,7 +42,7 @@ public class MemberServiceImpl implements MemberService {
         String jwt = token.substring(JWT_PREFIX.length());
         
         redisTemplate.opsForSet().add(jwt, email);
-        redisTemplate.expire(jwt, jwtItems.expiredTime, SECONDS);
+        redisTemplate.expire(jwt, jwtItems.expiredTime, jwtItems.expiredTimeUnit);
         
         SecurityContextHolder.clearContext();
     }

@@ -30,18 +30,22 @@ public class JwtProvider implements InitializingBean {
     private final JwtConstants jwtItems;
     private SecretKey key;
     
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        byte[] keyBytes = Decoders.BASE64.decode(jwtItems.secretKey);
+        key = Keys.hmacShaKeyFor(keyBytes);
+    }
+    
     /**
      * security context -> jwt
      */
-    public String createToken(Authentication authentication) {
+    public String tokenFrom(Authentication authentication) {
         return Jwts.builder()
-                .subject(((JwtUserDto) authentication.getPrincipal()).getEmail())
-                .claim(JWT_CLAIM_KEY_USER_GRADE,authentication.getAuthorities().stream()
-                        .map(GrantedAuthority::getAuthority)
-                        .collect(Collectors.joining(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR)))
-                .claim(JWT_CLAIM_KEY_USER_ID,((JwtUserDto)authentication.getPrincipal()).getId())
-                .claim(JWT_CLAIM_KEY_USER_NICKNAME,((JwtUserDto)authentication.getPrincipal()).getNickname())
-                .expiration(new Date(System.currentTimeMillis() + jwtItems.expiredTime))
+                .subject(emailFrom(authentication))
+                .claim(JWT_CLAIM_KEY_USER_GRADE, gradeFrom(authentication))
+                .claim(JWT_CLAIM_KEY_USER_ID, idFrom(authentication))
+                .claim(JWT_CLAIM_KEY_USER_NICKNAME, nicknameFrom(authentication))
+                .expiration(expiredDate())
                 .signWith(key)
                 .compact();
     }
@@ -49,8 +53,8 @@ public class JwtProvider implements InitializingBean {
     /**
      * jwt -> security context
      */
-    public Authentication getAuthentication(String token) {
-        Claims claims = getClaims(token);
+    public Authentication authenticationFrom(String token) {
+        Claims claims = claimsFrom(token);
         
         Long id = claims.get(JWT_CLAIM_KEY_USER_ID, Long.class);
         String email = claims.getSubject();
@@ -85,27 +89,74 @@ public class JwtProvider implements InitializingBean {
         }
     }
     
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        byte[] keyBytes = Decoders.BASE64.decode(jwtItems.secretKey);
-        key = Keys.hmacShaKeyFor(keyBytes);
-    }
-    
     
     /**
-     * token에서 email 추출
+     * token -> email 추출
      */
-    public String getEmail(String token) {
-        return getClaims(token).getSubject();
+    public String emailFrom(String token) {
+        return claimsFrom(token).getSubject();
     }
     
     /**
-     * token에서 claim 추출
+     * token -> id 추출
      */
-    private Claims getClaims(String token) {
+    public Long idFrom(String token) {
+        return claimsFrom(token).get(JWT_CLAIM_KEY_USER_ID, Long.class);
+    }
+    
+    /**
+     * token -> nickname 추출
+     */
+    public String nicknameFrom(String token) {
+        return claimsFrom(token).get(JWT_CLAIM_KEY_USER_NICKNAME, String.class);
+    }
+    
+    /**
+     * token -> claim 추출
+     */
+    private Claims claimsFrom(String token) {
         return Jwts.parser()
                 .verifyWith(key).build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+    
+    /**
+     * 만료일자 계산
+     */
+    private Date expiredDate() {
+        return Date.from(new Date(System.currentTimeMillis())
+                        .toInstant()
+                        .plus(jwtItems.expiredTime, jwtItems.expiredTimeUnit.toChronoUnit()));
+    }
+    
+    /**
+     * authentication -> email 추출
+     */
+    private String emailFrom(Authentication authentication) {
+        return ((JwtUserDto) authentication.getPrincipal()).getEmail();
+    }
+    
+    /**
+     * authentication -> nickname 추출
+     */
+    private String nicknameFrom(Authentication authentication) {
+        return ((JwtUserDto) authentication.getPrincipal()).getNickname();
+    }
+    
+    /**
+     * authentication -> id 추출
+     */
+    private Long idFrom(Authentication authentication) {
+        return ((JwtUserDto) authentication.getPrincipal()).getId();
+    }
+    
+    /**
+     * authentication -> 권한(grade) 추출
+     */
+    private String gradeFrom(Authentication authentication) {
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR));
     }
 }
