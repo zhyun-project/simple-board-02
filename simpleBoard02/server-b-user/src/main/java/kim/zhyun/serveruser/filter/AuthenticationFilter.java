@@ -5,9 +5,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.data.SignInRequest;
-import kim.zhyun.serveruser.data.UserDto;
 import kim.zhyun.serveruser.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,13 +15,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 import java.util.Set;
 
+import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_IN;
+import static kim.zhyun.serveruser.utils.FilterApiResponseUtil.sendMessage;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,12 +37,17 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             throws AuthenticationException {
         try {
             SignInRequest credential = new ObjectMapper().readValue(request.getInputStream(), SignInRequest.class);
+            
+            if (credential == null)
+                return SecurityContextHolder.getContext().getAuthentication();
+                
             String role = userService.findByEmail(credential.getEmail()).getRole().getGrade();
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
                             credential.getEmail(),
                             credential.getPassword(),
                             Set.of(new SimpleGrantedAuthority(role))));
+        
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -50,11 +58,15 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
-        String username = ((User) authResult.getPrincipal()).getUsername();
-        UserDto userInfo = userService.findByEmail(username);
-        String token = jwtProvider.createToken(authResult);
+        String token = jwtProvider.tokenFrom(authResult);
+        JwtUserDto principal = (JwtUserDto) authResult.getPrincipal();
         
         response.addHeader(JWT_HEADER, token);
+        
+        sendMessage(response,
+                SC_OK,
+                true,
+                String.format(SUCCESS_FORMAT_SIGN_IN, principal.getNickname(), principal.getEmail()));
     }
     
 }

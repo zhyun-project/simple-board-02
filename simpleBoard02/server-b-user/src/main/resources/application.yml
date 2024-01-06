@@ -16,10 +16,12 @@ spring:
 
   sql:
     init:
+#      mode: always
       mode: never
 
   jpa:
     hibernate:
+#      ddl-auto: create
       ddl-auto: none
     defer-datasource-initialization: true
     properties:
@@ -69,5 +71,6 @@ sign-up:
     expire: 30 # TimeUnit: Minute
 
 token:
-  expiration-time: 86400 # 1일
+  expiration-time: 1
+  expiration-time-unit: d # d: Day , h: Hour, m: Minute, s: Second
   secret: VGhpc2lzSnd0U2VjcmV0S2V5Rm9yU2ltcGxlQm9hcmQwMlByb2plY3RNYWRlQnlaaHl1bktpbU9yV2xndXNLaW0=

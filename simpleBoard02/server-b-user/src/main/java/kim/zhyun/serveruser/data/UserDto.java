@@ -28,7 +28,8 @@ public class UserDto {
         return UserDto.builder()
                 .id(source.getId())
                 .email(source.getEmail())
-                .nickname(source.getEmail())
+                .password(source.getPassword())
+                .nickname(source.getNickname())
                 .role(source.getRole()).build();
     }
     

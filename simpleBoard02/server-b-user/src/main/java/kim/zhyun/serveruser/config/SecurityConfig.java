@@ -16,8 +16,6 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
@@ -31,8 +29,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Configuration
 public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final SecurityAuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
-    private final MemberService userService;
+    private final MemberService memberService;
     
     private final SessionCheckFilter sessionCheckFilter;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
@@ -61,7 +60,9 @@ public class SecurityConfig {
         http.httpBasic(withDefaults());
         http.csrf(AbstractHttpConfigurer::disable);
         http.headers(AbstractHttpConfigurer::disable);
+        http.logout(AbstractHttpConfigurer::disable);
         
+
         http.addFilterBefore(exceptionHandlerFilter, SecurityContextHolderFilter.class);
         http.addFilterBefore(sessionCheckFilter, ExceptionHandlerFilter.class);
         http.addFilterAt(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -71,15 +72,9 @@ public class SecurityConfig {
     }
     
     private AuthenticationFilter authenticationFilter() throws Exception {
-        AuthenticationFilter filter = new AuthenticationFilter(userService, jwtProvider);
-        filter.setAuthenticationManager(authenticationConfiguration.getAuthenticationManager());
+        AuthenticationFilter filter = new AuthenticationFilter(memberService, jwtProvider);
+        filter.setAuthenticationManager(authenticationManager);
         return filter;
-    }
-    
-    
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
     
 }

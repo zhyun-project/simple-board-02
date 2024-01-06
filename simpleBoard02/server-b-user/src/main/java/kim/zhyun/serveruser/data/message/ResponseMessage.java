@@ -22,5 +22,6 @@ public class ResponseMessage {
     
     // 로그인 _ ex. 얼거스(gimwlgus@daum.net)님 로그인 되었습니다
     public static final String SUCCESS_FORMAT_SIGN_IN = "%s(%s)님 로그인 되었습니다.";
+    public static final String SUCCESS_FORMAT_SIGN_OUT = "%s(%s)님 로그아웃 되었습니다.";
     
 }

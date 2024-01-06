@@ -13,7 +13,7 @@ Content-Type: application/json
 }
 
 ### 이메일 인증 코드 검증
-GET http://localhost:8090/check/auth?code=786d75
+GET http://localhost:8090/check/auth?code=708245
 
 ### 회원가입
 POST http://localhost:8090/sign-up
@@ -36,5 +36,10 @@ Content-Type: application/json
 
 ### 유저 조회
 GET http://localhost:8090/user
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BkYXVtLm5ldCIsImdyYWRlIjoiUk9MRV9NRU1CRVIiLCJleHAiOjE3MDQzNzUwMjV9.K-R-lJ7k45P1b_4Rd7UNXOVptZSqUVZlxXMaIzEKUhLDzFnT6hZ5q3aHiNhE7CDvPz-sCtuUvHSJpThEzFxw2Q
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BkYXVtLm5ldCIsImdyYWRlIjoiUk9MRV9NRU1CRVIiLCJleHAiOjE3MDQ0NDYzNzh9.-DduDrzRr1o0zRJe3_9-HT1J542Cio9ccoR5Pa1sld0Ya98P-8E_vfTR3eHebSqK9oJODHXxON9Bbcm0ld30lw
+
+### 로그아웃
+POST http://localhost:8090/logout
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BkYXVtLm5ldCIsImdyYWRlIjoiUk9MRV9NRU1CRVIiLCJleHAiOjE3MDQ0NDYzNzh9.-DduDrzRr1o0zRJe3_9-HT1J542Cio9ccoR5Pa1sld0Ya98P-8E_vfTR3eHebSqK9oJODHXxON9Bbcm0ld30lw
+
 
