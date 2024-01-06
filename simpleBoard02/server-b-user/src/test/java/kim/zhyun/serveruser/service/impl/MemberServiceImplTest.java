@@ -1,9 +1,13 @@
 package kim.zhyun.serveruser.service.impl;
 
+import kim.zhyun.jwt.data.JwtConstants;
 import kim.zhyun.jwt.data.JwtUserDto;
+import kim.zhyun.jwt.provider.JwtProvider;
+import kim.zhyun.jwt.storage.JwtLogoutStorage;
 import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
 import kim.zhyun.serveruser.config.SecurityConfig;
+import kim.zhyun.serveruser.controller.SignController;
 import kim.zhyun.serveruser.data.SignInRequest;
 import kim.zhyun.serveruser.data.UserDto;
 import kim.zhyun.serveruser.data.entity.Role;
@@ -22,21 +26,35 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.time.Duration;
 import java.util.Optional;
+import java.util.Set;
 
+import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
+import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
+import static kim.zhyun.jwt.data.JwtResponseMessage.JWT_EXPIRED;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.SIGNIN_FAIL;
 import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
 @Import(SecurityConfig.class)
@@ -148,5 +166,120 @@ class MemberServiceImplTest {
         }
     }
     
-    
+    @DisplayName("로그아웃 로직 테스트")
+    @AutoConfigureMockMvc
+    @Nested
+    class LogoutTest {
+        
+        private final JwtConstants jwtItems;
+        private final JwtProvider jwtProvider;
+        private final JwtLogoutStorage jwtLogoutStorage;
+        private final SignController controller;
+        private final MockMvc mvc;
+        public LogoutTest(@Autowired JwtConstants jwtItems,
+                          @Autowired JwtProvider jwtProvider,
+                          @Autowired JwtLogoutStorage jwtLogoutStorage,
+                          @Autowired SignController controller,
+                          @Autowired MockMvc mvc) {
+            this.jwtItems = jwtItems;
+            this.jwtProvider = jwtProvider;
+            this.jwtLogoutStorage = jwtLogoutStorage;
+            this.controller = controller;
+            this.mvc = mvc;
+        }
+        
+        @DisplayName("로그아웃 성공")
+        @Test
+        public void success() {
+            // given
+            String username = "gimwlgus@daum.net";
+            String nickname = "zhyun";
+            String password = "1234";
+            
+            SecurityContext context = SecurityContextHolder.getContext();
+            context.setAuthentication(new UsernamePasswordAuthenticationToken(JwtUserDto.builder()
+                    .id(1L)
+                    .email(username)
+                    .nickname(nickname).build(), password, Set.of()));
+            Authentication authentication = context.getAuthentication();
+            
+            String jwt = jwtProvider.tokenFrom(authentication);
+            
+            MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+            servletRequest.setContentType(APPLICATION_JSON_VALUE);
+            servletRequest.addHeader(JWT_HEADER, JWT_PREFIX + jwt);
+            
+            // when
+            assertFalse(jwtLogoutStorage.isLogoutToken(jwt, username));
+            controller.logout(servletRequest, authentication);
+            
+            // then
+            assertTrue(jwtLogoutStorage.isLogoutToken(jwt, username));
+        }
+        
+        @DisplayName("로그아웃 후 토큰 사용 실패")
+        @Test
+        public void logout_token_health_check() throws Exception {
+            // given
+            String username = "gimwlgus@daum.net";
+            String nickname = "zhyun";
+            String password = "1234";
+            
+            SecurityContext context = SecurityContextHolder.getContext();
+            context.setAuthentication(new UsernamePasswordAuthenticationToken(JwtUserDto.builder()
+                    .id(1L)
+                    .email(username)
+                    .nickname(nickname).build(), password, Set.of()));
+            Authentication authentication = context.getAuthentication();
+            
+            String jwt = jwtProvider.tokenFrom(authentication);
+            
+            MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+            servletRequest.setContentType(APPLICATION_JSON_VALUE);
+            servletRequest.addHeader(JWT_HEADER, JWT_PREFIX + jwt);
+            
+            // when-then
+            assertFalse(jwtLogoutStorage.isLogoutToken(jwt, username));
+            controller.logout(servletRequest, authentication);
+            assertTrue(jwtLogoutStorage.isLogoutToken(jwt, username));
+            
+            mvc.perform(get("/user").header(JWT_HEADER, JWT_PREFIX + jwt))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(JWT_EXPIRED));
+        }
+        
+        @DisplayName("로그아웃 후 토큰 만료 시간 끝난 후에 redis에 남아있는지 확인")
+        @Test
+        public void logout_token_expired() throws Exception {
+            // given
+            String username = "gimwlgus@daum.net";
+            String nickname = "zhyun";
+            String password = "1234";
+            
+            SecurityContext context = SecurityContextHolder.getContext();
+            context.setAuthentication(new UsernamePasswordAuthenticationToken(JwtUserDto.builder()
+                    .id(1L)
+                    .email(username)
+                    .nickname(nickname).build(), password, Set.of()));
+            Authentication authentication = context.getAuthentication();
+            
+            String jwt = jwtProvider.tokenFrom(authentication);
+            
+            MockHttpServletRequest servletRequest = new MockHttpServletRequest();
+            servletRequest.setContentType(APPLICATION_JSON_VALUE);
+            servletRequest.addHeader(JWT_HEADER, JWT_PREFIX + jwt);
+            
+            // when
+            assertFalse(jwtLogoutStorage.isLogoutToken(jwt, username));
+            controller.logout(servletRequest, authentication);
+            assertTrue(jwtLogoutStorage.isLogoutToken(jwt, username));
+            
+            Thread.sleep(Duration.of(jwtItems.expiredTime, jwtItems.expiredTimeUnit.toChronoUnit()));
+            
+            // then
+            assertFalse(jwtLogoutStorage.isLogoutToken(jwt, username));
+        }
+        
+    }
 }
