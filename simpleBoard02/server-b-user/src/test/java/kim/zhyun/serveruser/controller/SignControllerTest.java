@@ -4,14 +4,13 @@ import kim.zhyun.serveruser.advice.SignUpException;
 import kim.zhyun.serveruser.data.SignInRequest;
 import kim.zhyun.serveruser.data.SignupRequest;
 import kim.zhyun.serveruser.data.entity.User;
-import kim.zhyun.serveruser.data.message.ExceptionMessage;
-import kim.zhyun.serveruser.data.message.ResponseMessage;
 import kim.zhyun.serveruser.data.type.RoleType;
 import kim.zhyun.serveruser.repository.RoleRepository;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,8 +22,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
@@ -311,6 +308,11 @@ class SignControllerTest {
                     .andExpect(jsonPath("$.message").value(String.format(SUCCESS_FORMAT_SIGN_IN, nickname, email)))
                     .andDo(print());
         }
+        
+        @AfterEach
+        public void clean() {
+            userRepository.deleteAll();
+        }
     }
     
     @DisplayName("로그아웃 테스트")
@@ -359,6 +361,11 @@ class SignControllerTest {
                     .andExpect(jsonPath("$.status").value(true))
                     .andExpect(jsonPath("$.message").value(String.format(SUCCESS_FORMAT_SIGN_OUT, nickname, email)))
                     .andDo(print());
+        }
+        
+        @AfterEach
+        public void clean() {
+            userRepository.deleteAll();
         }
     }
 }

@@ -19,9 +19,7 @@ import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
 import kim.zhyun.serveruser.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -164,6 +163,11 @@ class MemberServiceImplTest {
             verify(userService, times(2)).findByEmail(signInInfo.getEmail());
             assertTrue(result.getPrincipal() instanceof JwtUserDto);
         }
+        
+        @AfterEach
+        public void clean() {
+            userRepository.deleteAll();
+        }
     }
     
     @DisplayName("로그아웃 로직 테스트")
@@ -175,15 +179,18 @@ class MemberServiceImplTest {
         private final JwtProvider jwtProvider;
         private final JwtLogoutStorage jwtLogoutStorage;
         private final SignController controller;
+        private final RedisTemplate<String, String> redisTemplate;
         private final MockMvc mvc;
         public LogoutTest(@Autowired JwtConstants jwtItems,
                           @Autowired JwtProvider jwtProvider,
                           @Autowired JwtLogoutStorage jwtLogoutStorage,
+                          @Autowired RedisTemplate<String, String> redisTemplate,
                           @Autowired SignController controller,
                           @Autowired MockMvc mvc) {
             this.jwtItems = jwtItems;
             this.jwtProvider = jwtProvider;
             this.jwtLogoutStorage = jwtLogoutStorage;
+            this.redisTemplate = redisTemplate;
             this.controller = controller;
             this.mvc = mvc;
         }
@@ -281,5 +288,9 @@ class MemberServiceImplTest {
             assertFalse(jwtLogoutStorage.isLogoutToken(jwt, username));
         }
         
+        @BeforeEach
+        public void clean() {
+            redisTemplate.keys("*").forEach(redisTemplate::delete);
+        }
     }
 }
