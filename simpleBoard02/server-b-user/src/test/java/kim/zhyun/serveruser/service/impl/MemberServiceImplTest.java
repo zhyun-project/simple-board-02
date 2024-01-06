@@ -44,20 +44,20 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @SpringBootTest
 class MemberServiceImplTest {
     
-    @InjectMocks AuthenticationFilter authenticationFilter;
-    @InjectMocks SecurityAuthenticationManager authenticationManager;
-    @Mock UserRepository userRepository;
-    @Mock MemberService userService;
-    @Mock PasswordEncoder passwordEncoder;
-
-    private final RoleRepository roleRepository;
-    public MemberServiceImplTest(@Autowired RoleRepository roleRepository) {
-        this.roleRepository = roleRepository;
-    }
-    
     @DisplayName("로그인 로직 테스트")
     @Nested
     class LoginTest {
+        
+        @InjectMocks AuthenticationFilter authenticationFilter;
+        @InjectMocks SecurityAuthenticationManager authenticationManager;
+        @Mock UserRepository userRepository;
+        @Mock MemberService userService;
+        @Mock PasswordEncoder passwordEncoder;
+        
+        private final RoleRepository roleRepository;
+        public LoginTest(@Autowired RoleRepository roleRepository) {
+            this.roleRepository = roleRepository;
+        }
         
         @DisplayName("비회원 접근")
         @Test
