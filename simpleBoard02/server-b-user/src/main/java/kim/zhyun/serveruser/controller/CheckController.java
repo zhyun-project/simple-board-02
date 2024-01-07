@@ -39,20 +39,20 @@ public class CheckController {
         String sessionId = request.getSession().getId();
         
         boolean result = false;
-        String message = SIGN_UP_CHECK_VALUE_IS_EMPTY;
+        String message = RESPONSE_SIGN_UP_CHECK_VALUE_IS_EMPTY;
         
         // email 중복확인
         if (email != null) {
             result = signupService.availableEmail(email, sessionId);
-            message = result ? SIGN_UP_AVAILABLE_EMAIL
-                             : SIGN_UP_UNAVAILABLE_EMAIL;
+            message = result ? RESPONSE_SIGN_UP_AVAILABLE_EMAIL
+                             : RESPONSE_SIGN_UP_UNAVAILABLE_EMAIL;
         }
         
         // 닉네임 중복확인
         if (nickname != null) {
             result = signupService.availableNickname(nickname, sessionId);
-            message = result ? SIGN_UP_AVAILABLE_NICKNAME
-                             : SIGN_UP_UNAVAILABLE_NICKNAME;
+            message = result ? RESPONSE_SIGN_UP_AVAILABLE_NICKNAME
+                             : RESPONSE_SIGN_UP_UNAVAILABLE_NICKNAME;
         }
         
         return ResponseEntity.ok(ApiResponse.<Void>builder()
@@ -68,7 +68,7 @@ public class CheckController {
         
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .status(true)
-                .message(SEND_EMAIL_AUTH_CODE).build());
+                .message(RESPONSE_SEND_EMAIL_AUTH_CODE).build());
     }
     
     @Operation(summary = "메일 인증코드 검증")
@@ -80,7 +80,7 @@ public class CheckController {
         
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .status(true)
-                .message(VERIFY_EMAIL_AUTH_SUCCESS).build());
+                .message(RESPONSE_VERIFY_EMAIL_AUTH_SUCCESS).build());
     }
     
 }

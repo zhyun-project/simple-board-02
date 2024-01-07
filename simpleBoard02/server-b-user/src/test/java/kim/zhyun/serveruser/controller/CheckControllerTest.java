@@ -55,7 +55,7 @@ class CheckControllerTest {
         mvc.perform(get("/check"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("status").value(false))
-                .andExpect(jsonPath("message").value(SIGN_UP_CHECK_VALUE_IS_EMPTY))
+                .andExpect(jsonPath("message").value(RESPONSE_SIGN_UP_CHECK_VALUE_IS_EMPTY))
                 .andDo(print());
         
         verify(signupService, times(0)).availableEmail(anyString(), anyString());
@@ -76,7 +76,7 @@ class CheckControllerTest {
             mvc.perform(get("/check").param("nickname", NICKNAME).session(session))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("status").value(true))
-                    .andExpect(jsonPath("message").value(SIGN_UP_AVAILABLE_NICKNAME))
+                    .andExpect(jsonPath("message").value(RESPONSE_SIGN_UP_AVAILABLE_NICKNAME))
                     .andDo(print());
         }
         
@@ -91,7 +91,7 @@ class CheckControllerTest {
                             .session(session))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("status").value(false))
-                    .andExpect(jsonPath("message").value(SIGN_UP_UNAVAILABLE_NICKNAME))
+                    .andExpect(jsonPath("message").value(RESPONSE_SIGN_UP_UNAVAILABLE_NICKNAME))
                     .andDo(print());
             
             verify(signupService, times(0)).availableEmail(EMAIL, sessionId);
@@ -127,7 +127,7 @@ class CheckControllerTest {
             mvc.perform(get("/check").param("email", EMAIL))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("status").value(true))
-                    .andExpect(jsonPath("message").value(SIGN_UP_AVAILABLE_EMAIL))
+                    .andExpect(jsonPath("message").value(RESPONSE_SIGN_UP_AVAILABLE_EMAIL))
                     .andDo(print());
             
             verify(signupService, times(1)).availableEmail(anyString(), anyString());
@@ -142,7 +142,7 @@ class CheckControllerTest {
             mvc.perform(get("/check").param("email", EMAIL))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("status").value(false))
-                    .andExpect(jsonPath("message").value(SIGN_UP_UNAVAILABLE_EMAIL))
+                    .andExpect(jsonPath("message").value(RESPONSE_SIGN_UP_UNAVAILABLE_EMAIL))
                     .andDo(print());
             
             verify(signupService, times(1)).availableEmail(anyString(), anyString());
@@ -281,7 +281,7 @@ class CheckControllerTest {
                             .session(session))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
-                    .andExpect(jsonPath("$.message").value(SEND_EMAIL_AUTH_CODE))
+                    .andExpect(jsonPath("$.message").value(RESPONSE_SEND_EMAIL_AUTH_CODE))
                     .andDo(print());
             
             verify(signupService, times(1)).sendEmailAuthCode(sessionId, given);
@@ -373,7 +373,7 @@ class CheckControllerTest {
                             .session(session))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
-                    .andExpect(jsonPath("$.message").value(VERIFY_EMAIL_AUTH_SUCCESS))
+                    .andExpect(jsonPath("$.message").value(RESPONSE_VERIFY_EMAIL_AUTH_SUCCESS))
                     .andDo(print());
             
             verify(signupService, times(1)).verifyEmailAuthCode(sessionId, code);

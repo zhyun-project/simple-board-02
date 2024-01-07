@@ -26,8 +26,8 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
-import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_IN;
-import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_OUT;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_IN;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_OUT;
 import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
@@ -305,7 +305,7 @@ class SignControllerTest {
                             .content(new ObjectMapper().writeValueAsString(signInInfo)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
-                    .andExpect(jsonPath("$.message").value(String.format(SUCCESS_FORMAT_SIGN_IN, nickname, email)))
+                    .andExpect(jsonPath("$.message").value(String.format(RESPONSE_SUCCESS_FORMAT_SIGN_IN, nickname, email)))
                     .andDo(print());
         }
         
@@ -359,7 +359,7 @@ class SignControllerTest {
             mvc.perform(post("/logout").header(JWT_HEADER, jwt))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
-                    .andExpect(jsonPath("$.message").value(String.format(SUCCESS_FORMAT_SIGN_OUT, nickname, email)))
+                    .andExpect(jsonPath("$.message").value(String.format(RESPONSE_SUCCESS_FORMAT_SIGN_OUT, nickname, email)))
                     .andDo(print());
         }
         

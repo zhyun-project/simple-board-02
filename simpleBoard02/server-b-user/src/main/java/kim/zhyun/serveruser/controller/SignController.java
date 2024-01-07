@@ -15,8 +15,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
-import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_OUT;
-import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_UP;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_OUT;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_UP;
 
 
 @Tag(name = "회원가입, 회원탈퇴 API")
@@ -34,7 +34,7 @@ public class SignController {
 
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .status(true)
-                .message(String.format(SUCCESS_FORMAT_SIGN_UP, signupRequest.getNickname())).build());
+                .message(String.format(RESPONSE_SUCCESS_FORMAT_SIGN_UP, signupRequest.getNickname())).build());
     }
     
     @Operation(summary = "로그아웃")
@@ -45,7 +45,7 @@ public class SignController {
         
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .status(true)
-                .message(String.format(SUCCESS_FORMAT_SIGN_OUT, principal.getNickname(), principal.getEmail())).build());
+                .message(String.format(RESPONSE_SUCCESS_FORMAT_SIGN_OUT, principal.getNickname(), principal.getEmail())).build());
     }
     
     @Operation(summary = "회원탈퇴")
