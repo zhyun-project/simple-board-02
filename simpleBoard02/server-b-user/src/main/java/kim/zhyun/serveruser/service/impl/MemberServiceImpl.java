@@ -1,27 +1,31 @@
 package kim.zhyun.serveruser.service.impl;
 
+import io.netty.util.internal.StringUtil;
 import kim.zhyun.jwt.data.JwtConstants;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.data.UserDto;
+import kim.zhyun.serveruser.data.UserUpdateRequest;
+import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.data.entity.User;
 import kim.zhyun.serveruser.data.response.UserResponse;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.service.MemberService;
+import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
 import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_NOT_FOUND;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_SIGNIN_FAIL;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
 import static org.springframework.data.domain.Sort.Order.asc;
 
 @RequiredArgsConstructor
@@ -31,6 +35,8 @@ public class MemberServiceImpl implements MemberService {
     private final RedisTemplate<String, String> redisTemplate;
     private final JwtProvider jwtProvider;
     private final JwtConstants jwtItems;
+    private final PasswordEncoder passwordEncoder;
+    private final SessionUserService sessionUserService;
     
     @Override
     public List<UserResponse> findAll() {
@@ -68,6 +74,36 @@ public class MemberServiceImpl implements MemberService {
         redisTemplate.expire(jwt, jwtItems.expiredTime, jwtItems.expiredTimeUnit);
         
         SecurityContextHolder.clearContext();
+    }
+    
+    @Override
+    public UserResponse updateUserInfo(String sessionId, UserUpdateRequest request) {
+        Optional<User> userContainer = userRepository.findById(request.getId());
+        
+        if (userContainer.isEmpty())
+            throw new MemberException(EXCEPTION_NOT_FOUND);
+        
+        User user = userContainer.get();
+        
+        // 닉네임 업데이트
+        if (!StringUtil.isNullOrEmpty(request.getNickname())) {
+            SessionUser sessionUser = sessionUserService.findById(sessionId);
+            
+            // 닉네임 중복확인 체크
+            if (sessionUser.getNickname() == null
+                    || !sessionUser.getNickname().equals(request.getNickname()))
+                throw new MemberException(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK);
+            
+            user.setNickname(request.getNickname());
+        }
+        
+        // 비밀번호 업데이트
+        if (!StringUtil.isNullOrEmpty(request.getPassword())) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+        
+        sessionUserService.deleteById(sessionId);
+        return UserResponse.from(userRepository.save(user));
     }
     
     @Override

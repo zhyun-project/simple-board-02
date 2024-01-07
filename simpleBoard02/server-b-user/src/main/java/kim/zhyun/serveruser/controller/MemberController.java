@@ -2,7 +2,10 @@ package kim.zhyun.serveruser.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import kim.zhyun.serveruser.data.UserUpdateRequest;
 import kim.zhyun.serveruser.data.response.ApiResponse;
+import kim.zhyun.serveruser.data.response.UserResponse;
 import kim.zhyun.serveruser.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -11,9 +14,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_USER_REFERENCE_ALL;
-import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_USER_REFERENCE_ME;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.*;
 import static kim.zhyun.serveruser.data.type.RoleType.TYPE_ADMIN;
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 
 
 @Tag(name = "계정 조회, 계정 정보 수정, 계정 권한 수정 API")
@@ -44,10 +48,16 @@ public class MemberController {
                 .result(memberService.findById(id)).build());
     }
     
-    @Operation(summary = "본인 계정 정보 수정")
+    @Operation(summary = "본인 계정 정보 수정 (닉네임, 비밀번호만 변경)")
+    @PreAuthorize("#request.email == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).email")
     @PutMapping("/{id}")
-    public void updateById() {
-    
+    public ResponseEntity<Object> updateById(HttpServletRequest http, @RequestBody UserUpdateRequest request) {
+        UserResponse savedUser = memberService.updateUserInfo(http.getSession().getId(), request);
+        
+        return ResponseEntity.created(fromCurrentRequestUri().build().toUri())
+                .body(ApiResponse.builder()
+                        .status(true)
+                        .message(String.format(RESPONSE_USER_INFO_UPDATE, savedUser.getNickname())).build());
     }
     
     @Operation(summary = "계정 권한 수정")
