@@ -20,6 +20,11 @@ public class JwtUserDto {
     private Long id;
     private String email;
     private String nickname;
+
+    /**  @apiNote ⚠️ `Authentication.principal` 객체에만 사용  */
+    public static JwtUserDto from(Object principal) {
+        return (JwtUserDto) principal;
+    }
     
     @Override
     public boolean equals(Object o) {

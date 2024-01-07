@@ -5,6 +5,7 @@ import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.data.UserDto;
 import kim.zhyun.serveruser.data.entity.User;
+import kim.zhyun.serveruser.data.response.UserResponse;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_NOT_FOUND;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_SIGNIN_FAIL;
 import static org.springframework.data.domain.Sort.Order.asc;
 
@@ -31,11 +33,21 @@ public class MemberServiceImpl implements MemberService {
     private final JwtConstants jwtItems;
     
     @Override
-    public List<UserDto> findAll() {
+    public List<UserResponse> findAll() {
         return userRepository.findAll(Sort.by(asc("id")))
                 .stream()
-                .map(UserDto::from)
+                .map(UserResponse::from)
                 .toList();
+    }
+    
+    @Override
+    public UserResponse findById(long id) {
+        Optional<User> userContainer = userRepository.findById(id);
+        
+        if (userContainer.isEmpty())
+            throw new MemberException(EXCEPTION_NOT_FOUND);
+        
+        return UserResponse.from(userContainer.get());
     }
     
     @Override
