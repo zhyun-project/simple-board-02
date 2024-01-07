@@ -1,9 +1,9 @@
 package kim.zhyun.serveruser.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import kim.zhyun.jwt.filter.JwtFilter;
 import kim.zhyun.jwt.provider.JwtProvider;
-import kim.zhyun.serveruser.advice.security.SecurityAccessDeniedException;
-import kim.zhyun.serveruser.advice.security.SecurityAuthenticationEntryPoint;
+import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.filter.AuthenticationFilter;
 import kim.zhyun.serveruser.filter.ExceptionHandlerFilter;
 import kim.zhyun.serveruser.filter.SessionCheckFilter;
@@ -22,6 +22,10 @@ import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
+import static jakarta.servlet.http.HttpServletResponse.SC_FORBIDDEN;
+import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_AUTHENTICATION;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_PERMISSION;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @RequiredArgsConstructor
@@ -36,9 +40,7 @@ public class SecurityConfig {
     private final SessionCheckFilter sessionCheckFilter;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
     private final JwtFilter jwtFilter;
-    
-    private final SecurityAccessDeniedException accessDeniedException;
-    private final SecurityAuthenticationEntryPoint authenticationEntryPoint;
+
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
@@ -54,8 +56,16 @@ public class SecurityConfig {
                 .anyRequest().authenticated());
         
         http.exceptionHandling(config -> config
-                .accessDeniedHandler(accessDeniedException)
-                .authenticationEntryPoint(authenticationEntryPoint));
+                .accessDeniedHandler((request, response, exception) -> {
+                    // 접근할 수 없는 권한
+                    response.sendError(SC_UNAUTHORIZED, EXCEPTION_PERMISSION);
+                    throw new MemberException(EXCEPTION_PERMISSION);
+                })
+                .authenticationEntryPoint((request, response, exception) -> {
+                    // 유효한 자격증명을 제공하지 않고 접근하려 할때
+                    response.sendError(SC_FORBIDDEN, EXCEPTION_AUTHENTICATION);
+                    throw new MemberException(EXCEPTION_AUTHENTICATION);
+                }));
         
         http.httpBasic(withDefaults());
         http.csrf(AbstractHttpConfigurer::disable);
