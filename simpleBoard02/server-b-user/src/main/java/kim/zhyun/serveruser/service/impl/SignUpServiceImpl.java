@@ -18,10 +18,15 @@ import kim.zhyun.serveruser.service.NicknameReserveService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_ADMIN;
 import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
 
 @RequiredArgsConstructor
@@ -36,6 +41,8 @@ public class SignUpServiceImpl implements SignUpService {
     private final JwtUserInfoRepository jwtUserInfoRepository;
     
     private final PasswordEncoder passwordEncoder;
+    
+    @Value("${sign-up.admin}") private List<String> adminEmails;
     
     @Override
     public boolean availableEmail(String email, String sessionId) {
@@ -120,7 +127,9 @@ public class SignUpServiceImpl implements SignUpService {
                 || !sessionUser.getNickname().equals(request.getNickname()))
             throw new SignUpException(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK);
         
-        Role role = roleRepository.findByGrade(TYPE_MEMBER);
+        
+        Role role = roleRepository.findByGrade(roleTypeFrom(sessionUser.getEmail()));
+        
         User saved = userRepository.save(User.builder()
                 .email(request.getEmail())
                 .nickname(request.getNickname())
@@ -132,6 +141,14 @@ public class SignUpServiceImpl implements SignUpService {
         jwtUserInfoUpdate(saved);
     }
     
+    
+    /**
+     * admin 유저를 구분하기 위한 메서드
+     */
+    private String roleTypeFrom(String email) {
+        String admins = Strings.join(adminEmails, ',');
+        return admins == null || !admins.contains(email) ? TYPE_MEMBER : TYPE_ADMIN;
+    }
     
     /**
      * redis user info 저장소 업데이트

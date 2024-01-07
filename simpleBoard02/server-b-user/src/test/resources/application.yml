@@ -59,6 +59,9 @@ sign-up:
     expire: 30 # TimeUnit: Second
   session:
     expire: 5 # TimeUnit: Minute
+  admin:
+    gimwlgus@gmail.com,
+    gimwlgus@daum.net
 
 token:
   expiration-time: 30
