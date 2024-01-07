@@ -3,6 +3,7 @@ package kim.zhyun.serveruser.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import kim.zhyun.serveruser.data.UserUpdateRequest;
 import kim.zhyun.serveruser.data.response.ApiResponse;
 import kim.zhyun.serveruser.data.response.UserResponse;
@@ -51,7 +52,8 @@ public class MemberController {
     @Operation(summary = "본인 계정 정보 수정 (닉네임, 비밀번호만 변경)")
     @PreAuthorize("#request.email == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).email")
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateById(HttpServletRequest http, @RequestBody UserUpdateRequest request) {
+    public ResponseEntity<Object> updateById(HttpServletRequest http,
+                                             @Valid @RequestBody UserUpdateRequest request) {
         UserResponse savedUser = memberService.updateUserInfo(http.getSession().getId(), request);
         
         return ResponseEntity.created(fromCurrentRequestUri().build().toUri())

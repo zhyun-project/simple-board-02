@@ -89,7 +89,7 @@ public class MemberServiceImpl implements MemberService {
         User user = userContainer.get();
         
         // 닉네임 업데이트
-        if (!StringUtil.isNullOrEmpty(request.getNickname())) {
+        if (!StringUtil.isNullOrEmpty(request.getNickname()) && !request.getNickname().equals(user.getNickname())) {
             SessionUser sessionUser = sessionUserService.findById(sessionId);
             
             // 닉네임 중복확인 체크
