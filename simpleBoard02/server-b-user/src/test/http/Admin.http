@@ -27,6 +27,16 @@ Content-Type: application/json
   "password": "1234"
 }
 
+### 유저 권한 수정
+PUT http://localhost:8090/user/role
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BkYXVtLm5ldCIsImlkIjoxLCJleHAiOjE3MDQ3MzEwNDR9.EiAJOaAa37BcXe6bkd189cSuYaggUgURMlxNa8gjtgzBAN7-8vuJpMQvDZ1bVWudorhvEla18Cae7s3lThqadg
+Content-Type: application/json
+
+{
+  "id": 2,
+  "role": "MEMBER"
+}
+
 ### 로그아웃
 POST http://localhost:8090/logout
 X-TOKEN: Bearer
