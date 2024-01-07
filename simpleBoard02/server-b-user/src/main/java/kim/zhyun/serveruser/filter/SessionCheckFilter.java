@@ -24,8 +24,10 @@ public class SessionCheckFilter extends OncePerRequestFilter {
         String requestURI = request.getRequestURI();
         String sessionId = request.getSession().getId();
         
-        // 회원가입, 닉네임, 이메일 중복확인 end point 접근
-        if (requestURI.contains("sign-up") || requestURI.contains("check")) {
+        // 회원가입, 유저, 닉네임, 이메일 중복확인 end point 접근
+        if (requestURI.contains("sign-up")
+                || requestURI.contains("check")
+                || requestURI.contains("user")) {
             connectProcess(sessionId);
         }
         // 이외의 end point 접근
