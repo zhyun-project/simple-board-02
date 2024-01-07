@@ -38,7 +38,7 @@ public class SecurityAuthenticationManager implements AuthenticationManager {
                         .email(userDto.getEmail())
                         .nickname(userDto.getNickname()).build(),
                 userDto.getPassword(),
-                Set.of(new SimpleGrantedAuthority(userDto.getRole().getGrade())));
+                authentication.getAuthorities());
     }
     
 }

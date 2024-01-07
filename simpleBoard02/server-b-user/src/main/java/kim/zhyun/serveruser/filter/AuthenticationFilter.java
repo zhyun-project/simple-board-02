@@ -47,7 +47,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                     new UsernamePasswordAuthenticationToken(
                             credential.getEmail(),
                             credential.getPassword(),
-                            Set.of(new SimpleGrantedAuthority(role))));
+                            Set.of(new SimpleGrantedAuthority("ROLE_" + role))));
         
         } catch (IOException e) {
             throw new RuntimeException(EXCEPTION_REQUIRED_REQUEST_BODY);
