@@ -7,7 +7,6 @@ import kim.zhyun.serveruser.data.EmailAuthDto;
 import kim.zhyun.serveruser.data.NicknameDto;
 import kim.zhyun.serveruser.data.SignupRequest;
 import kim.zhyun.serveruser.data.entity.SessionUser;
-import kim.zhyun.serveruser.data.type.RoleType;
 import kim.zhyun.serveruser.repository.RoleRepository;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.service.EmailService;
@@ -23,6 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -323,7 +323,7 @@ class SignUpServiceImplTest {
                     SignUpException.class,
                     () -> signupService.saveMember(SESSION_ID, signupRequest));
             
-            verify(roleRepository, times(0)).findByGrade(RoleType.MEMBER.name());
+            verify(roleRepository, times(0)).findByGrade(TYPE_MEMBER);
             verify(sessionUserService, times(0)).deleteById(SESSION_ID);
         }
         @DisplayName("실패 - 이메일 불일치")
@@ -344,7 +344,7 @@ class SignUpServiceImplTest {
                     SignUpException.class,
                     () -> signupService.saveMember(SESSION_ID, signupRequest));
             
-            verify(roleRepository, times(0)).findByGrade(RoleType.MEMBER.name());
+            verify(roleRepository, times(0)).findByGrade(TYPE_MEMBER);
             verify(sessionUserService, times(0)).deleteById(SESSION_ID);
         }
         
@@ -366,7 +366,7 @@ class SignUpServiceImplTest {
                     SignUpException.class,
                     () -> signupService.saveMember(SESSION_ID, signupRequest));
             
-            verify(roleRepository, times(0)).findByGrade(RoleType.MEMBER.name());
+            verify(roleRepository, times(0)).findByGrade(TYPE_MEMBER);
             verify(sessionUserService, times(0)).deleteById(SESSION_ID);
         }
         
@@ -387,7 +387,7 @@ class SignUpServiceImplTest {
             signupService.saveMember(SESSION_ID, signupRequest);
             
             
-            verify(roleRepository, times(1)).findByGrade(RoleType.MEMBER.name());
+            verify(roleRepository, times(1)).findByGrade(TYPE_MEMBER);
             verify(sessionUserService, times(1)).deleteById(SESSION_ID);
         }
         

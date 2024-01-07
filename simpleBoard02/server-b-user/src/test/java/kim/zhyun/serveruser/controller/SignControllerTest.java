@@ -4,7 +4,6 @@ import kim.zhyun.serveruser.advice.SignUpException;
 import kim.zhyun.serveruser.data.SignInRequest;
 import kim.zhyun.serveruser.data.SignupRequest;
 import kim.zhyun.serveruser.data.entity.User;
-import kim.zhyun.serveruser.data.type.RoleType;
 import kim.zhyun.serveruser.repository.RoleRepository;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
@@ -29,6 +28,7 @@ import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
 import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_IN;
 import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_OUT;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -267,7 +267,7 @@ class SignControllerTest {
                     .email(email)
                     .password(passwordEncoder.encode(password))
                     .nickname(nickname)
-                    .role(roleRepository.findByGrade(RoleType.MEMBER.name())).build());
+                    .role(roleRepository.findByGrade(TYPE_MEMBER)).build());
             
             String passwordFault = "4321";
             SignInRequest signInInfo = SignInRequest.of(email, passwordFault);
@@ -295,7 +295,7 @@ class SignControllerTest {
                     .email(email)
                     .password(passwordEncoder.encode(password))
                     .nickname(nickname)
-                    .role(roleRepository.findByGrade(RoleType.MEMBER.name())).build());
+                    .role(roleRepository.findByGrade(TYPE_MEMBER)).build());
             
             SignInRequest signInInfo = SignInRequest.of(email, password);
             
@@ -342,7 +342,7 @@ class SignControllerTest {
                     .email(email)
                     .password(passwordEncoder.encode(password))
                     .nickname(nickname)
-                    .role(roleRepository.findByGrade(RoleType.MEMBER.name())).build());
+                    .role(roleRepository.findByGrade(TYPE_MEMBER)).build());
             
             SignInRequest signInInfo = SignInRequest.of(email, password);
             

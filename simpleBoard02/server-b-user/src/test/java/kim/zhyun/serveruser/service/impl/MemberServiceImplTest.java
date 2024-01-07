@@ -12,7 +12,6 @@ import kim.zhyun.serveruser.data.SignInRequest;
 import kim.zhyun.serveruser.data.UserDto;
 import kim.zhyun.serveruser.data.entity.Role;
 import kim.zhyun.serveruser.data.entity.User;
-import kim.zhyun.serveruser.data.type.RoleType;
 import kim.zhyun.serveruser.filter.AuthenticationFilter;
 import kim.zhyun.serveruser.repository.RoleRepository;
 import kim.zhyun.serveruser.repository.UserRepository;
@@ -46,6 +45,7 @@ import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.jwt.data.JwtResponseMessage.JWT_EXPIRED;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.SIGNIN_FAIL;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -102,7 +102,7 @@ class MemberServiceImplTest {
         public void member_password_fail() throws Exception {
             // given
             SignInRequest signInInfo = SignInRequest.of("asdsad@gmail.com", "qwer");
-            Role role = roleRepository.findByGrade(RoleType.MEMBER.name());
+            Role role = roleRepository.findByGrade(TYPE_MEMBER);
             User member = User.builder()
                     .id(1L)
                     .email(signInInfo.getEmail())
@@ -135,7 +135,7 @@ class MemberServiceImplTest {
         public void member_password_success() throws Exception {
             // given-when
             SignInRequest signInInfo = SignInRequest.of("asdsad@gmail.com", "qwer");
-            Role role = roleRepository.findByGrade(RoleType.MEMBER.name());
+            Role role = roleRepository.findByGrade(TYPE_MEMBER);
             User member = User.builder()
                     .id(1L)
                     .email(signInInfo.getEmail())

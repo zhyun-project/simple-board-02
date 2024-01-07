@@ -9,7 +9,6 @@ import kim.zhyun.serveruser.data.SignupRequest;
 import kim.zhyun.serveruser.data.entity.Role;
 import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.data.entity.User;
-import kim.zhyun.serveruser.data.type.RoleType;
 import kim.zhyun.serveruser.repository.RoleRepository;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.service.EmailService;
@@ -21,6 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
 
 @RequiredArgsConstructor
 @Service
@@ -117,7 +117,7 @@ public class SignUpServiceImpl implements SignUpService {
                 || !sessionUser.getNickname().equals(request.getNickname()))
             throw new SignUpException(REQUIRE_NICKNAME_DUPLICATE_CHECK);
         
-        Role role = roleRepository.findByGrade(RoleType.MEMBER.name());
+        Role role = roleRepository.findByGrade(TYPE_MEMBER);
         userRepository.save(User.builder()
                         .email(request.getEmail())
                         .nickname(request.getNickname())
