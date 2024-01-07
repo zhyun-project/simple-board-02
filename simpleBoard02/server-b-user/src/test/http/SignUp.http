@@ -24,39 +24,3 @@ Content-Type: application/json
   "nickname": "얼거s",
   "password": "1234"
 }
-
-### 로그인
-POST http://localhost:8090/login
-Content-Type: application/json
-
-{
-  "email": "gimwlgus@kakao.com",
-  "password": "4321"
-}
-
-### 유저 조회
-GET http://localhost:8090/user
-#X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BkYXVtLm5ldCIsImlkIjoxLCJleHAiOjE3MDQ3MzEwNDR9.EiAJOaAa37BcXe6bkd189cSuYaggUgURMlxNa8gjtgzBAN7-8vuJpMQvDZ1bVWudorhvEla18Cae7s3lThqadg
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MiwiZXhwIjoxNzA0NzMyMDYxfQ.i9KI9ujmCLkitGOu4soJC75P-b-X6LPg0AAJ9Ap8Wsr0X_FqbPSKjbUK7NkUvurg_CZjCqziPKiefdf5sdVOqg
-
-### 유저 조회
-GET http://localhost:8090/user/2
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MiwiZXhwIjoxNzA0NzMyMDYxfQ.i9KI9ujmCLkitGOu4soJC75P-b-X6LPg0AAJ9Ap8Wsr0X_FqbPSKjbUK7NkUvurg_CZjCqziPKiefdf5sdVOqg
-
-### 유저 정보 수정
-PUT http://localhost:8090/user/2
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MiwiZXhwIjoxNzA0NzMyMDYxfQ.i9KI9ujmCLkitGOu4soJC75P-b-X6LPg0AAJ9Ap8Wsr0X_FqbPSKjbUK7NkUvurg_CZjCqziPKiefdf5sdVOqg
-Content-Type: application/json
-
-{
-  "id": 2,
-  "email": "gimwlgus@kakao.com",
-  "nickname": "얼구스",
-  "password": "1234"
-}
-
-### 로그아웃
-POST http://localhost:8090/logout
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MiwiZXhwIjoxNzA0NzMxMTQ0fQ.X0djopsrNrXyIJfiNu_GK19HQN5ytXjdI5ns8GCk35ZPoSoQJQQvZxn00h89yixxUxtNN7peiNRLIsyTvXWiig
-
-

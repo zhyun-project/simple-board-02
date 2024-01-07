@@ -1,0 +1,34 @@
+### 로그인
+POST http://localhost:8090/login
+Content-Type: application/json
+
+{
+  "email": "gimwlgus@kakao.com",
+  "password": "1234"
+}
+
+### 유저 조회
+GET http://localhost:8090/user
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MiwiZXhwIjoxNzA0NzMyMDYxfQ.i9KI9ujmCLkitGOu4soJC75P-b-X6LPg0AAJ9Ap8Wsr0X_FqbPSKjbUK7NkUvurg_CZjCqziPKiefdf5sdVOqg
+
+### 유저 조회
+GET http://localhost:8090/user/2
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MiwiZXhwIjoxNzA0NzMyMDYxfQ.i9KI9ujmCLkitGOu4soJC75P-b-X6LPg0AAJ9Ap8Wsr0X_FqbPSKjbUK7NkUvurg_CZjCqziPKiefdf5sdVOqg
+
+### 유저 정보 수정
+PUT http://localhost:8090/user/2
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MiwiZXhwIjoxNzA0NzMyMDYxfQ.i9KI9ujmCLkitGOu4soJC75P-b-X6LPg0AAJ9Ap8Wsr0X_FqbPSKjbUK7NkUvurg_CZjCqziPKiefdf5sdVOqg
+Content-Type: application/json
+
+{
+  "id": 2,
+  "email": "gimwlgus@kakao.com",
+  "nickname": "얼구스",
+  "password": "1234"
+}
+
+### 로그아웃
+POST http://localhost:8090/logout
+X-TOKEN: Bearer
+
+
