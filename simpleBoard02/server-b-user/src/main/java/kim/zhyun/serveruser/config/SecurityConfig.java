@@ -58,12 +58,10 @@ public class SecurityConfig {
         http.exceptionHandling(config -> config
                 .accessDeniedHandler((request, response, exception) -> {
                     // 접근할 수 없는 권한
-                    response.sendError(SC_UNAUTHORIZED, EXCEPTION_PERMISSION);
                     throw new MemberException(EXCEPTION_PERMISSION);
                 })
                 .authenticationEntryPoint((request, response, exception) -> {
                     // 유효한 자격증명을 제공하지 않고 접근하려 할때
-                    response.sendError(SC_FORBIDDEN, EXCEPTION_AUTHENTICATION);
                     throw new MemberException(EXCEPTION_AUTHENTICATION);
                 }));
         
