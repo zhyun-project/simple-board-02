@@ -24,4 +24,8 @@ public class ResponseMessage {
     public static final String SUCCESS_FORMAT_SIGN_IN = "%s(%s)님 로그인 되었습니다.";
     public static final String SUCCESS_FORMAT_SIGN_OUT = "%s(%s)님 로그아웃 되었습니다.";
     
+    // 계정 관련
+    public static final String USER_REFERENCE_ALL = "전체 계정 상세 조회";
+    public static final String USER_REFERENCE_ME = "계정 상세 조회";
+    
 }

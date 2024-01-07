@@ -19,7 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.MAIL_SEND_FAIL;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_MAIL_SEND_FAIL;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -51,7 +51,7 @@ public class EmailServiceImpl implements EmailService {
             saveEmailAuthCode(saveEmailInfo);
             
         } catch (Exception e) {
-            throw new MailAuthException(MAIL_SEND_FAIL);
+            throw new MailAuthException(EXCEPTION_MAIL_SEND_FAIL);
         }
     }
     

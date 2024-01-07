@@ -104,9 +104,9 @@ class CheckControllerTest {
             mvc.perform(get("/check").param("nickname", ""))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
-                    .andExpect(jsonPath("$.message").value(VALID_EXCEPTION))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_VALID_FORMAT))
                     .andExpect(jsonPath("$.result.[0].field").value("nickname"))
-                    .andExpect(jsonPath("$.result.[0].message").value(VALID_NICKNAME_EXCEPTION_MESSAGE))
+                    .andExpect(jsonPath("$.result.[0].message").value(EXCEPTION_VALID_NICKNAME_FORMAT))
                     .andDo(print());
             
             verify(signupService, times(0)).availableEmail(anyString(), anyString());
@@ -155,7 +155,7 @@ class CheckControllerTest {
             mvc.perform(get("/check").param("email", ""))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
-                    .andExpect(jsonPath("$.message").value(VALID_EXCEPTION))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_VALID_FORMAT))
                     .andExpect(jsonPath("$.result.[0].field").value("email"))
                     .andExpect(jsonPath("$.result.[0].message").value(EMAIL_VALID_EXCEPTION_MESSAGE))
                     .andDo(print());
@@ -170,7 +170,7 @@ class CheckControllerTest {
             mvc.perform(get("/check").param("email", "오호@."))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
-                    .andExpect(jsonPath("$.message").value(VALID_EXCEPTION))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_VALID_FORMAT))
                     .andExpect(jsonPath("$.result.[0].field").value("email"))
                     .andExpect(jsonPath("$.result.[0].message").value(EMAIL_VALID_EXCEPTION_MESSAGE))
                     .andDo(print());
@@ -192,7 +192,7 @@ class CheckControllerTest {
                             .contentType(APPLICATION_JSON))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
-                    .andExpect(jsonPath("$.message").value(REQUIRED_REQUEST_BODY))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_REQUIRED_REQUEST_BODY))
                     .andDo(print());
             
             verify(signupService, times(0)).sendEmailAuthCode("", null);
@@ -210,7 +210,7 @@ class CheckControllerTest {
                             .content(mapper.writeValueAsString(given)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
-                    .andExpect(jsonPath("$.message").value(VALID_EXCEPTION))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_VALID_FORMAT))
                     .andExpect(jsonPath("$.result.[0].field").value("email"))
                     .andExpect(jsonPath("$.result.[0].message").value(EMAIL_VALID_EXCEPTION_MESSAGE))
                     .andDo(print());
@@ -230,7 +230,7 @@ class CheckControllerTest {
                             .content(mapper.writeValueAsString(given)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
-                    .andExpect(jsonPath("$.message").value(VALID_EXCEPTION))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_VALID_FORMAT))
                     .andExpect(jsonPath("$.result.[0].field").value("email"))
                     .andExpect(jsonPath("$.result.[0].message").value(EMAIL_VALID_EXCEPTION_MESSAGE))
                     .andDo(print());
@@ -247,7 +247,7 @@ class CheckControllerTest {
             
             EmailAuthCodeRequest given = EmailAuthCodeRequest.of(EMAIL);
             
-            doThrow(new MailAuthException(REQUIRE_MAIL_DUPLICATE_CHECK))
+            doThrow(new MailAuthException(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK))
                     .when(signupService).sendEmailAuthCode(sessionId, given);
             
             // when-then
@@ -257,7 +257,7 @@ class CheckControllerTest {
                             .session(session))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
-                    .andExpect(jsonPath("$.message").value(REQUIRE_MAIL_DUPLICATE_CHECK))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK))
                     .andDo(print());
             
             verify(signupService, times(1)).sendEmailAuthCode(sessionId, given);
@@ -305,9 +305,9 @@ class CheckControllerTest {
                             .session(session))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
-                    .andExpect(jsonPath("$.message").value(VALID_EXCEPTION))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_VALID_FORMAT))
                     .andExpect(jsonPath("$.result.[0].field").value("code"))
-                    .andExpect(jsonPath("$.result.[0].message").value(VALID_EMAIL_CODE_EXCEPTION_MESSAGE))
+                    .andExpect(jsonPath("$.result.[0].message").value(EXCEPTION_VALID_EMAIL_CODE))
                     .andDo(print());
             
             verify(signupService, times(0)).verifyEmailAuthCode(sessionId, "");
@@ -322,14 +322,14 @@ class CheckControllerTest {
             String code = "ASD7GH";
             
             // when-then
-            doThrow(new MailAuthException(VERIFY_EMAIL_AUTH_CODE_EXPIRED)).when(signupService).verifyEmailAuthCode(sessionId, code);
+            doThrow(new MailAuthException(EXCEPTION_VERIFY_EMAIL_AUTH_CODE_EXPIRED)).when(signupService).verifyEmailAuthCode(sessionId, code);
             
             mvc.perform(get("/check/auth")
                             .param("code", code)
                             .session(session))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
-                    .andExpect(jsonPath("$.message").value(VERIFY_EMAIL_AUTH_CODE_EXPIRED))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_VERIFY_EMAIL_AUTH_CODE_EXPIRED))
                     .andDo(print());
             
             verify(signupService, times(1)).verifyEmailAuthCode(sessionId, code);
@@ -344,14 +344,14 @@ class CheckControllerTest {
             String code = "ASD7GH";
             
             // when-then
-            doThrow(new MailAuthException(VERIFY_FAIL_EMAIL_AUTH_CODE)).when(signupService).verifyEmailAuthCode(sessionId, code);
+            doThrow(new MailAuthException(EXCEPTION_VERIFY_FAIL_EMAIL_AUTH_CODE)).when(signupService).verifyEmailAuthCode(sessionId, code);
             
             mvc.perform(get("/check/auth")
                             .param("code", code)
                             .session(session))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
-                    .andExpect(jsonPath("$.message").value(VERIFY_FAIL_EMAIL_AUTH_CODE))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_VERIFY_FAIL_EMAIL_AUTH_CODE))
                     .andDo(print());
             
             verify(signupService, times(1)).verifyEmailAuthCode(sessionId, code);

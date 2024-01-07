@@ -44,7 +44,7 @@ import java.util.Set;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.jwt.data.JwtResponseMessage.JWT_EXPIRED;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.SIGNIN_FAIL;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_SIGNIN_FAIL;
 import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -83,7 +83,7 @@ class MemberServiceImplTest {
             SignInRequest signInInfo = SignInRequest.of("asdsad@gmail.com", "qwer");
             
             when(userRepository.findByEmail(signInInfo.getEmail())).thenReturn(Optional.empty());
-            doThrow(new MemberException(SIGNIN_FAIL)).when(userService).findByEmail(signInInfo.getEmail());
+            doThrow(new MemberException(EXCEPTION_SIGNIN_FAIL)).when(userService).findByEmail(signInInfo.getEmail());
             
             MockHttpServletRequest servletRequest = new MockHttpServletRequest();
             servletRequest.setContentType(APPLICATION_JSON_VALUE);
@@ -91,7 +91,7 @@ class MemberServiceImplTest {
             
             
             // when-then
-            assertThrows(SIGNIN_FAIL, MemberException.class, () ->
+            assertThrows(EXCEPTION_SIGNIN_FAIL, MemberException.class, () ->
                     authenticationFilter.attemptAuthentication(servletRequest, new MockHttpServletResponse()));
             
             verify(userService, times(1)).findByEmail(signInInfo.getEmail());
@@ -122,7 +122,7 @@ class MemberServiceImplTest {
             
             
             // when-then
-            assertThrows(SIGNIN_FAIL,
+            assertThrows(EXCEPTION_SIGNIN_FAIL,
                     MemberException.class,
                     () -> authenticationManager.authenticate(
                             authenticationFilter.attemptAuthentication(servletRequest, new MockHttpServletResponse())));

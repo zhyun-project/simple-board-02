@@ -31,10 +31,10 @@ public class CheckController {
     @GetMapping
     public ResponseEntity<ApiResponse<Void>> duplicateCheck(HttpServletRequest request,
                                                             @RequestParam(name = "email", required = false)
-                                                            @Email(message = VALID_EMAIL_EXCEPTION_MESSAGE, regexp = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$")
+                                                            @Email(message = EXCEPTION_VALID_EMAIL_FORMAT, regexp = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$")
                                                             String email,
                                                             @RequestParam(name = "nickname", required = false)
-                                                                @Length(min = 1, max = 6, message = VALID_NICKNAME_EXCEPTION_MESSAGE)
+                                                                @Length(min = 1, max = 6, message = EXCEPTION_VALID_NICKNAME_FORMAT)
                                                                 String nickname) {
         String sessionId = request.getSession().getId();
         
@@ -75,7 +75,7 @@ public class CheckController {
     @GetMapping("/auth")
     public ResponseEntity<ApiResponse<Void>> authEmailCode(HttpServletRequest request,
                               @RequestParam(name = "code")
-                              @NotBlank(message = VALID_EMAIL_CODE_EXCEPTION_MESSAGE) String code) {
+                              @NotBlank(message = EXCEPTION_VALID_EMAIL_CODE) String code) {
         signupService.verifyEmailAuthCode(request.getSession().getId(), code);
         
         return ResponseEntity.ok(ApiResponse.<Void>builder()

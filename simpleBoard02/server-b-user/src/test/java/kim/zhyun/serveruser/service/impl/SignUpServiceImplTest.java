@@ -184,7 +184,7 @@ class SignUpServiceImplTest {
             when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
             
             // then
-            assertThrows(REQUIRE_MAIL_DUPLICATE_CHECK,
+            assertThrows(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK,
                     MailAuthException.class,
                     () -> signupService.sendEmailAuthCode(SESSION_ID, requestInfo));
             
@@ -258,7 +258,7 @@ class SignUpServiceImplTest {
             when(emailService.existEmail(requestInfo)).thenReturn(false);
             
             // when-then
-            assertThrows(VERIFY_EMAIL_AUTH_CODE_EXPIRED,
+            assertThrows(EXCEPTION_VERIFY_EMAIL_AUTH_CODE_EXPIRED,
                     MailAuthException.class,
                     () -> signupService.verifyEmailAuthCode(SESSION_ID, CODE));
             
@@ -285,7 +285,7 @@ class SignUpServiceImplTest {
             when(emailService.existCode(requestInfo)).thenReturn(false);
             
             // when-then
-            assertThrows(VERIFY_FAIL_EMAIL_AUTH_CODE,
+            assertThrows(EXCEPTION_VERIFY_FAIL_EMAIL_AUTH_CODE,
                     MailAuthException.class,
                     () -> signupService.verifyEmailAuthCode(SESSION_ID, CODE));
             
@@ -319,7 +319,7 @@ class SignUpServiceImplTest {
             when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
             
             // when-then
-            assertThrows(REQUIRE_MAIL_DUPLICATE_CHECK,
+            assertThrows(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK,
                     SignUpException.class,
                     () -> signupService.saveMember(SESSION_ID, signupRequest));
             
@@ -340,7 +340,7 @@ class SignUpServiceImplTest {
             when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
             
             // when-then
-            assertThrows(REQUIRE_MAIL_DUPLICATE_CHECK,
+            assertThrows(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK,
                     SignUpException.class,
                     () -> signupService.saveMember(SESSION_ID, signupRequest));
             
@@ -362,7 +362,7 @@ class SignUpServiceImplTest {
             when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
             
             // when-then
-            assertThrows(REQUIRE_NICKNAME_DUPLICATE_CHECK,
+            assertThrows(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK,
                     SignUpException.class,
                     () -> signupService.saveMember(SESSION_ID, signupRequest));
             

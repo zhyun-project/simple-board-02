@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.SIGNIN_FAIL;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_SIGNIN_FAIL;
 
 @RequiredArgsConstructor
 @Component
@@ -30,7 +30,7 @@ public class SecurityAuthenticationManager implements AuthenticationManager {
         UserDto userDto = userService.findByEmail(email);
         
         if (!passwordEncoder.matches(password, userDto.getPassword()))
-            throw new MemberException(SIGNIN_FAIL);
+            throw new MemberException(EXCEPTION_SIGNIN_FAIL);
         
         return new UsernamePasswordAuthenticationToken(
                 JwtUserDto.builder()

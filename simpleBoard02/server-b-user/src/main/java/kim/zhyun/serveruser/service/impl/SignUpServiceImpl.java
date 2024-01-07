@@ -78,7 +78,7 @@ public class SignUpServiceImpl implements SignUpService {
         SessionUser sessionUser = sessionUserService.findById(sessionId);
         
         if (sessionUser.getEmail() == null || !sessionUser.getEmail().equals(request.getEmail()))
-            throw new MailAuthException(REQUIRE_MAIL_DUPLICATE_CHECK);
+            throw new MailAuthException(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK);
         
         // 2. 메일 발송
         emailService.sendEmailAuthCode(request.getEmail());
@@ -93,11 +93,11 @@ public class SignUpServiceImpl implements SignUpService {
 
         // 코드 불일치 case 1 : 만료된 경우
         if (!emailService.existEmail(requestInfo))
-            throw new MailAuthException(VERIFY_EMAIL_AUTH_CODE_EXPIRED);
+            throw new MailAuthException(EXCEPTION_VERIFY_EMAIL_AUTH_CODE_EXPIRED);
         
         // 코드 불일치 case 2 : 코드 불일치
         if (!emailService.existCode(requestInfo))
-            throw new MailAuthException(VERIFY_FAIL_EMAIL_AUTH_CODE);
+            throw new MailAuthException(EXCEPTION_VERIFY_FAIL_EMAIL_AUTH_CODE);
         
         // 인증 성공
         emailService.deleteAndUpdateSessionUserEmail(requestInfo, sessionId);
@@ -110,12 +110,12 @@ public class SignUpServiceImpl implements SignUpService {
         // 중복 확인 하지 않은 email
         if (sessionUser.getEmail() == null
                 || (!sessionUser.getEmail().equals(request.getEmail()) || !sessionUser.isEmailVerification()))
-            throw new SignUpException(REQUIRE_MAIL_DUPLICATE_CHECK);
+            throw new SignUpException(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK);
         
         // 중복 확인 하지 않은 nickname
         if (sessionUser.getNickname() == null
                 || !sessionUser.getNickname().equals(request.getNickname()))
-            throw new SignUpException(REQUIRE_NICKNAME_DUPLICATE_CHECK);
+            throw new SignUpException(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK);
         
         Role role = roleRepository.findByGrade(TYPE_MEMBER);
         userRepository.save(User.builder()

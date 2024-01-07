@@ -23,7 +23,7 @@ import java.util.Set;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.REQUIRED_REQUEST_BODY;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
 import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_IN;
 import static kim.zhyun.serveruser.utils.FilterApiResponseUtil.sendMessage;
 
@@ -50,7 +50,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                             Set.of(new SimpleGrantedAuthority(role))));
         
         } catch (IOException e) {
-            throw new RuntimeException(REQUIRED_REQUEST_BODY);
+            throw new RuntimeException(EXCEPTION_REQUIRED_REQUEST_BODY);
         }
     }
     
