@@ -72,30 +72,6 @@ class DisconnectSessionCheckFilterTest {
         run(delete("/withdrawal"));
     }
     
-    @DisplayName("/user get 접근")
-    @Test
-    void user_get_all() throws Exception {
-        run(get("/user"));
-    }
-    
-    @DisplayName("/user/{id} get 접근")
-    @Test
-    void user_get_by_id() throws Exception {
-        run(get("/user/{id}", 1));
-    }
-    
-    @DisplayName("/user/{id} put 접근")
-    @Test
-    void user_update_by_id() throws Exception {
-        run(put("/user/{id}", 1));
-    }
-    
-    @DisplayName("/user/{id}/role put 접근")
-    @Test
-    void user_update_by_id_and_role() throws Exception {
-        run(put("/user/{id}/role", 1));
-    }
-    
     private void run(MockHttpServletRequestBuilder mockHttpServletRequestBuilder) throws Exception {
         // given
         MockHttpSession session = new MockHttpSession();

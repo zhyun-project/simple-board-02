@@ -20,8 +20,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @Slf4j
@@ -65,6 +65,30 @@ class ConnectionSessionCheckFilterTest {
     @Test
     void check_auth_post_test() throws Exception {
         verifyRun(post("/check/auth"));
+    }
+    
+    @DisplayName("/user get 접근")
+    @Test
+    void user_get_all() throws Exception {
+        verifyRun(get("/user"));
+    }
+    
+    @DisplayName("/user/{id} get 접근")
+    @Test
+    void user_get_by_id() throws Exception {
+        verifyRun(get("/user/{id}", 1));
+    }
+    
+    @DisplayName("/user/{id} put 접근")
+    @Test
+    void user_update_by_id() throws Exception {
+        verifyRun(put("/user/{id}", 1));
+    }
+    
+    @DisplayName("/user/{id}/role put 접근")
+    @Test
+    void user_update_by_id_and_role() throws Exception {
+        verifyRun(put("/user/{id}/role", 1));
     }
     
     private void verifyRun(MockHttpServletRequestBuilder mockHttpServletRequestBuilder) throws Exception {
