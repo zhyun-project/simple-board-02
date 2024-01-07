@@ -1,5 +1,7 @@
 package kim.zhyun.serveruser.controller;
 
+import kim.zhyun.jwt.data.JwtUserInfo;
+import kim.zhyun.jwt.repository.JwtUserInfoRepository;
 import kim.zhyun.serveruser.advice.SignUpException;
 import kim.zhyun.serveruser.data.SignInRequest;
 import kim.zhyun.serveruser.data.SignupRequest;
@@ -321,12 +323,15 @@ class SignControllerTest {
         
         private final RoleRepository roleRepository;
         private final UserRepository userRepository;
+        private final JwtUserInfoRepository jwtUserInfoRepository;
         private final PasswordEncoder passwordEncoder;
         public LogoutTest(@Autowired RoleRepository roleRepository,
                          @Autowired UserRepository userRepository,
+                         @Autowired JwtUserInfoRepository jwtUserInfoRepository,
                          @Autowired PasswordEncoder passwordEncoder) {
             this.roleRepository = roleRepository;
             this.userRepository = userRepository;
+            this.jwtUserInfoRepository = jwtUserInfoRepository;
             this.passwordEncoder = passwordEncoder;
         }
         
@@ -338,11 +343,18 @@ class SignControllerTest {
             String nickname = "얼거스";
             String password = "1234";
             
-            userRepository.save(User.builder()
+            User saved = userRepository.save(User.builder()
                     .email(email)
                     .password(passwordEncoder.encode(password))
                     .nickname(nickname)
                     .role(roleRepository.findByGrade(TYPE_MEMBER)).build());
+            
+            jwtUserInfoRepository.save(JwtUserInfo.builder()
+                            .id(saved.getId())
+                            .grade(saved.getRole().getGrade())
+                            .email(saved.getEmail())
+                            .nickname(saved.getNickname())
+                    .build());
             
             SignInRequest signInInfo = SignInRequest.of(email, password);
             

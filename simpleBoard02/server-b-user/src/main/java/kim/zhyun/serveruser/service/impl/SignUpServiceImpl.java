@@ -1,5 +1,7 @@
 package kim.zhyun.serveruser.service.impl;
 
+import kim.zhyun.jwt.data.JwtUserInfo;
+import kim.zhyun.jwt.repository.JwtUserInfoRepository;
 import kim.zhyun.serveruser.advice.MailAuthException;
 import kim.zhyun.serveruser.advice.SignUpException;
 import kim.zhyun.serveruser.data.EmailAuthCodeRequest;
@@ -31,6 +33,7 @@ public class SignUpServiceImpl implements SignUpService {
     private final NicknameReserveService nicknameReserveService;
     private final SessionUserService sessionUserService;
     private final EmailService emailService;
+    private final JwtUserInfoRepository jwtUserInfoRepository;
     
     private final PasswordEncoder passwordEncoder;
     
@@ -118,17 +121,29 @@ public class SignUpServiceImpl implements SignUpService {
             throw new SignUpException(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK);
         
         Role role = roleRepository.findByGrade(TYPE_MEMBER);
-        userRepository.save(User.builder()
-                        .email(request.getEmail())
-                        .nickname(request.getNickname())
-                        .password(getPassword(request.getPassword()))
-                        .role(role)
-                .build());
+        User saved = userRepository.save(User.builder()
+                .email(request.getEmail())
+                .nickname(request.getNickname())
+                .password(getPassword(request.getPassword()))
+                .role(role).build());
         
         sessionUserService.deleteById(sessionId);
+        
+        jwtUserInfoUpdate(saved);
     }
     
     
+    /**
+     * redis user info 저장소 업데이트
+     */
+    private void jwtUserInfoUpdate(User user) {
+        jwtUserInfoRepository.save(JwtUserInfo.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .grade("ROLE_" + user.getRole().getGrade())
+                .build());
+    }
     
     /**
      * session user 저장소에 이메일 등록

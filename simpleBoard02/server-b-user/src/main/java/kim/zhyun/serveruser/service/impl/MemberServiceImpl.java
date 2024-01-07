@@ -2,7 +2,9 @@ package kim.zhyun.serveruser.service.impl;
 
 import io.netty.util.internal.StringUtil;
 import kim.zhyun.jwt.data.JwtConstants;
+import kim.zhyun.jwt.data.JwtUserInfo;
 import kim.zhyun.jwt.provider.JwtProvider;
+import kim.zhyun.jwt.repository.JwtUserInfoRepository;
 import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.data.UserDto;
 import kim.zhyun.serveruser.data.UserUpdateRequest;
@@ -37,6 +39,7 @@ public class MemberServiceImpl implements MemberService {
     private final JwtConstants jwtItems;
     private final PasswordEncoder passwordEncoder;
     private final SessionUserService sessionUserService;
+    private final JwtUserInfoRepository jwtUserInfoRepository;
     
     @Override
     public List<UserResponse> findAll() {
@@ -103,7 +106,24 @@ public class MemberServiceImpl implements MemberService {
         }
         
         sessionUserService.deleteById(sessionId);
-        return UserResponse.from(userRepository.save(user));
+        
+        User saved = userRepository.save(user);
+        jwtUserInfoUpdate(saved);
+        
+        return UserResponse.from(saved);
+    }
+    
+    
+    /**
+     * redis user info 저장소 업데이트
+     */
+    private void jwtUserInfoUpdate(User user) {
+        jwtUserInfoRepository.save(JwtUserInfo.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .grade("ROLE_" + user.getRole().getGrade())
+                .build());
     }
     
     @Override
