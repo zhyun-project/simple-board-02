@@ -7,10 +7,13 @@ import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.jwt.repository.JwtUserInfoRepository;
 import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.data.UserDto;
+import kim.zhyun.serveruser.data.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.data.UserUpdateRequest;
+import kim.zhyun.serveruser.data.entity.Role;
 import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.data.entity.User;
 import kim.zhyun.serveruser.data.response.UserResponse;
+import kim.zhyun.serveruser.repository.RoleRepository;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.service.MemberService;
 import kim.zhyun.serveruser.service.SessionUserService;
@@ -40,6 +43,7 @@ public class MemberServiceImpl implements MemberService {
     private final PasswordEncoder passwordEncoder;
     private final SessionUserService sessionUserService;
     private final JwtUserInfoRepository jwtUserInfoRepository;
+    private final RoleRepository roleRepository;
     
     @Override
     public List<UserResponse> findAll() {
@@ -110,6 +114,22 @@ public class MemberServiceImpl implements MemberService {
         User saved = userRepository.save(user);
         jwtUserInfoUpdate(saved);
         
+        return UserResponse.from(saved);
+    }
+    
+    @Override
+    public UserResponse updateUserGrade(UserGradeUpdateRequest request) {
+        Optional<User> userContainer = userRepository.findById(request.getId());
+        
+        if (userContainer.isEmpty())
+            throw new MemberException(EXCEPTION_NOT_FOUND);
+        
+        User user = userContainer.get();
+        Role role = roleRepository.findByGrade(request.getRole().toUpperCase());
+        user.setRole(role);
+        
+        User saved = userRepository.save(user);
+        jwtUserInfoUpdate(saved);
         return UserResponse.from(saved);
     }
     

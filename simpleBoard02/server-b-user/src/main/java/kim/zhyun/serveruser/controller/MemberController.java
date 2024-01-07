@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import kim.zhyun.serveruser.data.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.data.UserUpdateRequest;
 import kim.zhyun.serveruser.data.response.ApiResponse;
 import kim.zhyun.serveruser.data.response.UserResponse;
@@ -17,8 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static kim.zhyun.serveruser.data.message.ResponseMessage.*;
 import static kim.zhyun.serveruser.data.type.RoleType.TYPE_ADMIN;
-import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
-import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.*;
 
 
 @Tag(name = "계정 조회, 계정 정보 수정, 계정 권한 수정 API")
@@ -63,9 +63,17 @@ public class MemberController {
     }
     
     @Operation(summary = "계정 권한 수정")
-    @PutMapping("/{id}/role")
-    public void updateByIdAndRole() {
-    
+    @PreAuthorize("hasRole('"+TYPE_ADMIN+"')")
+    @PutMapping("/role")
+    public ResponseEntity<Object> updateByIdAndRole(@RequestBody UserGradeUpdateRequest request) {
+        UserResponse savedUser = memberService.updateUserGrade(request);
+        
+        return ResponseEntity.created(fromCurrentContextPath().path("/user").build().toUri())
+                .body(ApiResponse.builder()
+                        .status(true)
+                        .message(String.format(RESPONSE_USER_GRADE_UPDATE,
+                                savedUser.getNickname(),
+                                savedUser.getRole().getGrade())).build());
     }
     
 }
