@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.REQUIRED_REQUEST_BODY;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.VALID_EXCEPTION;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_VALID_FORMAT;
 
 @RestControllerAdvice
 public class GlobalAdvice extends ResponseEntityExceptionHandler {
@@ -68,7 +68,7 @@ public class GlobalAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .badRequest().body(ApiResponse.<List<ValidExceptionResponse>>builder()
                         .status(false)
-                        .message(VALID_EXCEPTION)
+                        .message(EXCEPTION_VALID_FORMAT)
                         .result(errorList).build());
     }
     
@@ -98,7 +98,7 @@ public class GlobalAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .badRequest().body(ApiResponse.<List<ValidExceptionResponse>>builder()
                         .status(false)
-                        .message(VALID_EXCEPTION)
+                        .message(EXCEPTION_VALID_FORMAT)
                         .result(list).build());
     }
     
@@ -113,7 +113,7 @@ public class GlobalAdvice extends ResponseEntityExceptionHandler {
         return ResponseEntity
                 .badRequest().body(ApiResponse.<List<ValidExceptionResponse>>builder()
                         .status(false)
-                        .message(REQUIRED_REQUEST_BODY).build());
+                        .message(EXCEPTION_REQUIRED_REQUEST_BODY).build());
     }
     
 }

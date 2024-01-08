@@ -1,14 +1,15 @@
 package kim.zhyun.serveruser.data.type;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@Getter
-@RequiredArgsConstructor
-public enum RoleType {
-    ADMIN("관리자"),
-    MEMBER("회원"),
-    WITHDRAWAL("탈퇴 회원");
+public class RoleType {
+    public static final String TYPE_ADMIN = "ADMIN";
+    public static final String ROLE_ADMIN = "ROLE_ADMIN";
+    public static final String DESCRIPTION_ADMIN = "관리자";
     
-    private final String description;
+    public static final String TYPE_MEMBER = "MEMBER";
+    public static final String ROLE_MEMBER = "ROLE_MEMBER";
+    public static final String DESCRIPTION_MEMBER = "회원";
+    
+    public static final String TYPE_WITHDRAWAL = "WITHDRAWAL";
+    public static final String ROLE_WITHDRAWAL = "ROLE_WITHDRAWAL";
+    public static final String DESCRIPTION_WITHDRAWAL = "탈퇴 회원";
 }

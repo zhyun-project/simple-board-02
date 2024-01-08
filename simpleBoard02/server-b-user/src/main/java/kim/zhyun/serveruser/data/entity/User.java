@@ -7,6 +7,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
@@ -36,7 +37,20 @@ public class User {
     @LastModifiedDate
     private LocalDateTime modifiedAt;
     
-    @OneToOne
+    @ManyToOne
     private Role role;
+    
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+        return Objects.equals(getId(), user.getId())
+                && Objects.equals(getEmail(), user.getEmail())
+                && Objects.equals(getPassword(), user.getPassword())
+                && Objects.equals(getNickname(), user.getNickname())
+                && Objects.equals(getCreatedAt(), user.getCreatedAt())
+                && Objects.equals(getModifiedAt(), user.getModifiedAt())
+                && Objects.equals(getRole(), user.getRole());
+    }
     
 }

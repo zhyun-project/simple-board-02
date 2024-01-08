@@ -2,7 +2,6 @@ package kim.zhyun.serveruser.repository;
 
 import kim.zhyun.serveruser.config.JpaConfig;
 import kim.zhyun.serveruser.data.entity.Role;
-import kim.zhyun.serveruser.data.type.RoleType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_ADMIN;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,7 +33,7 @@ class RoleRepositoryTest extends PrintLog<RoleRepository> {
     @Test
     void find_role_true() {
         // given
-        String roleName = RoleType.ADMIN.name();
+        String roleName = TYPE_ADMIN;
         
         // when
         Role role = roleRepository.findByGrade(roleName);
@@ -60,7 +60,7 @@ class RoleRepositoryTest extends PrintLog<RoleRepository> {
     @Test
     void exist_role_true() {
         // given
-        String role = RoleType.ADMIN.name();
+        String role = TYPE_ADMIN;
         
         // when
         boolean exists = roleRepository.existsByGrade(role);

@@ -1,13 +1,15 @@
 package kim.zhyun.serveruser.service.impl;
 
+import kim.zhyun.jwt.repository.JwtUserInfoRepository;
 import kim.zhyun.serveruser.advice.MailAuthException;
 import kim.zhyun.serveruser.advice.SignUpException;
 import kim.zhyun.serveruser.data.EmailAuthCodeRequest;
 import kim.zhyun.serveruser.data.EmailAuthDto;
 import kim.zhyun.serveruser.data.NicknameDto;
 import kim.zhyun.serveruser.data.SignupRequest;
+import kim.zhyun.serveruser.data.entity.Role;
 import kim.zhyun.serveruser.data.entity.SessionUser;
-import kim.zhyun.serveruser.data.type.RoleType;
+import kim.zhyun.serveruser.data.entity.User;
 import kim.zhyun.serveruser.repository.RoleRepository;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.service.EmailService;
@@ -19,10 +21,12 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -42,6 +46,7 @@ class SignUpServiceImplTest {
     @Mock        EmailService emailService;
     @Mock        RoleRepository roleRepository;
     @Mock        PasswordEncoder passwordEncoder;
+    @Mock        JwtUserInfoRepository jwtUserInfoRepository;
     
     @Nested
     @DisplayName("이메일 중복 확인")
@@ -184,7 +189,7 @@ class SignUpServiceImplTest {
             when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
             
             // then
-            assertThrows(REQUIRE_MAIL_DUPLICATE_CHECK,
+            assertThrows(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK,
                     MailAuthException.class,
                     () -> signupService.sendEmailAuthCode(SESSION_ID, requestInfo));
             
@@ -258,7 +263,7 @@ class SignUpServiceImplTest {
             when(emailService.existEmail(requestInfo)).thenReturn(false);
             
             // when-then
-            assertThrows(VERIFY_EMAIL_AUTH_CODE_EXPIRED,
+            assertThrows(EXCEPTION_VERIFY_EMAIL_AUTH_CODE_EXPIRED,
                     MailAuthException.class,
                     () -> signupService.verifyEmailAuthCode(SESSION_ID, CODE));
             
@@ -285,7 +290,7 @@ class SignUpServiceImplTest {
             when(emailService.existCode(requestInfo)).thenReturn(false);
             
             // when-then
-            assertThrows(VERIFY_FAIL_EMAIL_AUTH_CODE,
+            assertThrows(EXCEPTION_VERIFY_FAIL_EMAIL_AUTH_CODE,
                     MailAuthException.class,
                     () -> signupService.verifyEmailAuthCode(SESSION_ID, CODE));
             
@@ -305,6 +310,11 @@ class SignUpServiceImplTest {
         private final String NICKNAME_CHANGED = "닉네임변경";
         
         
+        private final RoleRepository roleRepositoryBean;
+        public SignUpSave(@Autowired RoleRepository roleRepositoryBean) {
+            this.roleRepositoryBean = roleRepositoryBean;
+        }
+        
         @DisplayName("실패 - 이메일 중복확인 안함")
         @Test
         void fail_email_duplicate_pass() {
@@ -319,11 +329,11 @@ class SignUpServiceImplTest {
             when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
             
             // when-then
-            assertThrows(REQUIRE_MAIL_DUPLICATE_CHECK,
+            assertThrows(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK,
                     SignUpException.class,
                     () -> signupService.saveMember(SESSION_ID, signupRequest));
             
-            verify(roleRepository, times(0)).findByGrade(RoleType.MEMBER.name());
+            verify(roleRepository, times(0)).findByGrade(TYPE_MEMBER);
             verify(sessionUserService, times(0)).deleteById(SESSION_ID);
         }
         @DisplayName("실패 - 이메일 불일치")
@@ -340,11 +350,11 @@ class SignUpServiceImplTest {
             when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
             
             // when-then
-            assertThrows(REQUIRE_MAIL_DUPLICATE_CHECK,
+            assertThrows(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK,
                     SignUpException.class,
                     () -> signupService.saveMember(SESSION_ID, signupRequest));
             
-            verify(roleRepository, times(0)).findByGrade(RoleType.MEMBER.name());
+            verify(roleRepository, times(0)).findByGrade(TYPE_MEMBER);
             verify(sessionUserService, times(0)).deleteById(SESSION_ID);
         }
         
@@ -362,11 +372,11 @@ class SignUpServiceImplTest {
             when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
             
             // when-then
-            assertThrows(REQUIRE_NICKNAME_DUPLICATE_CHECK,
+            assertThrows(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK,
                     SignUpException.class,
                     () -> signupService.saveMember(SESSION_ID, signupRequest));
             
-            verify(roleRepository, times(0)).findByGrade(RoleType.MEMBER.name());
+            verify(roleRepository, times(0)).findByGrade(TYPE_MEMBER);
             verify(sessionUserService, times(0)).deleteById(SESSION_ID);
         }
         
@@ -381,13 +391,28 @@ class SignUpServiceImplTest {
                     .emailVerification(true)
                     .nickname(NICKNAME).build();
             
+            Role role = roleRepositoryBean.findByGrade(TYPE_MEMBER);
+            User user = User.builder()
+                    .email(signupRequest.getEmail())
+                    .nickname(signupRequest.getNickname())
+                    .password(passwordEncoder.encode(signupRequest.getPassword()))
+                    .role(role).build();
+            User saved = User.builder()
+                    .id(1L)
+                    .email(signupRequest.getEmail())
+                    .nickname(signupRequest.getNickname())
+                    .password(passwordEncoder.encode(signupRequest.getPassword()))
+                    .role(role).build();
+            
             when(sessionUserService.findById(SESSION_ID)).thenReturn(sessionUser);
+            when(roleRepository.findByGrade(TYPE_MEMBER)).thenReturn(role);
+            when(userRepository.save(user)).thenReturn(saved);
             
             // then
             signupService.saveMember(SESSION_ID, signupRequest);
             
             
-            verify(roleRepository, times(1)).findByGrade(RoleType.MEMBER.name());
+            verify(roleRepository, times(1)).findByGrade(TYPE_MEMBER);
             verify(sessionUserService, times(1)).deleteById(SESSION_ID);
         }
         

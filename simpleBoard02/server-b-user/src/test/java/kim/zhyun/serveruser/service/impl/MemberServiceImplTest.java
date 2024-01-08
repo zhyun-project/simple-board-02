@@ -2,7 +2,9 @@ package kim.zhyun.serveruser.service.impl;
 
 import kim.zhyun.jwt.data.JwtConstants;
 import kim.zhyun.jwt.data.JwtUserDto;
+import kim.zhyun.jwt.data.JwtUserInfo;
 import kim.zhyun.jwt.provider.JwtProvider;
+import kim.zhyun.jwt.repository.JwtUserInfoRepository;
 import kim.zhyun.jwt.storage.JwtLogoutStorage;
 import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
@@ -10,14 +12,18 @@ import kim.zhyun.serveruser.config.SecurityConfig;
 import kim.zhyun.serveruser.controller.SignController;
 import kim.zhyun.serveruser.data.SignInRequest;
 import kim.zhyun.serveruser.data.UserDto;
+import kim.zhyun.serveruser.data.UserGradeUpdateRequest;
+import kim.zhyun.serveruser.data.UserUpdateRequest;
 import kim.zhyun.serveruser.data.entity.Role;
+import kim.zhyun.serveruser.data.entity.SessionUser;
 import kim.zhyun.serveruser.data.entity.User;
-import kim.zhyun.serveruser.data.type.RoleType;
+import kim.zhyun.serveruser.data.response.UserResponse;
 import kim.zhyun.serveruser.filter.AuthenticationFilter;
 import kim.zhyun.serveruser.repository.RoleRepository;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
 import kim.zhyun.serveruser.service.MemberService;
+import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,6 +36,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -45,7 +52,11 @@ import java.util.Set;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.jwt.data.JwtResponseMessage.JWT_EXPIRED;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.SIGNIN_FAIL;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_SIGNIN_FAIL;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_WITHDRAWAL;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -83,7 +94,7 @@ class MemberServiceImplTest {
             SignInRequest signInInfo = SignInRequest.of("asdsad@gmail.com", "qwer");
             
             when(userRepository.findByEmail(signInInfo.getEmail())).thenReturn(Optional.empty());
-            doThrow(new MemberException(SIGNIN_FAIL)).when(userService).findByEmail(signInInfo.getEmail());
+            doThrow(new MemberException(EXCEPTION_SIGNIN_FAIL)).when(userService).findByEmail(signInInfo.getEmail());
             
             MockHttpServletRequest servletRequest = new MockHttpServletRequest();
             servletRequest.setContentType(APPLICATION_JSON_VALUE);
@@ -91,7 +102,7 @@ class MemberServiceImplTest {
             
             
             // when-then
-            assertThrows(SIGNIN_FAIL, MemberException.class, () ->
+            assertThrows(EXCEPTION_SIGNIN_FAIL, MemberException.class, () ->
                     authenticationFilter.attemptAuthentication(servletRequest, new MockHttpServletResponse()));
             
             verify(userService, times(1)).findByEmail(signInInfo.getEmail());
@@ -102,7 +113,7 @@ class MemberServiceImplTest {
         public void member_password_fail() throws Exception {
             // given
             SignInRequest signInInfo = SignInRequest.of("asdsad@gmail.com", "qwer");
-            Role role = roleRepository.findByGrade(RoleType.MEMBER.name());
+            Role role = roleRepository.findByGrade(TYPE_MEMBER);
             User member = User.builder()
                     .id(1L)
                     .email(signInInfo.getEmail())
@@ -122,7 +133,7 @@ class MemberServiceImplTest {
             
             
             // when-then
-            assertThrows(SIGNIN_FAIL,
+            assertThrows(EXCEPTION_SIGNIN_FAIL,
                     MemberException.class,
                     () -> authenticationManager.authenticate(
                             authenticationFilter.attemptAuthentication(servletRequest, new MockHttpServletResponse())));
@@ -135,7 +146,7 @@ class MemberServiceImplTest {
         public void member_password_success() throws Exception {
             // given-when
             SignInRequest signInInfo = SignInRequest.of("asdsad@gmail.com", "qwer");
-            Role role = roleRepository.findByGrade(RoleType.MEMBER.name());
+            Role role = roleRepository.findByGrade(TYPE_MEMBER);
             User member = User.builder()
                     .id(1L)
                     .email(signInInfo.getEmail())
@@ -293,4 +304,238 @@ class MemberServiceImplTest {
             redisTemplate.keys("*").forEach(redisTemplate::delete);
         }
     }
+    
+    @DisplayName("회원 정보 수정 테스트")
+    @Nested
+    class MemberInfoUpdate {
+        
+        private final MemberServiceImpl memberService;
+        private final UserRepository userRepository;
+        private final SessionUserService sessionUserService;
+        private final RoleRepository roleRepository;
+        public MemberInfoUpdate(@Autowired MemberServiceImpl memberService,
+                                         @Autowired UserRepository userRepository,
+                                         @Autowired SessionUserService sessionUserService,
+                                         @Autowired RoleRepository roleRepository) {
+            this.memberService = memberService;
+            this.userRepository = userRepository;
+            this.sessionUserService = sessionUserService;
+            this.roleRepository = roleRepository;
+        }
+        
+        @DisplayName("닉네임 수정 테스트")
+        @Nested
+        class NicknameTest {
+            String username = "member@mem.ber";
+            String nickname = "mem1";
+            String nicknameChange = "닉넴변경;";
+            String password = "1234";
+            
+            @DisplayName("이전 닉네임과 동일")
+            @Test
+            public void pass() {
+                // given
+                User user = mem1();
+                UserUpdateRequest request = UserUpdateRequest.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .nickname(user.getNickname()).build();
+                
+                // when
+                MockHttpSession session = new MockHttpSession();
+                UserResponse result = memberService.updateUserInfo(session.getId(), request);
+                
+                // then
+                assertThat(UserResponse.from(user)).isEqualTo(result);
+            }
+            
+            
+            @DisplayName("닉네임 중복확인 안함")
+            @Test
+            public void fail_nickname_duplicate_passed() {
+                // given
+                User user = mem1();
+                UserUpdateRequest request = UserUpdateRequest.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .nickname(nicknameChange).build();
+                
+                // when-then
+                MockHttpSession session = new MockHttpSession();
+                assertThrows(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK,
+                        MemberException.class,
+                        () -> memberService.updateUserInfo(session.getId(), request));
+            }
+            
+            
+            @DisplayName("닉네임 수정")
+            @Test
+            public void success() {
+                // given
+                User user = mem1();
+                UserUpdateRequest request = UserUpdateRequest.builder()
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .nickname(nicknameChange).build();
+                
+                MockHttpSession session = new MockHttpSession();
+                
+                SessionUser sessionUser = SessionUser.builder()
+                        .sessionId(session.getId())
+                        .email(user.getEmail())
+                        .nickname(nicknameChange).build();
+                
+                sessionUserService.save(sessionUser);
+                
+                // when
+                UserResponse result = memberService.updateUserInfo(session.getId(), request);
+                
+                // then
+                assertThat(result).isNotEqualTo(UserResponse.from(user));
+                assertThat(result.getNickname()).isEqualTo(nicknameChange);
+            }
+            
+            
+            @BeforeEach public void init() {
+                Role roleMember = roleRepository.findByGrade(TYPE_MEMBER);
+                
+                User mem1 = User.builder()
+                        .email(username)
+                        .nickname(nickname)
+                        .password(password)
+                        .role(roleMember).build();
+                
+                userRepository.save(mem1);
+            }
+            @AfterEach public void clean() {
+                userRepository.deleteAll();
+            }
+            
+            private User mem1() {
+                return userRepository.findByEmail(username).get();
+            }
+        }
+        
+        @DisplayName("비밀번호 수정 테스트")
+        @Nested
+        class PasswordTest {
+            String username = "member@mem.ber";
+            String nickname = "mem1";
+            String password = "1234";
+            
+            private final PasswordEncoder passwordEncoder;
+            public PasswordTest(@Autowired PasswordEncoder passwordEncoder) {
+                this.passwordEncoder = passwordEncoder;
+            }
+            
+            @DisplayName("비밀번호 수정")
+            @Test
+            public void success() {
+                // given
+                User before = mem1();
+                String passwordChange = "passwordChange";
+                
+                UserUpdateRequest request = UserUpdateRequest.builder()
+                        .id(before.getId())
+                        .email(before.getEmail())
+                        .password(passwordChange).build();
+                
+                // when
+                MockHttpSession session = new MockHttpSession();
+                UserResponse afterResponse = memberService.updateUserInfo(session.getId(), request);
+                
+                // then
+                User after = mem1();
+                UserResponse beforeResponse = UserResponse.from(before);
+                
+                assertThat(before).isNotEqualTo(after);
+                assertThat(beforeResponse).isEqualTo(afterResponse);
+                
+                assertThat(before.getPassword()).isNotEqualTo(after.getPassword());
+                assertThat(passwordEncoder.matches(passwordChange, after.getPassword())).isTrue();
+            }
+            
+            
+            @BeforeEach public void init() {
+                Role roleMember = roleRepository.findByGrade(TYPE_MEMBER);
+                
+                User mem1 = User.builder()
+                        .email(username)
+                        .nickname(nickname)
+                        .password(password)
+                        .role(roleMember).build();
+                
+                userRepository.save(mem1);
+            }
+            @AfterEach public void clean() {
+                userRepository.deleteAll();
+            }
+            
+            public User mem1() {
+                return userRepository.findByEmail(username).get();
+            }
+        }
+        
+    }
+    
+    @DisplayName("회원 권한 수정 테스트")
+    @Nested
+    class MemberGradeUpdateRealTest {
+        
+        private final MemberServiceImpl memberService;
+        private final UserRepository userRepository;
+        private final JwtUserInfoRepository jwtUserInfoRepository;
+        private final RoleRepository roleRepository;
+        public MemberGradeUpdateRealTest(@Autowired MemberServiceImpl memberService,
+                                         @Autowired UserRepository userRepository,
+                                         @Autowired JwtUserInfoRepository jwtUserInfoRepository,
+                                         @Autowired RoleRepository roleRepository) {
+            this.memberService = memberService;
+            this.userRepository = userRepository;
+            this.jwtUserInfoRepository = jwtUserInfoRepository;
+            this.roleRepository = roleRepository;
+        }
+        
+        @DisplayName("권한 수정")
+        @Test
+        public void success() {
+            Role roleMember = roleRepository.findByGrade(TYPE_MEMBER);
+            
+            UserGradeUpdateRequest updateRequest = UserGradeUpdateRequest.builder()
+                    .id(1L)
+                    .role(TYPE_WITHDRAWAL).build();
+            
+            User mem1 = User.builder()
+                    .id(updateRequest.getId())
+                    .email("member@mem.ber")
+                    .nickname("mem1")
+                    .password("1234")
+                    .role(roleMember).build();
+            
+            userRepository.save(mem1);
+            
+            // when
+            var before  = mem1.getRole().getGrade();
+            var updated = memberService.updateUserGrade(updateRequest);
+            var after   = updated.getRole().getGrade();
+            
+            // then
+            assertThat(before).isNotEqualTo(after);
+            
+            JwtUserInfo jwtUserInfo = jwtUserInfoRepository.findById(mem1.getId()).get();
+            User user = userRepository.findById(mem1.getId()).get();
+            
+            assertThat(jwtUserInfo.getId()).isEqualTo(user.getId());
+            assertThat(jwtUserInfo.getEmail()).isEqualTo(user.getEmail());
+            assertThat(jwtUserInfo.getNickname()).isEqualTo(user.getNickname());
+            assertThat(jwtUserInfo.getGrade()).contains(user.getRole().getGrade());
+            
+            assertThat(jwtUserInfo.getGrade()).doesNotContain(mem1.getRole().getGrade());
+        }
+        
+        @AfterEach public void clean() {
+            userRepository.deleteAll();
+        }
+    }
+    
 }

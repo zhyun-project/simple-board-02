@@ -5,6 +5,8 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import kim.zhyun.jwt.data.JwtConstants;
 import kim.zhyun.jwt.data.JwtUserDto;
+import kim.zhyun.jwt.data.JwtUserInfo;
+import kim.zhyun.jwt.repository.JwtUserInfoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -19,7 +21,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import static kim.zhyun.jwt.data.JwtConstants.*;
+import static kim.zhyun.jwt.data.JwtConstants.JWT_CLAIM_KEY_USER_ID;
 import static kim.zhyun.jwt.data.JwtResponseMessage.*;
 
 @Slf4j
@@ -27,6 +29,7 @@ import static kim.zhyun.jwt.data.JwtResponseMessage.*;
 @Component
 public class JwtProvider implements InitializingBean {
     
+    private final JwtUserInfoRepository userInfoStorage;
     private final JwtConstants jwtItems;
     private SecretKey key;
     
@@ -42,9 +45,7 @@ public class JwtProvider implements InitializingBean {
     public String tokenFrom(Authentication authentication) {
         return Jwts.builder()
                 .subject(emailFrom(authentication))
-                .claim(JWT_CLAIM_KEY_USER_GRADE, gradeFrom(authentication))
                 .claim(JWT_CLAIM_KEY_USER_ID, idFrom(authentication))
-                .claim(JWT_CLAIM_KEY_USER_NICKNAME, nicknameFrom(authentication))
                 .expiration(expiredDate())
                 .signWith(key)
                 .compact();
@@ -58,7 +59,14 @@ public class JwtProvider implements InitializingBean {
         
         Long id = claims.get(JWT_CLAIM_KEY_USER_ID, Long.class);
         String email = claims.getSubject();
-        String nickname = claims.get(JWT_CLAIM_KEY_USER_NICKNAME, String.class);
+        
+        JwtUserInfo userInfo = userInfoStorage.findById(id)
+                .orElse(JwtUserInfo.builder()
+                        .id(id)
+                        .email(email)
+                        .grade("ROLE_WITHDRAWAL").build());
+        String nickname = userInfo.getNickname();
+        String grade = userInfo.getGrade();
         
         return new UsernamePasswordAuthenticationToken(
                 JwtUserDto.builder()
@@ -66,7 +74,7 @@ public class JwtProvider implements InitializingBean {
                         .email(email)
                         .nickname(nickname).build(),
                 token,
-                Arrays.stream(claims.get(JWT_CLAIM_KEY_USER_GRADE).toString().split(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR))
+                Arrays.stream(grade.split(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toSet()));
     }
@@ -104,12 +112,6 @@ public class JwtProvider implements InitializingBean {
         return claimsFrom(token).get(JWT_CLAIM_KEY_USER_ID, Long.class);
     }
     
-    /**
-     * token -> nickname 추출
-     */
-    public String nicknameFrom(String token) {
-        return claimsFrom(token).get(JWT_CLAIM_KEY_USER_NICKNAME, String.class);
-    }
     
     /**
      * token -> claim 추출

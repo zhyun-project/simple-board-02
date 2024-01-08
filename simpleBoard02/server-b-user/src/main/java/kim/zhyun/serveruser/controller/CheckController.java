@@ -31,28 +31,28 @@ public class CheckController {
     @GetMapping
     public ResponseEntity<ApiResponse<Void>> duplicateCheck(HttpServletRequest request,
                                                             @RequestParam(name = "email", required = false)
-                                                            @Email(message = VALID_EMAIL_EXCEPTION_MESSAGE, regexp = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$")
+                                                            @Email(message = EXCEPTION_VALID_EMAIL_FORMAT, regexp = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$")
                                                             String email,
                                                             @RequestParam(name = "nickname", required = false)
-                                                                @Length(min = 1, max = 6, message = VALID_NICKNAME_EXCEPTION_MESSAGE)
+                                                                @Length(min = 1, max = 6, message = EXCEPTION_VALID_NICKNAME_FORMAT)
                                                                 String nickname) {
         String sessionId = request.getSession().getId();
         
         boolean result = false;
-        String message = SIGN_UP_CHECK_VALUE_IS_EMPTY;
+        String message = RESPONSE_SIGN_UP_CHECK_VALUE_IS_EMPTY;
         
         // email 중복확인
         if (email != null) {
             result = signupService.availableEmail(email, sessionId);
-            message = result ? SIGN_UP_AVAILABLE_EMAIL
-                             : SIGN_UP_UNAVAILABLE_EMAIL;
+            message = result ? RESPONSE_SIGN_UP_AVAILABLE_EMAIL
+                             : RESPONSE_SIGN_UP_UNAVAILABLE_EMAIL;
         }
         
         // 닉네임 중복확인
         if (nickname != null) {
             result = signupService.availableNickname(nickname, sessionId);
-            message = result ? SIGN_UP_AVAILABLE_NICKNAME
-                             : SIGN_UP_UNAVAILABLE_NICKNAME;
+            message = result ? RESPONSE_SIGN_UP_AVAILABLE_NICKNAME
+                             : RESPONSE_SIGN_UP_UNAVAILABLE_NICKNAME;
         }
         
         return ResponseEntity.ok(ApiResponse.<Void>builder()
@@ -68,19 +68,19 @@ public class CheckController {
         
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .status(true)
-                .message(SEND_EMAIL_AUTH_CODE).build());
+                .message(RESPONSE_SEND_EMAIL_AUTH_CODE).build());
     }
     
     @Operation(summary = "메일 인증코드 검증")
     @GetMapping("/auth")
     public ResponseEntity<ApiResponse<Void>> authEmailCode(HttpServletRequest request,
                               @RequestParam(name = "code")
-                              @NotBlank(message = VALID_EMAIL_CODE_EXCEPTION_MESSAGE) String code) {
+                              @NotBlank(message = EXCEPTION_VALID_EMAIL_CODE) String code) {
         signupService.verifyEmailAuthCode(request.getSession().getId(), code);
         
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .status(true)
-                .message(VERIFY_EMAIL_AUTH_SUCCESS).build());
+                .message(RESPONSE_VERIFY_EMAIL_AUTH_SUCCESS).build());
     }
     
 }

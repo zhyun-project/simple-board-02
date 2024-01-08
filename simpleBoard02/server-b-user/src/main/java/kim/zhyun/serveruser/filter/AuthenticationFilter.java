@@ -23,8 +23,8 @@ import java.util.Set;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.REQUIRED_REQUEST_BODY;
-import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_IN;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_IN;
 import static kim.zhyun.serveruser.utils.FilterApiResponseUtil.sendMessage;
 
 @Slf4j
@@ -47,10 +47,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                     new UsernamePasswordAuthenticationToken(
                             credential.getEmail(),
                             credential.getPassword(),
-                            Set.of(new SimpleGrantedAuthority(role))));
+                            Set.of(new SimpleGrantedAuthority("ROLE_" + role))));
         
         } catch (IOException e) {
-            throw new RuntimeException(REQUIRED_REQUEST_BODY);
+            throw new RuntimeException(EXCEPTION_REQUIRED_REQUEST_BODY);
         }
     }
     
@@ -67,7 +67,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         sendMessage(response,
                 SC_OK,
                 true,
-                String.format(SUCCESS_FORMAT_SIGN_IN, principal.getNickname(), principal.getEmail()));
+                String.format(RESPONSE_SUCCESS_FORMAT_SIGN_IN, principal.getNickname(), principal.getEmail()));
     }
     
 }

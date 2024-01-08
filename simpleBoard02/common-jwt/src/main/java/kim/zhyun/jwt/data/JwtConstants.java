@@ -12,9 +12,7 @@ public class JwtConstants {
     
     public static final String JWT_HEADER = "X-TOKEN";
     public static final String JWT_PREFIX = "Bearer ";
-    public static final String JWT_CLAIM_KEY_USER_GRADE = "grade";
     public static final String JWT_CLAIM_KEY_USER_ID = "id";
-    public static final String JWT_CLAIM_KEY_USER_NICKNAME = "nickname";
     public static final String JWT_CLAIM_GRADE_SEPARATOR = ",";
 
     

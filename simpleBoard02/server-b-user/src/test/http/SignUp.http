@@ -1,45 +1,26 @@
 ### 닉네임 중복 확인
-GET http://localhost:8090/check?nickname=얼거스
+GET http://localhost:8090/check?nickname=얼구스
 
 ### 이메일 중복 확인
-GET http://localhost:8090/check?email=gimwlgus@daum.net
+GET http://localhost:8090/check?email=gimwlgus@kakao.com
 
 ### 이메일 전송
 POST http://localhost:8090/check/auth
 Content-Type: application/json
 
 {
-  "email": "gimwlgus@daum.net"
+  "email": "gimwlgus@kakao.com"
 }
 
 ### 이메일 인증 코드 검증
-GET http://localhost:8090/check/auth?code=708245
+GET http://localhost:8090/check/auth?code=8b6725
 
 ### 회원가입
 POST http://localhost:8090/sign-up
 Content-Type: application/json
 
 {
-  "email": "gimwlgus@daum.net",
-  "nickname": "얼거스",
+  "email": "gimwlgus@kakao.com",
+  "nickname": "얼거s",
   "password": "1234"
 }
-
-### 로그인
-POST http://localhost:8090/login
-Content-Type: application/json
-
-{
-  "email": "gimwlgus@daum.net",
-  "password": "1234"
-}
-
-### 유저 조회
-GET http://localhost:8090/user
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BkYXVtLm5ldCIsImdyYWRlIjoiUk9MRV9NRU1CRVIiLCJleHAiOjE3MDQ0NDYzNzh9.-DduDrzRr1o0zRJe3_9-HT1J542Cio9ccoR5Pa1sld0Ya98P-8E_vfTR3eHebSqK9oJODHXxON9Bbcm0ld30lw
-
-### 로그아웃
-POST http://localhost:8090/logout
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BkYXVtLm5ldCIsImdyYWRlIjoiUk9MRV9NRU1CRVIiLCJleHAiOjE3MDQ0NDYzNzh9.-DduDrzRr1o0zRJe3_9-HT1J542Cio9ccoR5Pa1sld0Ya98P-8E_vfTR3eHebSqK9oJODHXxON9Bbcm0ld30lw
-
-

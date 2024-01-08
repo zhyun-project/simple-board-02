@@ -1,10 +1,11 @@
 package kim.zhyun.serveruser.controller;
 
+import kim.zhyun.jwt.data.JwtUserInfo;
+import kim.zhyun.jwt.repository.JwtUserInfoRepository;
 import kim.zhyun.serveruser.advice.SignUpException;
 import kim.zhyun.serveruser.data.SignInRequest;
 import kim.zhyun.serveruser.data.SignupRequest;
 import kim.zhyun.serveruser.data.entity.User;
-import kim.zhyun.serveruser.data.type.RoleType;
 import kim.zhyun.serveruser.repository.RoleRepository;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
@@ -27,8 +28,9 @@ import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
-import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_IN;
-import static kim.zhyun.serveruser.data.message.ResponseMessage.SUCCESS_FORMAT_SIGN_OUT;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_IN;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_OUT;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -71,7 +73,7 @@ class SignControllerTest {
             
             SignupRequest signupRequest = SignupRequest.of(EMAIL, NICKNAME, PASSWORD);
             
-            doThrow(new SignUpException(REQUIRE_MAIL_DUPLICATE_CHECK))
+            doThrow(new SignUpException(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK))
                     .when(signupService).saveMember(SESSION_ID, signupRequest);
             
             // when-then
@@ -81,7 +83,7 @@ class SignControllerTest {
                             .session(session))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("status").value(false))
-                    .andExpect(jsonPath("message").value(REQUIRE_MAIL_DUPLICATE_CHECK))
+                    .andExpect(jsonPath("message").value(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK))
                     .andDo(print());
         }
         
@@ -96,7 +98,7 @@ class SignControllerTest {
             SignupRequest signupRequestOtherEmail = SignupRequest.of(EMAIL_CHANGED, NICKNAME, PASSWORD);
             
             doNothing().when(signupService).saveMember(SESSION_ID, signupRequest);
-            doThrow(new SignUpException(REQUIRE_MAIL_DUPLICATE_CHECK))
+            doThrow(new SignUpException(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK))
                     .when(signupService).saveMember(SESSION_ID, signupRequestOtherEmail);
             
             // when-then
@@ -106,7 +108,7 @@ class SignControllerTest {
                             .session(session))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("status").value(false))
-                    .andExpect(jsonPath("message").value(REQUIRE_MAIL_DUPLICATE_CHECK))
+                    .andExpect(jsonPath("message").value(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK))
                     .andDo(print());
         }
         
@@ -121,7 +123,7 @@ class SignControllerTest {
             SignupRequest signupRequestOtherNickname = SignupRequest.of(EMAIL, NICKNAME_CHANGED, PASSWORD);
             
             doNothing().when(signupService).saveMember(SESSION_ID, signupRequest);
-            doThrow(new SignUpException(REQUIRE_NICKNAME_DUPLICATE_CHECK))
+            doThrow(new SignUpException(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK))
                     .when(signupService).saveMember(SESSION_ID, signupRequestOtherNickname);
             
             // when-then
@@ -131,7 +133,7 @@ class SignControllerTest {
                             .session(session))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("status").value(false))
-                    .andExpect(jsonPath("message").value(REQUIRE_NICKNAME_DUPLICATE_CHECK))
+                    .andExpect(jsonPath("message").value(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK))
                     .andDo(print());
         }
         
@@ -146,7 +148,7 @@ class SignControllerTest {
             SignupRequest signupRequestPasswordException = SignupRequest.of(EMAIL, NICKNAME_CHANGED, "");
             
             doNothing().when(signupService).saveMember(SESSION_ID, signupRequest);
-            doThrow(new SignUpException(VALID_PASSWORD_EXCEPTION_MESSAGE))
+            doThrow(new SignUpException(EXCEPTION_VALID_PASSWORD_FORMAT))
                     .when(signupService).saveMember(SESSION_ID, signupRequestPasswordException);
             
             // when-then
@@ -156,9 +158,9 @@ class SignControllerTest {
                             .session(session))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("status").value(false))
-                    .andExpect(jsonPath("message").value(VALID_EXCEPTION))
+                    .andExpect(jsonPath("message").value(EXCEPTION_VALID_FORMAT))
                     .andExpect(jsonPath("$.result.[0].field").value("password"))
-                    .andExpect(jsonPath("$.result.[0].message").value(VALID_PASSWORD_EXCEPTION_MESSAGE))
+                    .andExpect(jsonPath("$.result.[0].message").value(EXCEPTION_VALID_PASSWORD_FORMAT))
                     .andDo(print());
         }
         
@@ -173,7 +175,7 @@ class SignControllerTest {
             SignupRequest signupRequestPasswordException = SignupRequest.of(EMAIL, NICKNAME_CHANGED, "tes");
             
             doNothing().when(signupService).saveMember(SESSION_ID, signupRequest);
-            doThrow(new SignUpException(VALID_PASSWORD_EXCEPTION_MESSAGE))
+            doThrow(new SignUpException(EXCEPTION_VALID_PASSWORD_FORMAT))
                     .when(signupService).saveMember(SESSION_ID, signupRequestPasswordException);
             
             // when-then
@@ -183,9 +185,9 @@ class SignControllerTest {
                             .session(session))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("status").value(false))
-                    .andExpect(jsonPath("message").value(VALID_EXCEPTION))
+                    .andExpect(jsonPath("message").value(EXCEPTION_VALID_FORMAT))
                     .andExpect(jsonPath("$.result.[0].field").value("password"))
-                    .andExpect(jsonPath("$.result.[0].message").value(VALID_PASSWORD_EXCEPTION_MESSAGE))
+                    .andExpect(jsonPath("$.result.[0].message").value(EXCEPTION_VALID_PASSWORD_FORMAT))
                     .andDo(print());
         }
         
@@ -235,7 +237,7 @@ class SignControllerTest {
             mvc.perform(post("/login"))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
-                    .andExpect(jsonPath("$.message").value(REQUIRED_REQUEST_BODY))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_REQUIRED_REQUEST_BODY))
                     .andDo(print());
         }
         
@@ -251,7 +253,7 @@ class SignControllerTest {
                             .content(new ObjectMapper().writeValueAsString(signInInfo)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
-                    .andExpect(jsonPath("$.message").value(SIGNIN_FAIL))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_SIGNIN_FAIL))
                     .andDo(print());
         }
         
@@ -267,7 +269,7 @@ class SignControllerTest {
                     .email(email)
                     .password(passwordEncoder.encode(password))
                     .nickname(nickname)
-                    .role(roleRepository.findByGrade(RoleType.MEMBER.name())).build());
+                    .role(roleRepository.findByGrade(TYPE_MEMBER)).build());
             
             String passwordFault = "4321";
             SignInRequest signInInfo = SignInRequest.of(email, passwordFault);
@@ -278,7 +280,7 @@ class SignControllerTest {
                             .content(new ObjectMapper().writeValueAsString(signInInfo)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
-                    .andExpect(jsonPath("$.message").value(SIGNIN_FAIL))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_SIGNIN_FAIL))
                     .andDo(print());
         }
         
@@ -295,7 +297,7 @@ class SignControllerTest {
                     .email(email)
                     .password(passwordEncoder.encode(password))
                     .nickname(nickname)
-                    .role(roleRepository.findByGrade(RoleType.MEMBER.name())).build());
+                    .role(roleRepository.findByGrade(TYPE_MEMBER)).build());
             
             SignInRequest signInInfo = SignInRequest.of(email, password);
             
@@ -305,7 +307,7 @@ class SignControllerTest {
                             .content(new ObjectMapper().writeValueAsString(signInInfo)))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
-                    .andExpect(jsonPath("$.message").value(String.format(SUCCESS_FORMAT_SIGN_IN, nickname, email)))
+                    .andExpect(jsonPath("$.message").value(String.format(RESPONSE_SUCCESS_FORMAT_SIGN_IN, nickname, email)))
                     .andDo(print());
         }
         
@@ -321,12 +323,15 @@ class SignControllerTest {
         
         private final RoleRepository roleRepository;
         private final UserRepository userRepository;
+        private final JwtUserInfoRepository jwtUserInfoRepository;
         private final PasswordEncoder passwordEncoder;
         public LogoutTest(@Autowired RoleRepository roleRepository,
                          @Autowired UserRepository userRepository,
+                         @Autowired JwtUserInfoRepository jwtUserInfoRepository,
                          @Autowired PasswordEncoder passwordEncoder) {
             this.roleRepository = roleRepository;
             this.userRepository = userRepository;
+            this.jwtUserInfoRepository = jwtUserInfoRepository;
             this.passwordEncoder = passwordEncoder;
         }
         
@@ -338,11 +343,18 @@ class SignControllerTest {
             String nickname = "얼거스";
             String password = "1234";
             
-            userRepository.save(User.builder()
+            User saved = userRepository.save(User.builder()
                     .email(email)
                     .password(passwordEncoder.encode(password))
                     .nickname(nickname)
-                    .role(roleRepository.findByGrade(RoleType.MEMBER.name())).build());
+                    .role(roleRepository.findByGrade(TYPE_MEMBER)).build());
+            
+            jwtUserInfoRepository.save(JwtUserInfo.builder()
+                            .id(saved.getId())
+                            .grade(saved.getRole().getGrade())
+                            .email(saved.getEmail())
+                            .nickname(saved.getNickname())
+                    .build());
             
             SignInRequest signInInfo = SignInRequest.of(email, password);
             
@@ -359,7 +371,7 @@ class SignControllerTest {
             mvc.perform(post("/logout").header(JWT_HEADER, jwt))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
-                    .andExpect(jsonPath("$.message").value(String.format(SUCCESS_FORMAT_SIGN_OUT, nickname, email)))
+                    .andExpect(jsonPath("$.message").value(String.format(RESPONSE_SUCCESS_FORMAT_SIGN_OUT, nickname, email)))
                     .andDo(print());
         }
         

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.VALID_PASSWORD_EXCEPTION_MESSAGE;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_VALID_PASSWORD_FORMAT;
 
 @Getter
 @AllArgsConstructor(staticName = "of")
@@ -18,7 +18,7 @@ public class SignupRequest {
     @NotNull private String email;
     @NotNull private String nickname;
     
-    @NotNull @Size(min = 4, message = VALID_PASSWORD_EXCEPTION_MESSAGE)
+    @NotNull @Size(min = 4, message = EXCEPTION_VALID_PASSWORD_FORMAT)
     private String password;
     
     

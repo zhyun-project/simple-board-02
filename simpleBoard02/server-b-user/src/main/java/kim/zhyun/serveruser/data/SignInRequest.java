@@ -10,18 +10,18 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.VALID_PASSWORD_EXCEPTION_MESSAGE;
+import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_VALID_PASSWORD_FORMAT;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor(staticName = "of")
 public class SignInRequest {
     
-    @Email(message = ExceptionMessage.VALID_EMAIL_EXCEPTION_MESSAGE, regexp = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$")
+    @Email(message = ExceptionMessage.EXCEPTION_VALID_EMAIL_FORMAT, regexp = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$")
     @NotNull
     private String email;
     
-    @Size(min = 4, message = VALID_PASSWORD_EXCEPTION_MESSAGE)
+    @Size(min = 4, message = EXCEPTION_VALID_PASSWORD_FORMAT)
     private String password;
     
     @Override

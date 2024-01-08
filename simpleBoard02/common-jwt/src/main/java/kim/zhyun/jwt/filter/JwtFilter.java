@@ -46,7 +46,8 @@ public class JwtFilter extends GenericFilterBean {
             Authentication authentication = provider.authenticationFrom(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             
-            log.info("Security Context에 {}({}) 인증 정보를 저장했습니다. uri: {}",
+            log.info("Security Context에 {} {}({}) 인증 정보를 저장했습니다. uri: {}",
+                    authentication.getAuthorities(),
                     ((JwtUserDto) authentication.getPrincipal()).getNickname(),
                     ((JwtUserDto) authentication.getPrincipal()).getEmail(),
                     requestURI);
