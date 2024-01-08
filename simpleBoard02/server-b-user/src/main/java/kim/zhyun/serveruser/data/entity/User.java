@@ -29,6 +29,9 @@ public class User {
     private String password;
     @Column(length = 30)
     private String nickname;
+
+    @Column(columnDefinition = "bit default 0 comment '탈퇴 여부'")
+    private boolean withdrawal;
     
     @CreatedDate
     @Column(updatable = false)
@@ -48,6 +51,7 @@ public class User {
                 && Objects.equals(getEmail(), user.getEmail())
                 && Objects.equals(getPassword(), user.getPassword())
                 && Objects.equals(getNickname(), user.getNickname())
+                && Objects.equals(isWithdrawal(), user.isWithdrawal())
                 && Objects.equals(getCreatedAt(), user.getCreatedAt())
                 && Objects.equals(getModifiedAt(), user.getModifiedAt())
                 && Objects.equals(getRole(), user.getRole());

@@ -23,6 +23,7 @@ public class UserDto {
     private String email;
     private String nickname;
     private String password;
+    private boolean withdrawal;
     private Role role;
     private LocalDateTime modifiedAt;
     
@@ -32,6 +33,7 @@ public class UserDto {
                 .email(source.getEmail())
                 .password(source.getPassword())
                 .nickname(source.getNickname())
+                .withdrawal(source.isWithdrawal())
                 .role(source.getRole())
                 .modifiedAt(source.getModifiedAt()).build();
     }
@@ -42,6 +44,7 @@ public class UserDto {
                 .email(dto.getEmail())
                 .nickname(dto.getEmail())
                 .password(dto.getPassword())
+                .withdrawal(dto.isWithdrawal())
                 .role(dto.getRole())
                 .modifiedAt(dto.getModifiedAt()).build();
     }
@@ -54,6 +57,7 @@ public class UserDto {
                 && Objects.equals(getEmail(), userDto.getEmail())
                 && Objects.equals(getNickname(), userDto.getNickname())
                 && Objects.equals(getPassword(), userDto.getPassword())
+                && Objects.equals(isWithdrawal(), userDto.isWithdrawal())
                 && Objects.equals(getRole(), userDto.getRole())
                 && Objects.equals(getModifiedAt(), userDto.getModifiedAt());
     }
