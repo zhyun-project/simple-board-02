@@ -351,7 +351,7 @@ class SignControllerTest {
             
             jwtUserInfoRepository.save(JwtUserInfo.builder()
                             .id(saved.getId())
-                            .grade(saved.getRole().getGrade())
+                            .grade("ROLE_" + saved.getRole().getGrade())
                             .email(saved.getEmail())
                             .nickname(saved.getNickname())
                     .build());
