@@ -22,6 +22,7 @@ public class ExceptionMessage {
 
     // 로그인 관련
     public static final String EXCEPTION_SIGNIN_FAIL = "일치하는 사용자 정보가 없습니다.";
+    public static final String EXCEPTION_WITHDRAWAL = "탈퇴한지 %02d일 %02d시 %02d분 경과한 사용자입니다.";
     
     
     // 공통

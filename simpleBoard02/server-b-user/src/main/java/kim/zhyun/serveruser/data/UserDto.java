@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
@@ -23,6 +24,7 @@ public class UserDto {
     private String nickname;
     private String password;
     private Role role;
+    private LocalDateTime modifiedAt;
     
     public static UserDto from(User source) {
         return UserDto.builder()
@@ -30,7 +32,8 @@ public class UserDto {
                 .email(source.getEmail())
                 .password(source.getPassword())
                 .nickname(source.getNickname())
-                .role(source.getRole()).build();
+                .role(source.getRole())
+                .modifiedAt(source.getModifiedAt()).build();
     }
     
     public static User to(UserDto dto) {
@@ -39,7 +42,8 @@ public class UserDto {
                 .email(dto.getEmail())
                 .nickname(dto.getEmail())
                 .password(dto.getPassword())
-                .role(dto.getRole()).build();
+                .role(dto.getRole())
+                .modifiedAt(dto.getModifiedAt()).build();
     }
     
     @Override
@@ -50,7 +54,8 @@ public class UserDto {
                 && Objects.equals(getEmail(), userDto.getEmail())
                 && Objects.equals(getNickname(), userDto.getNickname())
                 && Objects.equals(getPassword(), userDto.getPassword())
-                && Objects.equals(getRole(), userDto.getRole());
+                && Objects.equals(getRole(), userDto.getRole())
+                && Objects.equals(getModifiedAt(), userDto.getModifiedAt());
     }
     
 }
