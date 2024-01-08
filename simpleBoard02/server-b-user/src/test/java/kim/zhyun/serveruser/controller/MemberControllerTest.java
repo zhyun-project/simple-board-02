@@ -43,6 +43,7 @@ class MemberControllerTest {
     private final String ADMIN_USERNAME = "gimwlgus@daum.net";
     private final String MEMBER_1_USERNAME = "member1@daum.net";
     private final String MEMBER_2_USERNAME = "member2@daum.net";
+    private final String WITHDRAWAL_USERNAME = "withdrawal@daum.net";
     
     private final MockMvc mvc;
     private final UserRepository userRepository;
@@ -98,6 +99,19 @@ class MemberControllerTest {
                     .andDo(print());
         }
         
+        @DisplayName("내 계정 조회 - 실패 : 탈퇴자")
+        @Test
+        public void fail_find_by_id_from_withdrawal() throws Exception {
+            User me = withdrawal();
+            setAuthentication(me);
+            
+            mvc.perform(get("/user/{id}", me.getId()))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_PERMISSION))
+                    .andDo(print());
+        }
+        
         @DisplayName("내 계정 조회 - 성공")
         @Test
         public void find_by_id_from_me() throws Exception {
@@ -147,6 +161,26 @@ class MemberControllerTest {
                                     .id(other.getId())
                                     .email(other.getEmail())
                                     .password("왔다갑니다").build())))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_PERMISSION))
+                    .andDo(print());
+        }
+        
+        @DisplayName("실패 - 탈퇴자")
+        @Test
+        public void fail_withdrawal_info_update() throws Exception {
+            // given
+            User me = withdrawal();
+            setAuthentication(me);
+            
+            // when-then
+            mvc.perform(put("/user/{}", me.getId())
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(new ObjectMapper().writeValueAsString(UserUpdateRequest.builder()
+                                    .id(me.getId())
+                                    .email(me.getEmail())
+                                    .password("비밀번호").build())))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
                     .andExpect(jsonPath("$.message").value(EXCEPTION_PERMISSION))
@@ -350,7 +384,7 @@ class MemberControllerTest {
     @Nested
     class UpdateMemberGrade {
         
-        @DisplayName("실패 - `ADMIN`이 아닌 계정의 접근")
+        @DisplayName("실패 - `MEMBER`의 접근")
         @Test
         public void fail_member_access() throws Exception {
             // given
@@ -358,6 +392,29 @@ class MemberControllerTest {
             User target = member_2();
             
             setAuthentication(member);
+            
+            // when-then
+            mvc.perform(put("/user/role")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
+                                    .id(target.getId())
+                                    .role(TYPE_WITHDRAWAL).build())))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_PERMISSION))
+                    .andDo(print());
+            
+            assertEquals(TYPE_MEMBER, member_2().getRole().getGrade());
+        }
+        
+        @DisplayName("실패 - `WITHDRAWAL`의 접근")
+        @Test
+        public void fail_withdrawal_access() throws Exception {
+            // given
+            User withdrawal = withdrawal();
+            User target = member_2();
+            
+            setAuthentication(withdrawal);
             
             // when-then
             mvc.perform(put("/user/role")
@@ -427,6 +484,7 @@ class MemberControllerTest {
     @BeforeEach public void initUser() {
         Role roleAdmin = roleRepository.findByGrade(TYPE_ADMIN);
         Role roleMember = roleRepository.findByGrade(TYPE_MEMBER);
+        Role roleWithdrawal = roleRepository.findByGrade(TYPE_WITHDRAWAL);
         
         userRepository.save(User.builder()
                 .email(ADMIN_USERNAME)
@@ -443,6 +501,11 @@ class MemberControllerTest {
                 .password("1234")
                 .nickname("mem2")
                 .role(roleMember).build());
+        userRepository.save(User.builder()
+                .email(WITHDRAWAL_USERNAME)
+                .password("1234")
+                .nickname("mem2")
+                .role(roleWithdrawal).build());
     }
     @AfterEach public void clean() {
         userRepository.deleteAll();
@@ -456,6 +519,9 @@ class MemberControllerTest {
     }
     private User member_2() {
         return userRepository.findByEmail(MEMBER_2_USERNAME).get();
+    }
+    private User withdrawal() {
+        return userRepository.findByEmail(WITHDRAWAL_USERNAME).get();
     }
     
 }
