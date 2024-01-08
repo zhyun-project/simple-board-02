@@ -24,6 +24,8 @@ import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_AUTHENTICATION;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_PERMISSION;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_ADMIN;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @RequiredArgsConstructor
@@ -52,7 +54,7 @@ public class SecurityConfig {
                         mvcMatcher.pattern("/sign-up/**"),
                         mvcMatcher.pattern("/check/**"),
                         mvcMatcher.pattern("/login/**")).permitAll()
-                .anyRequest().authenticated());
+                .anyRequest().hasAnyRole(TYPE_ADMIN, TYPE_MEMBER));
         
         http.exceptionHandling(config -> config
                 .accessDeniedHandler((request, response, exception) -> {
