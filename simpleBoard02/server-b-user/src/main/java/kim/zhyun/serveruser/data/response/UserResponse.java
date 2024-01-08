@@ -49,4 +49,9 @@ public class UserResponse {
                 && Objects.equals(getRole(), userDto.getRole());
     }
     
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId(), getEmail(), getNickname(), getRole());
+    }
+    
 }
