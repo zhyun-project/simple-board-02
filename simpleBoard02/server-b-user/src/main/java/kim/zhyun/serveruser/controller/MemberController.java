@@ -65,7 +65,7 @@ public class MemberController {
     @Operation(summary = "계정 권한 수정")
     @PreAuthorize("hasRole('"+TYPE_ADMIN+"')")
     @PutMapping("/role")
-    public ResponseEntity<Object> updateByIdAndRole(@RequestBody UserGradeUpdateRequest request) {
+    public ResponseEntity<Object> updateByIdAndRole(@Valid @RequestBody UserGradeUpdateRequest request) {
         UserResponse savedUser = memberService.updateUserGrade(request);
         
         return ResponseEntity.created(fromCurrentContextPath().path("/user").build().toUri())
