@@ -2,6 +2,7 @@ package kim.zhyun.serveruser.controller;
 
 import kim.zhyun.serveruser.config.SecurityConfig;
 import kim.zhyun.serveruser.data.NicknameDto;
+import kim.zhyun.serveruser.data.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.data.UserUpdateRequest;
 import kim.zhyun.serveruser.data.entity.Role;
 import kim.zhyun.serveruser.data.entity.User;
@@ -26,7 +27,7 @@ import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
 import static kim.zhyun.serveruser.data.message.ResponseMessage.*;
 import static kim.zhyun.serveruser.data.type.RoleType.*;
 import static kim.zhyun.serveruser.util.TestSecurityUser.setAuthentication;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -343,6 +344,85 @@ class MemberControllerTest {
             }
         }
     }
+    
+    
+    @DisplayName("회원 권한 수정 테스트")
+    @Nested
+    class UpdateMemberGrade {
+        
+        @DisplayName("실패 - `ADMIN`이 아닌 계정의 접근")
+        @Test
+        public void fail_member_access() throws Exception {
+            // given
+            User member = member_1();
+            User target = member_2();
+            
+            setAuthentication(member);
+            
+            // when-then
+            mvc.perform(put("/user/role")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
+                                    .id(target.getId())
+                                    .role(TYPE_WITHDRAWAL).build())))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_PERMISSION))
+                    .andDo(print());
+            
+            assertEquals(TYPE_MEMBER, member_2().getRole().getGrade());
+        }
+        
+        @DisplayName("실패 - 권한 입력 안됨")
+        @Test
+        public void fail_grade_setting_is_null() throws Exception {
+            // given
+            User admin = admin();
+            User target = member_2();
+            
+            setAuthentication(admin);
+            
+            // when-then
+            mvc.perform(put("/user/role")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
+                                    .id(target.getId()).build())))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_VALID_FORMAT))
+                    .andDo(print());
+        }
+        
+        @DisplayName("성공")
+        @Test
+        public void success() throws Exception {
+            // given
+            User admin = admin();
+            User target = member_2();
+            
+            setAuthentication(admin);
+            
+            // when-then
+            String updateRoleType = TYPE_WITHDRAWAL;
+            
+            assertNotEquals(target.getRole().getGrade(), updateRoleType);
+            
+            mvc.perform(put("/user/role")
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
+                                    .id(target.getId())
+                                    .role(updateRoleType).build())))
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.message").value(String.format(
+                            RESPONSE_USER_GRADE_UPDATE, target.getNickname(), updateRoleType)))
+                    .andDo(print());
+            
+            target = member_2();
+            assertEquals(target.getRole().getGrade(), updateRoleType);
+        }
+    }
+    
     
     @BeforeEach public void initUser() {
         Role roleAdmin = roleRepository.findByGrade(TYPE_ADMIN);

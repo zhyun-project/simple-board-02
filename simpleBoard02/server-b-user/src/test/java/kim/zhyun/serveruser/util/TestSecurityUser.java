@@ -12,7 +12,7 @@ import org.springframework.security.test.context.TestSecurityContextHolder;
 
 import java.util.Set;
 
-@Disabled("테스트 클래스 아님")
+@Disabled("테스트 유틸")
 public class TestSecurityUser {
     
     @DisplayName("Authentication 객체 설정")
@@ -25,7 +25,7 @@ public class TestSecurityUser {
         SecurityContext securityContext = TestSecurityContextHolder.getContext();
         securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(
                 jwtUserDto, "",
-                Set.of(new SimpleGrantedAuthority(user.getRole().getGrade()))));
+                Set.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().getGrade()))));
         TestSecurityContextHolder.setContext(securityContext);
     }
 }
