@@ -1,13 +1,15 @@
 package kim.zhyun.serveruser.data;
 
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_VALID_NICKNAME_FORMAT;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_VALID_PASSWORD_FORMAT;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Getter @Setter
 public class UserUpdateRequest {
     private long id;

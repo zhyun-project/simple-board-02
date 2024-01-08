@@ -1,24 +1,31 @@
 package kim.zhyun.serveruser.util;
 
 import kim.zhyun.jwt.data.JwtUserDto;
+import kim.zhyun.serveruser.data.entity.User;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.TestSecurityContextHolder;
+
+import java.util.Set;
 
 @Disabled("테스트 클래스 아님")
 public class TestSecurityUser {
     
     @DisplayName("Authentication 객체 설정")
-    public static void setAuthentication(String username, String nickname) {
+    public static void setAuthentication(User user) {
         JwtUserDto jwtUserDto = JwtUserDto.builder()
-                .email(username)
-                .nickname(nickname)
-                .id(1L).build();
+                .email(user.getEmail())
+                .nickname(user.getNickname())
+                .id(user.getId()).build();
         
-        SecurityContext securityContext = SecurityContextHolder.getContext();
-        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(jwtUserDto, "", securityContext.getAuthentication().getAuthorities()));
-        SecurityContextHolder.setContext(securityContext);
+        SecurityContext securityContext = TestSecurityContextHolder.getContext();
+        securityContext.setAuthentication(new UsernamePasswordAuthenticationToken(
+                jwtUserDto, "",
+                Set.of(new SimpleGrantedAuthority(user.getRole().getGrade()))));
+        TestSecurityContextHolder.setContext(securityContext);
     }
 }
