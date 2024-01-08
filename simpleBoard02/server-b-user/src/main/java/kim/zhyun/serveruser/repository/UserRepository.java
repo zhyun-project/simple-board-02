@@ -3,6 +3,7 @@ package kim.zhyun.serveruser.repository;
 import kim.zhyun.serveruser.data.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -14,4 +15,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // 로그인
     Optional<User> findByEmail(String email);
     
+    // 탈퇴 회원 조회
+    List<User> findAllByWithdrawalIsTrueOrderByModifiedAtAsc();
 }

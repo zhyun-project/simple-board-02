@@ -73,6 +73,11 @@ sign-up:
     gimwlgus@gmail.com,
     gimwlgus@daum.net
 
+withdrawal:
+  cron: "0 0 3 * * *" # 매일 3시 삭제 실행
+  expiration-time: 1
+  expiration-time-unit: d # d: Day , h: Hour, m: Minute, s: Second
+
 token:
   expiration-time: 1
   expiration-time-unit: d # d: Day , h: Hour, m: Minute, s: Second

@@ -18,22 +18,30 @@ import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.service.MemberService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
+import static kim.zhyun.jwt.data.JwtConstants.JWT_USER_INFO_KEY;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
 import static kim.zhyun.serveruser.data.type.RoleType.TYPE_WITHDRAWAL;
+import static kim.zhyun.serveruser.utils.DateTimeUtil.beforeDateTime;
 import static org.springframework.data.domain.Sort.Order.asc;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -152,6 +160,40 @@ public class MemberServiceImpl implements MemberService {
         return UserDto.from(updated);
     }
     
+    @Scheduled(cron = "${withdrawal.cron}", zone = "Asia/Seoul")
+    @Override
+    public void userDeleteSchedule() {
+        Set<User> deleteRdbList = deleteListForRdb();
+        Set<String> deleteRedisList = deleteListForRedis(deleteRdbList);
+        
+        log.info("📆 Scheduler start - delete count = RDB: {}, Redis: {} ----┐", deleteRdbList.size(), deleteRedisList.size());
+        
+        // TODO: 게시글 삭제
+        userRepository.deleteAllInBatch(deleteRdbList);
+        redisTemplate.delete(deleteRedisList);
+        
+        log.info("📆 Scheduler end-------------------------------------------┘");
+    }
+    
+    
+    /**
+     * redis - 유예 기간 지난 탈퇴 회원 목록
+     */
+    private static Set<String> deleteListForRedis(Set<User> deleteList) {
+        return deleteList.stream()
+                .map(user -> String.format("%s:%d", JWT_USER_INFO_KEY, user.getId()))
+                .collect(Collectors.toSet());
+    }
+    
+    /**
+     * rdb - 유예 기간 지난 탈퇴 회원 목록
+     */
+    private Set<User> deleteListForRdb() {
+        LocalDateTime targetDateTime = beforeDateTime();
+        return userRepository.findAllByWithdrawalIsTrueOrderByModifiedAtAsc().stream()
+                .filter(user -> user.getModifiedAt().isBefore(targetDateTime))
+                .collect(Collectors.toSet());
+    }
     
     /**
      * redis user info 저장소 업데이트
