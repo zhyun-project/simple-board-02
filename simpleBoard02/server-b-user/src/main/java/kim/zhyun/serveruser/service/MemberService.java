@@ -15,5 +15,6 @@ public interface MemberService extends UserDetailsService {
     void logout(String token, String email);
     UserResponse updateUserInfo(String sessionId, UserUpdateRequest request);
     UserResponse updateUserGrade(UserGradeUpdateRequest request);
+    UserDto withdrawal(String jwt);
     
 }

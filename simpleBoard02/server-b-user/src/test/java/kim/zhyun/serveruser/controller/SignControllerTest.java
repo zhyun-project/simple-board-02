@@ -295,7 +295,8 @@ class SignControllerTest {
                     .email(email)
                     .password(passwordEncoder.encode(password))
                     .nickname(nickname)
-                    .role(roleRepository.findByGrade(TYPE_WITHDRAWAL)).build());
+                    .role(roleRepository.findByGrade(TYPE_WITHDRAWAL))
+                    .withdrawal(true).build());
             
             SignInRequest signInInfo = SignInRequest.of(email, password);
             

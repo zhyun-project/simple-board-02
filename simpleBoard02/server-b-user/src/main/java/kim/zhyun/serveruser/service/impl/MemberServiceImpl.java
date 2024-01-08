@@ -31,6 +31,7 @@ import java.util.Optional;
 
 import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_WITHDRAWAL;
 import static org.springframework.data.domain.Sort.Order.asc;
 
 @RequiredArgsConstructor
@@ -131,6 +132,24 @@ public class MemberServiceImpl implements MemberService {
         User saved = userRepository.save(user);
         jwtUserInfoUpdate(saved);
         return UserResponse.from(saved);
+    }
+    
+    @Override
+    public UserDto withdrawal(String jwt) {
+        Optional<User> userContainer = userRepository.findById(jwtProvider.idFrom(jwt));
+        
+        if (userContainer.isEmpty())
+            throw new MemberException(EXCEPTION_NOT_FOUND);
+        
+        User user = userContainer.get();
+        Role roleWithdrawal = roleRepository.findByGrade(TYPE_WITHDRAWAL);
+        user.setRole(roleWithdrawal);
+        user.setWithdrawal(true);
+        
+        User updated = userRepository.save(user);
+        jwtUserInfoUpdate(updated);
+        
+        return UserDto.from(updated);
     }
     
     

@@ -38,9 +38,8 @@ public class SecurityAuthenticationManager implements AuthenticationManager {
         if (!passwordEncoder.matches(password, userDto.getPassword()))
             throw new MemberException(EXCEPTION_SIGNIN_FAIL);
         
-        if (userDto.getRole().getGrade().equals(TYPE_WITHDRAWAL)) {
+        if (userDto.isWithdrawal()) {
             Map<String, Long> dateTime = withdrawalDateTimeMap(userDto.getModifiedAt());
-            
             throw new MemberException(String.format(EXCEPTION_WITHDRAWAL,
                     dateTime.get("d"),
                     dateTime.get("h"),
