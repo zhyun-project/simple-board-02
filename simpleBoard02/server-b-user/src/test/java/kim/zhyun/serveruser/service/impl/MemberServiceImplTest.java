@@ -2,7 +2,9 @@ package kim.zhyun.serveruser.service.impl;
 
 import kim.zhyun.jwt.data.JwtConstants;
 import kim.zhyun.jwt.data.JwtUserDto;
+import kim.zhyun.jwt.data.JwtUserInfo;
 import kim.zhyun.jwt.provider.JwtProvider;
+import kim.zhyun.jwt.repository.JwtUserInfoRepository;
 import kim.zhyun.jwt.storage.JwtLogoutStorage;
 import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
@@ -10,6 +12,7 @@ import kim.zhyun.serveruser.config.SecurityConfig;
 import kim.zhyun.serveruser.controller.SignController;
 import kim.zhyun.serveruser.data.SignInRequest;
 import kim.zhyun.serveruser.data.UserDto;
+import kim.zhyun.serveruser.data.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.data.entity.Role;
 import kim.zhyun.serveruser.data.entity.User;
 import kim.zhyun.serveruser.filter.AuthenticationFilter;
@@ -46,6 +49,8 @@ import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.jwt.data.JwtResponseMessage.JWT_EXPIRED;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_SIGNIN_FAIL;
 import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_WITHDRAWAL;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -291,6 +296,68 @@ class MemberServiceImplTest {
         @BeforeEach
         public void clean() {
             redisTemplate.keys("*").forEach(redisTemplate::delete);
+        }
+    }
+    
+    @DisplayName("회원 정보 수정 테스트")
+    @Nested
+    class MemberInfoUpdate {
+    
+    }
+    
+    @DisplayName("회원 권한 수정 테스트")
+    @Nested
+    class MemberGradeUpdateRealTest {
+        
+        private final MemberServiceImpl memberService;
+        private final UserRepository userRepository;
+        private final JwtUserInfoRepository jwtUserInfoRepository;
+        private final RoleRepository roleRepository;
+        public MemberGradeUpdateRealTest(@Autowired MemberServiceImpl memberService,
+                                         @Autowired UserRepository userRepository,
+                                         @Autowired JwtUserInfoRepository jwtUserInfoRepository,
+                                         @Autowired RoleRepository roleRepository) {
+            this.memberService = memberService;
+            this.userRepository = userRepository;
+            this.jwtUserInfoRepository = jwtUserInfoRepository;
+            this.roleRepository = roleRepository;
+        }
+        
+        @DisplayName("권한 수정")
+        @Test
+        public void success() {
+            Role roleMember = roleRepository.findByGrade(TYPE_MEMBER);
+            
+            UserGradeUpdateRequest updateRequest = UserGradeUpdateRequest.builder()
+                    .id(1L)
+                    .role(TYPE_WITHDRAWAL).build();
+            
+            User mem1 = User.builder()
+                    .id(updateRequest.getId())
+                    .email("member@mem.ber")
+                    .nickname("mem1")
+                    .password("1234")
+                    .role(roleMember).build();
+            
+            userRepository.save(mem1);
+            
+            // when
+            var before  = mem1.getRole().getGrade();
+            var updated = memberService.updateUserGrade(updateRequest);
+            var after   = updated.getRole().getGrade();
+            
+            // then
+            assertThat(before).isNotEqualTo(after);
+            
+            JwtUserInfo jwtUserInfo = jwtUserInfoRepository.findById(mem1.getId()).get();
+            User user = userRepository.findById(mem1.getId()).get();
+            
+            assertThat(jwtUserInfo.getId()).isEqualTo(user.getId());
+            assertThat(jwtUserInfo.getEmail()).isEqualTo(user.getEmail());
+            assertThat(jwtUserInfo.getNickname()).isEqualTo(user.getNickname());
+            assertThat(jwtUserInfo.getGrade()).contains(user.getRole().getGrade());
+            
+            assertThat(jwtUserInfo.getGrade()).doesNotContain(mem1.getRole().getGrade());
         }
     }
 }
