@@ -495,18 +495,16 @@ class MemberServiceImplTest {
         public void success() {
             Role roleMember = roleRepository.findByGrade(TYPE_MEMBER);
             
-            UserGradeUpdateRequest updateRequest = UserGradeUpdateRequest.builder()
-                    .id(1L)
-                    .role(TYPE_WITHDRAWAL).build();
-            
             User mem1 = User.builder()
-                    .id(updateRequest.getId())
                     .email("member@mem.ber")
                     .nickname("mem1")
                     .password("1234")
                     .role(roleMember).build();
-            
             userRepository.save(mem1);
+            
+            UserGradeUpdateRequest updateRequest = UserGradeUpdateRequest.builder()
+                    .id(userRepository.findByEmail(mem1.getEmail()).get().getId())
+                    .role(TYPE_WITHDRAWAL).build();
             
             // when
             var before  = mem1.getRole().getGrade();
@@ -672,6 +670,7 @@ class MemberServiceImplTest {
         }
         @AfterEach  public void clean() {
             userRepository.deleteAll();
+            jwtUserInfoRepository.deleteAll();
         }
         
         private User admin() {
