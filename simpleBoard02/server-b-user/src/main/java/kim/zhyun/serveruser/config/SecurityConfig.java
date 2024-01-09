@@ -54,6 +54,8 @@ public class SecurityConfig {
                         mvcMatcher.pattern("/sign-up/**"),
                         mvcMatcher.pattern("/check/**"),
                         mvcMatcher.pattern("/login/**")).permitAll()
+                .requestMatchers(
+                        mvcMatcher.pattern("/withdrawal/**")).authenticated()
                 .anyRequest().hasAnyRole(TYPE_ADMIN, TYPE_MEMBER));
         
         http.exceptionHandling(config -> config
