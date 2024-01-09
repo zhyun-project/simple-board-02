@@ -134,8 +134,12 @@ public class MemberServiceImpl implements MemberService {
             throw new MemberException(EXCEPTION_NOT_FOUND);
         
         User user = userContainer.get();
-        Role role = roleRepository.findByGrade(request.getRole().toUpperCase());
-        user.setRole(role);
+        String roleType = request.getRole().toUpperCase();
+        
+        if (user.getRole().getGrade().equals(TYPE_WITHDRAWAL) && roleType.equals(TYPE_WITHDRAWAL))
+            return UserResponse.from(user);
+        
+        userSetRole(user, roleType);
         
         User saved = userRepository.save(user);
         jwtUserInfoUpdate(saved);
@@ -150,9 +154,7 @@ public class MemberServiceImpl implements MemberService {
             throw new MemberException(EXCEPTION_NOT_FOUND);
         
         User user = userContainer.get();
-        Role roleWithdrawal = roleRepository.findByGrade(TYPE_WITHDRAWAL);
-        user.setRole(roleWithdrawal);
-        user.setWithdrawal(true);
+        userSetRole(user, TYPE_WITHDRAWAL);
         
         User updated = userRepository.save(user);
         jwtUserInfoUpdate(updated);
@@ -173,6 +175,15 @@ public class MemberServiceImpl implements MemberService {
         redisTemplate.delete(deleteRedisList);
         
         log.info("📆 Scheduler end-------------------------------------------┘");
+    }
+    
+    /**
+     * 회원 권한 설정
+     */
+    private void userSetRole(User user, String roleType) {
+        Role role = roleRepository.findByGrade(roleType);
+        user.setRole(role);
+        user.setWithdrawal(TYPE_WITHDRAWAL.equals(roleType));
     }
     
     
