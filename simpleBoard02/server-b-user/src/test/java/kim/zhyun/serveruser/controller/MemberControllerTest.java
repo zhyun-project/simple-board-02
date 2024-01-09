@@ -625,11 +625,25 @@ class MemberControllerTest {
             // given
             User target = withdrawal();
             
-            Thread.sleep(Duration.of(EXPIRE_TIME + 7 , EXPIRE_TIME_UNIT));
+            User member1 = member_1();
+            member1.setWithdrawal(true);
+            member1.setRole(target.getRole());
+            userRepository.save(member1);
+            
+            User member2 = member_2();
+            member2.setWithdrawal(true);
+            member2.setRole(target.getRole());
+            userRepository.save(member2);
+            
+            Thread.sleep(Duration.of(EXPIRE_TIME + 11 , EXPIRE_TIME_UNIT));
             
             // when-then
-            SignInRequest signInRequest = SignInRequest.of(target.getEmail(), "1234");
-            var period = DateTimeUtil.dateTimeCalculate(target.getModifiedAt());
+            hoxy_scheduler_physicalDeletedUserLogin(SignInRequest.of(target.getEmail(), "1234"));
+            hoxy_scheduler_physicalDeletedUserLogin(SignInRequest.of(member1.getEmail(), "1234"));
+            hoxy_scheduler_physicalDeletedUserLogin(SignInRequest.of(member2.getEmail(), "1234"));
+        }
+        
+        private void hoxy_scheduler_physicalDeletedUserLogin(SignInRequest signInRequest) throws Exception {
             mvc.perform(post("/login")
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(signInRequest)))
@@ -638,6 +652,7 @@ class MemberControllerTest {
                     .andExpect(jsonPath("$.message").value(EXCEPTION_SIGNIN_FAIL))
                     .andDo(print());
         }
+        
     }
     
     
