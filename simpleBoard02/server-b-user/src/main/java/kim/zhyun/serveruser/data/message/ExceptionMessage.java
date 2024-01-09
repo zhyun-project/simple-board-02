@@ -32,4 +32,7 @@ public class ExceptionMessage {
     public static final String EXCEPTION_AUTHENTICATION = "로그인이 필요합니다.";
     public static final String EXCEPTION_NOT_FOUND = "잘못된 요청입니다.";
     
+    // 회원 권한
+    public static final String EXCEPTION_ALREADY_WITHDRAWN_MEMBER = "탈퇴한 회원입니다.";
+    
 }

@@ -137,7 +137,7 @@ public class MemberServiceImpl implements MemberService {
         String roleType = request.getRole().toUpperCase();
         
         if (user.getRole().getGrade().equals(TYPE_WITHDRAWAL) && roleType.equals(TYPE_WITHDRAWAL))
-            return UserResponse.from(user);
+            throw new MemberException(EXCEPTION_ALREADY_WITHDRAWN_MEMBER);
         
         userSetRole(user, roleType);
         
