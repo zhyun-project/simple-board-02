@@ -490,7 +490,6 @@ class MemberControllerTest {
         }
     }
     
-    @Import(SchedulerConfig.class)
     @DisplayName("회원 탈퇴 테스트")
     @Nested
     class WithdrawalTest {
@@ -688,7 +687,7 @@ class MemberControllerTest {
                 .withdrawal(true)
                 .role(roleWithdrawal).build());
     }
-    @AfterEach public void clean() {
+    @AfterEach  public void clean() {
         userRepository.deleteAll();
     }
     
