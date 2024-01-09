@@ -2,8 +2,16 @@ server:
   port: 8090
 
 spring:
+  profiles:
+    active: local
+
+---
+
+spring:
   config:
     import: classpath:password.yml
+    activate:
+      on-profile: local
 
   h2:
     console:
@@ -74,9 +82,10 @@ sign-up:
     gimwlgus@daum.net
 
 withdrawal:
-  cron: "0 0 3 * * *" # 매일 3시 삭제 실행
-  expiration-time: 1
-  expiration-time-unit: d # d: Day , h: Hour, m: Minute, s: Second
+#  cron: "0 0 3 * * *" # 매일 3시 삭제 실행
+  cron: "* 0/1 * * * *" # 1분마다 삭제 실행
+  expiration-time: 30
+  expiration-time-unit: s # d: Day , h: Hour, m: Minute, s: Second
 
 token:
   expiration-time: 1
