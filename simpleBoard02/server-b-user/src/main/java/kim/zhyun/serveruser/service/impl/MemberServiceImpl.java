@@ -18,21 +18,30 @@ import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.service.MemberService;
 import kim.zhyun.serveruser.service.SessionUserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
+import static kim.zhyun.jwt.data.JwtConstants.JWT_USER_INFO_KEY;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_WITHDRAWAL;
+import static kim.zhyun.serveruser.utils.DateTimeUtil.beforeDateTime;
 import static org.springframework.data.domain.Sort.Order.asc;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class MemberServiceImpl implements MemberService {
@@ -125,14 +134,78 @@ public class MemberServiceImpl implements MemberService {
             throw new MemberException(EXCEPTION_NOT_FOUND);
         
         User user = userContainer.get();
-        Role role = roleRepository.findByGrade(request.getRole().toUpperCase());
-        user.setRole(role);
+        String roleType = request.getRole().toUpperCase();
+        
+        if (user.getRole().getGrade().equals(TYPE_WITHDRAWAL) && roleType.equals(TYPE_WITHDRAWAL))
+            throw new MemberException(EXCEPTION_ALREADY_WITHDRAWN_MEMBER);
+        
+        userSetRole(user, roleType);
         
         User saved = userRepository.save(user);
         jwtUserInfoUpdate(saved);
         return UserResponse.from(saved);
     }
     
+    @Override
+    public UserDto withdrawal(String jwt) {
+        String token = jwt.substring(JWT_PREFIX.length());
+        Optional<User> userContainer = userRepository.findById(jwtProvider.idFrom(token));
+        
+        if (userContainer.isEmpty())
+            throw new MemberException(EXCEPTION_NOT_FOUND);
+        
+        User user = userContainer.get();
+        userSetRole(user, TYPE_WITHDRAWAL);
+        
+        User updated = userRepository.save(user);
+        jwtUserInfoUpdate(updated);
+        
+        return UserDto.from(updated);
+    }
+    
+    @Scheduled(cron = "${withdrawal.cron}", zone = "Asia/Seoul")
+    @Override
+    public void userDeleteSchedule() {
+        Set<User> deleteRdbList = deleteListForRdb();
+        Set<String> deleteRedisList = deleteListForRedis(deleteRdbList);
+        
+        log.info("📆 Scheduler start - delete count = RDB: {}, Redis: {} ----┐", deleteRdbList.size(), deleteRedisList.size());
+        
+        // TODO: 게시글 삭제
+        userRepository.deleteAllInBatch(deleteRdbList);
+        redisTemplate.delete(deleteRedisList);
+        
+        log.info("📆 Scheduler end-------------------------------------------┘");
+    }
+    
+    /**
+     * 회원 권한 설정
+     */
+    private void userSetRole(User user, String roleType) {
+        Role role = roleRepository.findByGrade(roleType);
+        user.setRole(role);
+        user.setWithdrawal(TYPE_WITHDRAWAL.equals(roleType));
+    }
+    
+    
+    /**
+     * redis - 유예 기간 지난 탈퇴 회원 목록
+     */
+    private static Set<String> deleteListForRedis(Set<User> deleteList) {
+        return deleteList.stream()
+                .map(user -> String.format("%s:%d", JWT_USER_INFO_KEY, user.getId()))
+                .collect(Collectors.toSet());
+    }
+    
+    /**
+     * rdb - 유예 기간 지난 탈퇴 회원 목록
+     */
+    private Set<User> deleteListForRdb() {
+        LocalDateTime targetDateTime = beforeDateTime();
+        return userRepository.findAllByWithdrawalIsTrueOrderByModifiedAtAsc().stream()
+                .filter(user -> user.getModifiedAt().isBefore(targetDateTime))
+                .collect(Collectors.toSet());
+    }
     
     /**
      * redis user info 저장소 업데이트

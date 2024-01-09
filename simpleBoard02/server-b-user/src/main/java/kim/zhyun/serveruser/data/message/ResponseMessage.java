@@ -29,5 +29,6 @@ public class ResponseMessage {
     public static final String RESPONSE_USER_REFERENCE_ME = "계정 상세 조회";
     public static final String RESPONSE_USER_INFO_UPDATE = "%s님 계정 정보가 수정되었습니다."; // %s : 닉네임
     public static final String RESPONSE_USER_GRADE_UPDATE = "%s님 권한이 %s(으)로 수정되었습니다."; // %s : 닉네임, 권한
+    public static final String RESPONSE_USER_WITHDRAWAL = "%s(%s)님 탈퇴되었습니다."; // %s : 닉네임, 이메일
     
 }

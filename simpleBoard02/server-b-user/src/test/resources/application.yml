@@ -6,6 +6,10 @@ spring:
     console:
       enabled: true
 
+  datasource:
+    url: jdbc:h2:./simpleBoard02/server-b-user/h2/member-test;AUTO_SERVER=true;mode=MYSQL;
+    username: sa
+
   sql:
     init:
       mode: always
@@ -62,6 +66,11 @@ sign-up:
   admin:
     gimwlgus@gmail.com,
     gimwlgus@daum.net
+
+withdrawal:
+  cron: "0/5 * * * * *" # 5초마다 삭제 실행
+  expiration-time: 10
+  expiration-time-unit: s # d: Day , h: Hour, m: Minute, s: Second
 
 token:
   expiration-time: 30

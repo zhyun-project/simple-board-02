@@ -5,8 +5,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kim.zhyun.jwt.data.JwtUserDto;
-import kim.zhyun.serveruser.data.response.ApiResponse;
 import kim.zhyun.serveruser.data.SignupRequest;
+import kim.zhyun.serveruser.data.UserDto;
+import kim.zhyun.serveruser.data.response.ApiResponse;
 import kim.zhyun.serveruser.service.MemberService;
 import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
-import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_OUT;
-import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_UP;
+import static kim.zhyun.serveruser.data.message.ResponseMessage.*;
 
 
 @Tag(name = "회원가입, 회원탈퇴 API")
@@ -39,9 +39,9 @@ public class SignController {
     
     @Operation(summary = "로그아웃")
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request, Authentication authentication) {
+    public ResponseEntity<ApiResponse<Void>> logout(@RequestHeader(JWT_HEADER) String jwt, Authentication authentication) {
         JwtUserDto principal = (JwtUserDto) authentication.getPrincipal();
-        memberService.logout(request.getHeader(JWT_HEADER), principal.getEmail());
+        memberService.logout(jwt, principal.getEmail());
         
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .status(true)
@@ -50,8 +50,12 @@ public class SignController {
     
     @Operation(summary = "회원탈퇴")
     @DeleteMapping("/withdrawal")
-    public void withdrawal() {
-    
+    public ResponseEntity<Object> withdrawal(@RequestHeader(JWT_HEADER) String jwt) {
+        UserDto withdrawal = memberService.withdrawal(jwt);
+        
+        return ResponseEntity.ok(ApiResponse.builder()
+                        .status(true)
+                        .message(String.format(RESPONSE_USER_WITHDRAWAL, withdrawal.getNickname(), withdrawal.getEmail())).build());
     }
     
 }

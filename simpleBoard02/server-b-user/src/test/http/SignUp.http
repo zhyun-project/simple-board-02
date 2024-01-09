@@ -13,7 +13,7 @@ Content-Type: application/json
 }
 
 ### 이메일 인증 코드 검증
-GET http://localhost:8090/check/auth?code=8b6725
+GET http://localhost:8090/check/auth?code=b7b894
 
 ### 회원가입
 POST http://localhost:8090/sign-up
@@ -21,6 +21,6 @@ Content-Type: application/json
 
 {
   "email": "gimwlgus@kakao.com",
-  "nickname": "얼거s",
+  "nickname": "얼구스",
   "password": "1234"
 }

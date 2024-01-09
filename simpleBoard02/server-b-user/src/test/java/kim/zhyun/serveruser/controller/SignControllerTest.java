@@ -10,11 +10,9 @@ import kim.zhyun.serveruser.repository.RoleRepository;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
 import kim.zhyun.serveruser.service.SignUpService;
+import kim.zhyun.serveruser.utils.DateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,6 +29,7 @@ import static kim.zhyun.serveruser.data.message.ExceptionMessage.*;
 import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_IN;
 import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_OUT;
 import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
+import static kim.zhyun.serveruser.data.type.RoleType.TYPE_WITHDRAWAL;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -284,6 +283,36 @@ class SignControllerTest {
                     .andDo(print());
         }
         
+        @DisplayName("실패 - 탈퇴자")
+        @Test
+        public void fail_withdrawal() throws Exception {
+            
+            // given
+            String email = "withdrawal@daum.net";
+            String nickname = "탈퇴자";
+            String password = "1234";
+            
+            User saved = userRepository.save(User.builder()
+                    .email(email)
+                    .password(passwordEncoder.encode(password))
+                    .nickname(nickname)
+                    .role(roleRepository.findByGrade(TYPE_WITHDRAWAL))
+                    .withdrawal(true).build());
+            
+            SignInRequest signInInfo = SignInRequest.of(email, password);
+            
+            // when-then
+            var period = DateTimeUtil.dateTimeCalculate(saved.getModifiedAt());
+            mvc.perform(post("/login")
+                            .contentType(APPLICATION_JSON)
+                            .content(new ObjectMapper().writeValueAsString(signInInfo)))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(String.format(
+                            EXCEPTION_WITHDRAWAL, period.days(), period.hours(), period.minutes())))
+                    .andDo(print());
+        }
+        
         @DisplayName("성공")
         @Test
         public void success() throws Exception {
@@ -320,6 +349,11 @@ class SignControllerTest {
     @DisplayName("로그아웃 테스트")
     @Nested
     class LogoutTest {
+        String email = "gimwlgus@daum.net";
+        String emailWithdrawal = "withdrawal@daum.net";
+        String nickname = "얼거스";
+        String nicknameWithdrawal = "탈퇴자";
+        String password = "1234";
         
         private final RoleRepository roleRepository;
         private final UserRepository userRepository;
@@ -335,25 +369,31 @@ class SignControllerTest {
             this.passwordEncoder = passwordEncoder;
         }
         
+        @DisplayName("실패 - 탈퇴자")
+        @Test
+        public void fail() throws Exception {
+            // given
+            User withdrawal = withdrawal();
+            
+            // when-then
+            mvc.perform(post("/logout"))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_AUTHENTICATION))
+                    .andDo(print());
+        }
+        
         @DisplayName("성공")
         @Test
         public void success() throws Exception {
             // given
-            String email = "gimwlgus@daum.net";
-            String nickname = "얼거스";
-            String password = "1234";
-            
-            User saved = userRepository.save(User.builder()
-                    .email(email)
-                    .password(passwordEncoder.encode(password))
-                    .nickname(nickname)
-                    .role(roleRepository.findByGrade(TYPE_MEMBER)).build());
+            User saved = member();
             
             jwtUserInfoRepository.save(JwtUserInfo.builder()
-                            .id(saved.getId())
-                            .grade(saved.getRole().getGrade())
-                            .email(saved.getEmail())
-                            .nickname(saved.getNickname())
+                    .id(saved.getId())
+                    .grade("ROLE_" + saved.getRole().getGrade())
+                    .email(saved.getEmail())
+                    .nickname(saved.getNickname())
                     .build());
             
             SignInRequest signInInfo = SignInRequest.of(email, password);
@@ -375,9 +415,28 @@ class SignControllerTest {
                     .andDo(print());
         }
         
-        @AfterEach
-        public void clean() {
+        @BeforeEach public void init() {
+            userRepository.save(User.builder()
+                    .email(email)
+                    .password(passwordEncoder.encode(password))
+                    .nickname(nickname)
+                    .role(roleRepository.findByGrade(TYPE_MEMBER)).build());
+            
+            userRepository.save(User.builder()
+                    .email(emailWithdrawal)
+                    .password(passwordEncoder.encode(password))
+                    .nickname(nicknameWithdrawal)
+                    .role(roleRepository.findByGrade(TYPE_WITHDRAWAL)).build());
+        }
+        @AfterEach public void clean() {
             userRepository.deleteAll();
+        }
+        
+        private User member() {
+            return userRepository.findByEmail(email).get();
+        }
+        private User withdrawal() {
+            return userRepository.findByEmail(emailWithdrawal).get();
         }
     }
 }
