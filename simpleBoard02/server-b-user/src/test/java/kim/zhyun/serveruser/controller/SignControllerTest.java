@@ -10,6 +10,7 @@ import kim.zhyun.serveruser.repository.RoleRepository;
 import kim.zhyun.serveruser.repository.UserRepository;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
 import kim.zhyun.serveruser.service.SignUpService;
+import kim.zhyun.serveruser.utils.DateTimeUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -301,15 +302,14 @@ class SignControllerTest {
             SignInRequest signInInfo = SignInRequest.of(email, password);
             
             // when-then
-            Thread.sleep(60_000);
-            
+            var period = DateTimeUtil.dateTimeCalculate(saved.getModifiedAt());
             mvc.perform(post("/login")
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(signInInfo)))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
                     .andExpect(jsonPath("$.message").value(String.format(
-                            EXCEPTION_WITHDRAWAL, 0, 0, 1)))
+                            EXCEPTION_WITHDRAWAL, period.days(), period.hours(), period.minutes())))
                     .andDo(print());
         }
         
