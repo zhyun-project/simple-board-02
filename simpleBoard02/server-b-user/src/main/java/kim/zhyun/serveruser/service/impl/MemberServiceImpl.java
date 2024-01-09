@@ -211,7 +211,6 @@ public class MemberServiceImpl implements MemberService {
      * redis user info 저장소 업데이트
      */
     private void jwtUserInfoUpdate(User user) {
-        log.info("user update : {}", user);
         jwtUserInfoRepository.save(JwtUserInfo.builder()
                 .id(user.getId())
                 .email(user.getEmail())
