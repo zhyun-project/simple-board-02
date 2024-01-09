@@ -6,6 +6,7 @@ import kim.zhyun.jwt.data.JwtUserInfo;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.jwt.repository.JwtUserInfoRepository;
 import kim.zhyun.jwt.storage.JwtLogoutStorage;
+import kim.zhyun.jwt.util.TimeUnitUtil;
 import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
 import kim.zhyun.serveruser.config.SecurityConfig;
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
@@ -42,10 +44,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.TestSecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Set;
 
@@ -54,15 +58,17 @@ import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.jwt.data.JwtResponseMessage.JWT_EXPIRED;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_SIGNIN_FAIL;
-import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
-import static kim.zhyun.serveruser.data.type.RoleType.TYPE_WITHDRAWAL;
+import static kim.zhyun.serveruser.data.type.RoleType.*;
+import static kim.zhyun.serveruser.util.TestSecurityUser.setAuthentication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -526,4 +532,156 @@ class MemberServiceImplTest {
         }
     }
     
+    @DisplayName("회원 탈퇴 테스트")
+    @AutoConfigureMockMvc
+    @Nested
+    class WithdrawalTest {
+        private final String ADMIN_USERNAME = "gimwlgus@daum.net";
+        private final String WITHDRAWAL_USERNAME = "withdrawal@daum.net";
+        
+        private final long EXPIRE_TIME;
+        private final ChronoUnit EXPIRE_TIME_UNIT;
+        
+        private RoleRepository roleRepository;
+        private UserRepository userRepository;
+        private JwtUserInfoRepository jwtUserInfoRepository;
+        private PasswordEncoder passwordEncoder;
+        private MockMvc mvc;
+        
+        public WithdrawalTest(@Autowired MockMvc mvc,
+                              @Autowired RoleRepository roleRepository,
+                              @Autowired UserRepository userRepository,
+                              @Autowired JwtUserInfoRepository jwtUserInfoRepository,
+                              @Autowired PasswordEncoder passwordEncoder,
+                              @Value("${withdrawal.expiration-time}") long expireTime,
+                              @Value("${withdrawal.expiration-time-unit}") String expireTimeUnit) {
+            this.mvc = mvc;
+            this.roleRepository = roleRepository;
+            this.userRepository = userRepository;
+            this.jwtUserInfoRepository = jwtUserInfoRepository;
+            this.passwordEncoder = passwordEncoder;
+            this.EXPIRE_TIME = expireTime;
+            this.EXPIRE_TIME_UNIT = TimeUnitUtil.timeUnitFrom(expireTimeUnit);
+        }
+        
+        @DisplayName("탈퇴 후 유예기간이 끝나기 전에 관리자에 의해 탈퇴 취소 된 경우 db 데이터 확인 (cron 설정: 5초마다)")
+        @Test
+        void check_database_re_member() throws Exception {
+            // given
+            User target = withdrawal().get();
+            User admin = admin();
+            
+            // when
+            setAuthentication(admin);
+            mvc.perform(put("/user/role")
+                            .contentType(APPLICATION_JSON)
+                            .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
+                                    .id(target.getId())
+                                    .role(TYPE_MEMBER).build())))
+                    .andExpect(status().isCreated());
+            TestSecurityContextHolder.clearContext();
+            
+            // then
+            User targetUpdated = withdrawal().get();
+            assertThat(targetUpdated.getRole()).isNotEqualTo(target.getRole());
+            assertThat(targetUpdated.isWithdrawal()).isNotEqualTo(target.isWithdrawal());
+            assertThat(targetUpdated.getModifiedAt()).isNotEqualTo(target.getModifiedAt());
+            
+            assertThat(targetUpdated.getId()).isEqualTo(target.getId());
+            assertThat(targetUpdated.getEmail()).isEqualTo(target.getEmail());
+            assertThat(targetUpdated.getNickname()).isEqualTo(target.getNickname());
+            assertThat(targetUpdated.getCreatedAt()).isEqualTo(target.getCreatedAt());
+        }
+        
+        @DisplayName("탈퇴 유예기간이 끝난 후 db 데이터 확인")
+        @Test
+        void check_database_deleted_user() throws Exception {
+            // given
+            Optional<User> targetContainer = withdrawal();
+            User target = targetContainer.get();
+            
+            Optional<JwtUserInfo> redisTarget = withdrawalFromRedis(target);
+            
+            assertThat(targetContainer).isNotEmpty();
+            assertThat(redisTarget).isNotEmpty();
+            
+            // when
+            Thread.sleep(Duration.of(EXPIRE_TIME + 11, EXPIRE_TIME_UNIT));
+            
+            // then
+            Optional<User> targetUpdated = withdrawal();
+            Optional<JwtUserInfo> redisTargetUpdated = withdrawalFromRedis(target);
+            
+            assertThat(targetUpdated).isEmpty();
+            assertThat(redisTargetUpdated).isEmpty();
+        }
+        
+        @DisplayName("탈퇴한 회원을 관리자가 다시 탈퇴 처리할 경우 회원 db 데이터 확인")
+        @Test
+        void check_database_re_withdrawal() throws Exception {
+            // given
+            var admin  = admin();
+            var target = withdrawal().get();
+            var redisTarget = withdrawalFromRedis(target).get();
+            
+            // when
+            setAuthentication(admin);
+            mvc.perform(put("/user/role")
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
+                            .id(target.getId())
+                            .role(TYPE_WITHDRAWAL).build())))
+                    .andExpect(status().isBadRequest());
+            TestSecurityContextHolder.clearContext();
+            
+            // then
+            var targetUpdated = withdrawal().get();
+            var redisTargetUpdated = withdrawalFromRedis(target).get();
+            
+            assertThat(targetUpdated).isEqualTo(target);
+            assertThat(redisTargetUpdated).isEqualTo(redisTarget);
+        }
+        
+        
+        @BeforeEach public void initUser() {
+            Role roleAdmin = roleRepository.findByGrade(TYPE_ADMIN);
+            Role roleMember = roleRepository.findByGrade(TYPE_MEMBER);
+            Role roleWithdrawal = roleRepository.findByGrade(TYPE_WITHDRAWAL);
+            
+            String password = passwordEncoder.encode("1234");
+            
+            userRepository.save(User.builder()
+                    .email(ADMIN_USERNAME)
+                    .password(password)
+                    .nickname("admin")
+                    .withdrawal(false)
+                    .role(roleAdmin).build());
+            
+            User savedWithdrawal = userRepository.save(User.builder()
+                    .email(WITHDRAWAL_USERNAME)
+                    .password(password)
+                    .nickname("탈퇴🖐️")
+                    .withdrawal(true)
+                    .role(roleWithdrawal).build());
+            
+            jwtUserInfoRepository.save(JwtUserInfo.builder()
+                    .id(savedWithdrawal.getId())
+                    .email(savedWithdrawal.getEmail())
+                    .nickname(savedWithdrawal.getNickname())
+                    .grade(savedWithdrawal.getRole().getGrade()).build());
+        }
+        @AfterEach  public void clean() {
+            userRepository.deleteAll();
+        }
+        
+        private User admin() {
+            return userRepository.findByEmail(ADMIN_USERNAME).get();
+        }
+        private Optional<User> withdrawal() {
+            return userRepository.findByEmail(WITHDRAWAL_USERNAME);
+        }
+        private Optional<JwtUserInfo> withdrawalFromRedis(User target) {
+            return jwtUserInfoRepository.findById(JwtUserInfo.builder().id(target.getId()).build().getId());
+        }
+    }
 }
