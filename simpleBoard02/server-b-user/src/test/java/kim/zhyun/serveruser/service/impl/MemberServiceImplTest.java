@@ -223,13 +223,9 @@ class MemberServiceImplTest {
             
             String jwt = jwtProvider.tokenFrom(authentication);
             
-            MockHttpServletRequest servletRequest = new MockHttpServletRequest();
-            servletRequest.setContentType(APPLICATION_JSON_VALUE);
-            servletRequest.addHeader(JWT_HEADER, JWT_PREFIX + jwt);
-            
             // when
             assertFalse(jwtLogoutStorage.isLogoutToken(jwt, username));
-            controller.logout(servletRequest, authentication);
+            controller.logout(JWT_PREFIX + jwt, authentication);
             
             // then
             assertTrue(jwtLogoutStorage.isLogoutToken(jwt, username));
@@ -252,13 +248,9 @@ class MemberServiceImplTest {
             
             String jwt = jwtProvider.tokenFrom(authentication);
             
-            MockHttpServletRequest servletRequest = new MockHttpServletRequest();
-            servletRequest.setContentType(APPLICATION_JSON_VALUE);
-            servletRequest.addHeader(JWT_HEADER, JWT_PREFIX + jwt);
-            
             // when-then
             assertFalse(jwtLogoutStorage.isLogoutToken(jwt, username));
-            controller.logout(servletRequest, authentication);
+            controller.logout(JWT_PREFIX + jwt, authentication);
             assertTrue(jwtLogoutStorage.isLogoutToken(jwt, username));
             
             mvc.perform(get("/user").header(JWT_HEADER, JWT_PREFIX + jwt))
@@ -284,13 +276,9 @@ class MemberServiceImplTest {
             
             String jwt = jwtProvider.tokenFrom(authentication);
             
-            MockHttpServletRequest servletRequest = new MockHttpServletRequest();
-            servletRequest.setContentType(APPLICATION_JSON_VALUE);
-            servletRequest.addHeader(JWT_HEADER, JWT_PREFIX + jwt);
-            
             // when
             assertFalse(jwtLogoutStorage.isLogoutToken(jwt, username));
-            controller.logout(servletRequest, authentication);
+            controller.logout(JWT_PREFIX + jwt, authentication);
             assertTrue(jwtLogoutStorage.isLogoutToken(jwt, username));
             
             Thread.sleep(Duration.of(jwtItems.expiredTime, jwtItems.expiredTimeUnit.toChronoUnit()));
