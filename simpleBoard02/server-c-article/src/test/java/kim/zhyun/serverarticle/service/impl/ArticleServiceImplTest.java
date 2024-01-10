@@ -3,14 +3,9 @@ package kim.zhyun.serverarticle.service.impl;
 import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.jwt.data.JwtUserInfo;
 import kim.zhyun.jwt.repository.JwtUserInfoRepository;
-import kim.zhyun.serverarticle.advice.MemberException;
 import kim.zhyun.serverarticle.container.RedisTestContainer;
-import kim.zhyun.serverarticle.respository.ArticleRepository;
-import kim.zhyun.serverarticle.service.ArticleService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,27 +16,23 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_NOT_FOUND;
 import static kim.zhyun.serverarticle.data.type.RoleType.TYPE_ADMIN;
 import static kim.zhyun.serverarticle.data.type.RoleType.TYPE_MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
+@Order(0)
 @ExtendWith(RedisTestContainer.class)
 @SpringBootTest
 class ArticleServiceImplTest {
     private final JwtUserInfoRepository jwtUserInfoRepository;
-    private final ArticleRepository articleRepository;
     private final RedisTemplate<String, String> redisTemplate;
     
     @Value("${key.redis.articleId}") private String REDIS_ARTICLE_ID_KEY;
     
     public ArticleServiceImplTest(@Autowired JwtUserInfoRepository jwtUserInfoRepository,
-                                  @Autowired ArticleRepository articleRepository,
                                   @Autowired RedisTemplate<String, String> redisTemplate) {
         this.jwtUserInfoRepository = jwtUserInfoRepository;
-        this.articleRepository = articleRepository;
         this.redisTemplate = redisTemplate;
     }
     
@@ -75,7 +66,7 @@ class ArticleServiceImplTest {
     @DisplayName("getNewArticleId() 검증 - 신규 가입자")
     @Test
     void article_id_from_redis_by_user_id_is_exist_false() {
-        String redisArticleCountKey = REDIS_ARTICLE_ID_KEY + 2L;
+        String redisArticleCountKey = REDIS_ARTICLE_ID_KEY + 12L;
         
         if (!redisTemplate.hasKey(redisArticleCountKey)) {
             redisTemplate.opsForValue().set(redisArticleCountKey, "0");
@@ -115,6 +106,14 @@ class ArticleServiceImplTest {
         initRedisUserInfo(2, "gimwlgus@gmail.com", "얼거스", TYPE_ADMIN);
         initRedisUserInfo(3, "gimwlgus@daum.net", "zhyun", TYPE_MEMBER);
         initRedisUserInfo(5, "gimwlgus@kakao.com", "얼구스", TYPE_MEMBER);
+    }
+    
+    @AfterEach
+    void clean() {
+        redisTemplate.keys("*").stream()
+                .filter(key -> key.startsWith(REDIS_ARTICLE_ID_KEY))
+                .map(redisTemplate::delete)
+                .close();
     }
     
     private void initRedisUserInfo(long id, String email, String nickname, String grade) {
