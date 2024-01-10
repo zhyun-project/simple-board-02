@@ -23,8 +23,17 @@ public class JwtUserDto {
 
     /**  @apiNote ⚠️ `Authentication.principal` 객체에만 사용  */
     public static JwtUserDto from(Object principal) {
+        
+        if (principal instanceof JwtUserInfo source) {
+            return JwtUserDto.builder()
+                    .id(source.getId())
+                    .email(source.getEmail())
+                    .nickname(source.getNickname()).build();
+        }
+        
         return (JwtUserDto) principal;
     }
+    
     
     @Override
     public boolean equals(Object o) {
