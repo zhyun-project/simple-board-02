@@ -1,0 +1,34 @@
+spring:
+
+  datasource:
+    url: jdbc:h2:./h2/article-test;AUTO_SERVER=true;mode=MYSQL;
+    username: sa
+
+  sql:
+    init:
+      mode: always
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        highlight_sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+logging:
+  level:
+    org.hibernate.sql: debug
+    org.hibernate.type: trace
+
+---
+
+token:
+  secret: VGhpc2lzSnd0U2VjcmV0S2V5Rm9yU2ltcGxlQm9hcmQwMlByb2plY3RNYWRlQnlaaHl1bktpbU9yV2xndXNLaW0=
