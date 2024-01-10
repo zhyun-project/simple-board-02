@@ -9,23 +9,22 @@ Content-Type: application/json
 
 ### 유저 조회
 GET http://localhost:8090/user
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MiwiZXhwIjoxNzA0NzMyMDYxfQ.i9KI9ujmCLkitGOu4soJC75P-b-X6LPg0AAJ9Ap8Wsr0X_FqbPSKjbUK7NkUvurg_CZjCqziPKiefdf5sdVOqg
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzA3NDE3NTU4fQ.ET6WN0c6uilPXubDWy7PDbMRP_aZdSXRoRn-BgC9HhQ6aFO_vGnAlzeKl8b3DoPDai0Qg5lKz3iuBtEtUKwWDg
 
 ### 유저 조회
-GET http://localhost:8090/user/4
+GET http://localhost:8090/user/5
 X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzA3NDE3NTU4fQ.ET6WN0c6uilPXubDWy7PDbMRP_aZdSXRoRn-BgC9HhQ6aFO_vGnAlzeKl8b3DoPDai0Qg5lKz3iuBtEtUKwWDg
 
 
 ### 유저 정보 수정
-PUT http://localhost:8090/user/4
+PUT http://localhost:8090/user/5
 X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzA3NDE3NTU4fQ.ET6WN0c6uilPXubDWy7PDbMRP_aZdSXRoRn-BgC9HhQ6aFO_vGnAlzeKl8b3DoPDai0Qg5lKz3iuBtEtUKwWDg
-
 Content-Type: application/json
 
 {
   "id": 5,
   "email": "gimwlgus@kakao.com",
-  "nickname": "얼구스s",
+  "nickname": "얼구스",
   "password": "1234"
 }
 
