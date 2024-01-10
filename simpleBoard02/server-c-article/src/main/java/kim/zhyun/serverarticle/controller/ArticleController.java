@@ -4,9 +4,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kim.zhyun.jwt.data.JwtUserDto;
+import kim.zhyun.serverarticle.advice.ArticleException;
 import kim.zhyun.serverarticle.data.ArticleSaveRequest;
 import kim.zhyun.serverarticle.data.ArticleUpdateRequest;
 import kim.zhyun.serverarticle.data.ArticlesDeleteRequest;
+import kim.zhyun.serverarticle.data.message.ExceptionMessage;
 import kim.zhyun.serverarticle.data.response.ApiResponse;
 import kim.zhyun.serverarticle.data.response.ArticleResponse;
 import kim.zhyun.serverarticle.service.ArticleService;
@@ -20,6 +22,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.util.List;
 
+import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_NOT_FOUND;
 import static kim.zhyun.serverarticle.data.message.ResponseMessage.*;
 import static org.springframework.http.HttpStatus.NO_CONTENT;
 
@@ -65,7 +68,8 @@ public class ArticleController {
     }
     
     @Operation(summary = "게시글 등록")
-    @PreAuthorize("#userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id")
+    @PreAuthorize("(#userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id) " +
+            "&& (#request.userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id)")
     @PostMapping("/{userId}/articles")
     public ResponseEntity<Object> save(@PathVariable long userId,
                                        @RequestBody @Valid ArticleSaveRequest request) {
@@ -78,11 +82,16 @@ public class ArticleController {
     }
     
     @Operation(summary = "게시글 수정")
-    @PreAuthorize("#userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id")
+    @PreAuthorize("(#userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id) " +
+            "&& (#request.userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id)")
     @PutMapping("/{userId}/articles/{articleId}")
     public ResponseEntity<Object> updateByArticleId(@PathVariable long userId,
                                                     @PathVariable long articleId,
                                                     @RequestBody @Valid ArticleUpdateRequest request) {
+        
+        if (request.getUserId() != userId || request.getArticleId() != articleId)
+            throw new ArticleException(EXCEPTION_NOT_FOUND);
+        
         articleService.update(request);
         return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest().build().toUri())
                 .body(ApiResponse.builder()
@@ -91,24 +100,22 @@ public class ArticleController {
     }
     
     @Operation(summary = "게시글 삭제")
-    @PreAuthorize("#userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id")
+    @PreAuthorize("(#userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id) " +
+            "&& (#request.userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id)")
     @DeleteMapping("/{userId}/articles")
     public ResponseEntity<Object> deleteByArticleId(@PathVariable long userId,
                                                     @RequestBody ArticlesDeleteRequest request) {
         articleService.delete(request);
-        return ResponseEntity.status(NO_CONTENT)
-                .body(ApiResponse.builder()
+        return ResponseEntity.ok(ApiResponse.builder()
                         .status(true)
                         .message(RESPONSE_ARTICLE_DELETE).build());
     }
     
     @Operation(summary = "탈퇴 유저 게시글 삭제")
-    @PreAuthorize("#userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id")
     @DeleteMapping("/withdrawal/{userId}/articles")
     public ResponseEntity<Object> deleteAllByUser(@PathVariable long userId) {
         articleService.deleteUserAll(userId);
-        return ResponseEntity.status(NO_CONTENT)
-                .body(ApiResponse.builder()
+        return ResponseEntity.ok(ApiResponse.builder()
                         .status(true)
                         .message(RESPONSE_ARTICLE_DELETE_FOR_WITHDRAWAL).build());
     }

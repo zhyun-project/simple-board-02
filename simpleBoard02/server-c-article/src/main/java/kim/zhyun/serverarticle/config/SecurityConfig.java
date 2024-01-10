@@ -18,6 +18,7 @@ import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_AU
 import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_PERMISSION;
 import static kim.zhyun.serverarticle.data.type.RoleType.TYPE_ADMIN;
 import static kim.zhyun.serverarticle.data.type.RoleType.TYPE_MEMBER;
+import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
@@ -36,7 +37,7 @@ public class SecurityConfig {
                 .requestMatchers("/error/**").permitAll()
                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                 .requestMatchers(antMatcher(GET, "/**/articles/**")).permitAll()
-//                .requestMatchers(regexMatcher(GET, ".*\\/articles.*")).permitAll()
+                .requestMatchers(antMatcher(DELETE,"/withdrawal/**")).permitAll()
                 .anyRequest().hasAnyRole(TYPE_ADMIN, TYPE_MEMBER));
         
         http.exceptionHandling(config -> config

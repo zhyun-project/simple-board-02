@@ -22,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_ARTICLE_NOT_FOUND;
-import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_NOT_FOUND;
+import static kim.zhyun.serverarticle.data.message.ExceptionMessage.*;
+import static kim.zhyun.serverarticle.data.type.RoleType.ROLE_WITHDRAWAL;
 import static org.springframework.data.domain.Sort.Order.desc;
 
 @RequiredArgsConstructor
@@ -56,7 +56,7 @@ public class ArticleServiceImpl implements ArticleService {
     public List<ArticleResponse> findAllByUser(long userId) {
         JwtUserDto jwtUserDto = getJwtUserDto(userId);
         
-        return articleRepository.findAll(Sort.by(desc("createdAt"))).stream()
+        return articleRepository.findAllByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(article -> ArticleResponse.from(article, jwtUserDto))
                 .toList();
     }
@@ -97,6 +97,10 @@ public class ArticleServiceImpl implements ArticleService {
             throw new ArticleException(EXCEPTION_ARTICLE_NOT_FOUND);
         
         Article article = articleContainer.get();
+        
+        if (article.getArticleId() != request.getArticleId() || article.getUserId() != request.getUserId())
+            throw new ArticleException(EXCEPTION_NOT_FOUND);
+        
         article.setTitle(request.getTitle());
         article.setContent(request.getContent());
     }
@@ -115,6 +119,11 @@ public class ArticleServiceImpl implements ArticleService {
     
     @Override
     public void deleteUserAll(long userId) {
+        Optional<JwtUserInfo> container = jwtUserInfoRepository.findById(userId);
+        
+        if (container.isEmpty() || !container.get().getGrade().equals(ROLE_WITHDRAWAL))
+            throw new MemberException(EXCEPTION_NOT_WITHDRAWAL);
+            
         List<Article> list = articleRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
         articleRepository.deleteAllInBatch(list);
     }

@@ -14,7 +14,6 @@ import static kim.zhyun.serverarticle.data.message.ExceptionMessage.*;
 @Getter @Builder
 public class ArticleSaveRequest {
     
-    private long articleId;
     private long userId;
     
 //    @NotNull(message = EXCEPTION_TITLE_IS_NULL)
@@ -28,12 +27,11 @@ public class ArticleSaveRequest {
     @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ArticleSaveRequest that)) return false;
-        return articleId == that.articleId
-                && userId == that.userId
+        return userId == that.userId
                 && Objects.equals(title, that.title)
                 && Objects.equals(content, that.content);
     }
     @Override public int hashCode() {
-        return Objects.hash(articleId, userId, title, content);
+        return Objects.hash(userId, title, content);
     }
 }
