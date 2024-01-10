@@ -27,8 +27,7 @@ import java.util.List;
 import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_AUTHENTICATION;
 import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_PERMISSION;
 import static kim.zhyun.serverarticle.data.message.ResponseMessage.RESPONSE_ARTICLE_INSERT;
-import static kim.zhyun.serverarticle.data.type.RoleType.TYPE_ADMIN;
-import static kim.zhyun.serverarticle.data.type.RoleType.TYPE_MEMBER;
+import static kim.zhyun.serverarticle.data.type.RoleType.*;
 import static kim.zhyun.serverarticle.util.TestSecurityUser.getJwtUserDto;
 import static kim.zhyun.serverarticle.util.TestSecurityUser.setAuthentication;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -335,7 +334,7 @@ class ArticleControllerTest {
             mvc.perform(delete("/{userId}/articles", member1.getId())
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(deleteRequest)))
-                    .andExpect(status().isNoContent())
+                    .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
                     .andDo(print());
             
@@ -358,16 +357,23 @@ class ArticleControllerTest {
             JwtUserDto member2 = getJwtUserDto();
             saveArticle100(member2);
             
-            setAuthentication(jwtProvider, "member1");
+            TestSecurityContextHolder.clearContext();
+            
+            JwtUserInfo withdrawal = JwtUserInfo.builder()
+                    .id(member1.getId())
+                    .grade(ROLE_WITHDRAWAL)
+                    .nickname(member1.getNickname())
+                    .email(member1.getEmail()).build();
+            jwtUserInfoRepository.save(withdrawal);
             
             // when
             ArticlesDeleteRequest deleteRequest = ArticlesDeleteRequest.builder()
                     .userId(member1.getId()).build(); // 10개 - 중복제외
             
-            mvc.perform(delete("/withdrawal/{userId}/articles", member1.getId())
+            mvc.perform(delete("/withdrawal/{userId}/articles", withdrawal.getId())
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(deleteRequest)))
-                    .andExpect(status().isNoContent())
+                    .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
                     .andDo(print());
             
