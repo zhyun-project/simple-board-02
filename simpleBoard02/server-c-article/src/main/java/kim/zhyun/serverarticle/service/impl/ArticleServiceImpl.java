@@ -42,7 +42,10 @@ public class ArticleServiceImpl implements ArticleService {
         Map<Long, JwtUserDto> jwtUserMap = new HashMap<>();
         
         jwtUserInfoRepository.findAll()
-                .forEach(jwtUserInfo -> jwtUserMap.put(jwtUserInfo.getId(), JwtUserDto.from(jwtUserInfo)));
+                .forEach(jwtUserInfo -> {
+                    if (jwtUserInfo == null) return;
+                    jwtUserMap.put(jwtUserInfo.getId(), JwtUserDto.from(jwtUserInfo));
+                });
         
         return articleRepository.findAll(Sort.by(desc("createdAt"))).stream()
                 .map(article -> ArticleResponse.from(article, jwtUserMap.get(article.getUserId())))

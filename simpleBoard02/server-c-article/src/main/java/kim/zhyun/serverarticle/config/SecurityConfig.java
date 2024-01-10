@@ -33,8 +33,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         
         http.authorizeHttpRequests(config -> config
+                .requestMatchers("/error/**").permitAll()
                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                 .requestMatchers(antMatcher(GET, "/**/articles/**")).permitAll()
+//                .requestMatchers(regexMatcher(GET, ".*\\/articles.*")).permitAll()
                 .anyRequest().hasAnyRole(TYPE_ADMIN, TYPE_MEMBER));
         
         http.exceptionHandling(config -> config
