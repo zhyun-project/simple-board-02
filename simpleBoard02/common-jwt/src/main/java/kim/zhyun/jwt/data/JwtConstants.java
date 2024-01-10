@@ -17,13 +17,17 @@ public class JwtConstants {
     public static final String JWT_USER_INFO_KEY = "USER_INFO";
 
     
-    @Value("${token.expiration-time}")  public Long expiredTime;
-    @Value("${token.secret}")           public String secretKey;
+    public String secretKey;
+    public Long expiredTime;
     public TimeUnit expiredTimeUnit;
     
     
-    public JwtConstants(@Value("${token.expiration-time-unit}")  String expiredTimeUnitString) {
-        expiredTimeUnit = TimeUnit.of(timeUnitFrom(expiredTimeUnitString));
+    public JwtConstants(@Value("${token.secret}") String secretKey,
+                        @Value("${token.expiration-time-unit}")  String expiredTimeUnitString,
+                        @Value("${token.expiration-time}")  Long expiredTime) {
+        this.secretKey = secretKey;
+        this.expiredTime = expiredTime;
+        this.expiredTimeUnit = TimeUnit.of(timeUnitFrom(expiredTimeUnitString));
     }
     
 }
