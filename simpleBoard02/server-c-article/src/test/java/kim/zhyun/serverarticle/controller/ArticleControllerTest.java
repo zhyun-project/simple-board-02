@@ -65,7 +65,7 @@ class ArticleControllerTest {
     @Test
     @WithAnonymousUser
     void search_target_user_detail() throws Exception {
-        mvc.perform(get("/{userId}/articles", 1))
+        mvc.perform(get("/{userId}/articles/{articleId}", 1, 1))
                 .andExpect(status().isOk())
                 .andDo(print());
     }
@@ -197,11 +197,6 @@ class ArticleControllerTest {
     
     
     @BeforeEach void init() {
-        initRedisUserInfo(2, "gimwlgus@gmail.com", "얼거스", TYPE_ADMIN);
-        initRedisUserInfo(3, "gimwlgus@daum.net", "zhyun", TYPE_MEMBER);
-        initRedisUserInfo(5, "gimwlgus@kakao.com", "얼구스", TYPE_MEMBER);
-    }
-    @AfterEach void clean() {
         initRedisUserInfo(2, "gimwlgus@gmail.com", "얼거스", TYPE_ADMIN);
         initRedisUserInfo(3, "gimwlgus@daum.net", "zhyun", TYPE_MEMBER);
         initRedisUserInfo(5, "gimwlgus@kakao.com", "얼구스", TYPE_MEMBER);
