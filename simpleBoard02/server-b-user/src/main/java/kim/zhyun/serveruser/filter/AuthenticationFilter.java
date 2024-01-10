@@ -7,19 +7,19 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.jwt.provider.JwtProvider;
+import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
 import kim.zhyun.serveruser.data.SignInRequest;
-import kim.zhyun.serveruser.service.MemberService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.util.Set;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
@@ -28,10 +28,19 @@ import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS
 import static kim.zhyun.serveruser.utils.FilterApiResponseUtil.sendMessage;
 
 @Slf4j
-@RequiredArgsConstructor
+@Component
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private final MemberService userService;
     private final JwtProvider jwtProvider;
+    
+    public AuthenticationFilter(SecurityAuthenticationManager securityAuthenticationManager,
+                                JwtProvider jwtProvider,
+                                @Value("${token.expiration-time-unit}") String expiredTimeUnit,
+                                @Value("${token.expiration-time}") Long expiredTime) {
+        super(securityAuthenticationManager);
+        
+        this.jwtProvider = jwtProvider;
+        this.jwtProvider.setJwtExpired(expiredTime, expiredTimeUnit);
+    }
     
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
@@ -42,12 +51,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             if (credential == null)
                 return SecurityContextHolder.getContext().getAuthentication();
                 
-            String role = userService.findByEmail(credential.getEmail()).getRole().getGrade();
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
                             credential.getEmail(),
                             credential.getPassword(),
-                            Set.of(new SimpleGrantedAuthority("ROLE_" + role))));
+                            null));
         
         } catch (IOException e) {
             throw new RuntimeException(EXCEPTION_REQUIRED_REQUEST_BODY);

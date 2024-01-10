@@ -1,7 +1,6 @@
 package kim.zhyun.serveruser.service.impl;
 
 import io.netty.util.internal.StringUtil;
-import kim.zhyun.jwt.data.JwtConstants;
 import kim.zhyun.jwt.data.JwtUserInfo;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.jwt.repository.JwtUserInfoRepository;
@@ -48,7 +47,6 @@ public class MemberServiceImpl implements MemberService {
     private final UserRepository userRepository;
     private final RedisTemplate<String, String> redisTemplate;
     private final JwtProvider jwtProvider;
-    private final JwtConstants jwtItems;
     private final PasswordEncoder passwordEncoder;
     private final SessionUserService sessionUserService;
     private final JwtUserInfoRepository jwtUserInfoRepository;
@@ -87,7 +85,7 @@ public class MemberServiceImpl implements MemberService {
         String jwt = token.substring(JWT_PREFIX.length());
         
         redisTemplate.opsForSet().add(jwt, email);
-        redisTemplate.expire(jwt, jwtItems.expiredTime, jwtItems.expiredTimeUnit);
+        redisTemplate.expire(jwt, jwtProvider.expiredTime, jwtProvider.expiredTimeUnit);
         
         SecurityContextHolder.clearContext();
     }

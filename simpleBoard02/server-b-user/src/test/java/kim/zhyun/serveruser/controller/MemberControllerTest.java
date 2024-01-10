@@ -1,5 +1,7 @@
 package kim.zhyun.serveruser.controller;
 
+import kim.zhyun.jwt.data.JwtUserInfo;
+import kim.zhyun.jwt.repository.JwtUserInfoRepository;
 import kim.zhyun.jwt.util.TimeUnitUtil;
 import kim.zhyun.serveruser.config.SchedulerConfig;
 import kim.zhyun.serveruser.config.SecurityConfig;
@@ -60,16 +62,19 @@ class MemberControllerTest {
     private final RoleRepository roleRepository;
     private final NicknameReserveService nicknameReserveService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUserInfoRepository jwtUserInfoRepository;
     public MemberControllerTest(@Autowired MockMvc mvc,
                                 @Autowired UserRepository userRepository,
                                 @Autowired RoleRepository roleRepository,
                                 @Autowired NicknameReserveService nicknameReserveService,
-                                @Autowired PasswordEncoder passwordEncoder) {
+                                @Autowired PasswordEncoder passwordEncoder,
+                                @Autowired JwtUserInfoRepository jwtUserInfoRepository) {
         this.mvc = mvc;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.nicknameReserveService = nicknameReserveService;
         this.passwordEncoder = passwordEncoder;
+        this.jwtUserInfoRepository = jwtUserInfoRepository;
     }
     
     @DisplayName("회원 계정 조회 테스트")
@@ -501,7 +506,6 @@ class MemberControllerTest {
                               @Value("${withdrawal.expiration-time-unit}") String expireTimeUnit) {
             this.EXPIRE_TIME = expireTime;
             this.EXPIRE_TIME_UNIT = TimeUnitUtil.timeUnitFrom(expireTimeUnit);
-            
         }
         
         @DisplayName("성공")
@@ -662,33 +666,42 @@ class MemberControllerTest {
         
         String password = passwordEncoder.encode("1234");
         
-        userRepository.save(User.builder()
-                .email(ADMIN_USERNAME)
-                .password(password)
-                .nickname("admin")
-                .withdrawal(false)
-                .role(roleAdmin).build());
-        userRepository.save(User.builder()
-                .email(MEMBER_1_USERNAME)
-                .password(password)
-                .nickname("mem1")
-                .withdrawal(false)
-                .role(roleMember).build());
-        userRepository.save(User.builder()
-                .email(MEMBER_2_USERNAME)
-                .password(password)
-                .nickname("mem2")
-                .withdrawal(false)
-                .role(roleMember).build());
-        userRepository.save(User.builder()
-                .email(WITHDRAWAL_USERNAME)
-                .password(password)
-                .nickname("탈퇴🖐️")
-                .withdrawal(true)
-                .role(roleWithdrawal).build());
+        jwtUserInfoRepository.save(jwtUserInfo(
+                userRepository.save(User.builder()
+                        .email(ADMIN_USERNAME)
+                        .password(password)
+                        .nickname("admin")
+                        .withdrawal(false)
+                        .role(roleAdmin).build())
+        ));
+        jwtUserInfoRepository.save(jwtUserInfo(
+                userRepository.save(User.builder()
+                        .email(MEMBER_1_USERNAME)
+                        .password(password)
+                        .nickname("mem1")
+                        .withdrawal(false)
+                        .role(roleMember).build())
+        ));
+        jwtUserInfoRepository.save(jwtUserInfo(
+                userRepository.save(User.builder()
+                        .email(MEMBER_2_USERNAME)
+                        .password(password)
+                        .nickname("mem2")
+                        .withdrawal(false)
+                        .role(roleMember).build())
+        ));
+        jwtUserInfoRepository.save(jwtUserInfo(
+                userRepository.save(User.builder()
+                        .email(WITHDRAWAL_USERNAME)
+                        .password(password)
+                        .nickname("탈퇴🖐️")
+                        .withdrawal(true)
+                        .role(roleWithdrawal).build())
+        ));
     }
     @AfterEach  public void clean() {
         userRepository.deleteAll();
+        jwtUserInfoRepository.deleteAll();
     }
     
     private User admin() {
@@ -702,6 +715,14 @@ class MemberControllerTest {
     }
     private User withdrawal() {
         return userRepository.findByEmail(WITHDRAWAL_USERNAME).get();
+    }
+    
+    private JwtUserInfo jwtUserInfo(User savedWithdrawal) {
+        return JwtUserInfo.builder()
+                .id(savedWithdrawal.getId())
+                .email(savedWithdrawal.getEmail())
+                .nickname(savedWithdrawal.getNickname())
+                .grade("ROLE_" + savedWithdrawal.getRole().getGrade()).build();
     }
     
 }

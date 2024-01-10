@@ -1,6 +1,5 @@
 package kim.zhyun.serveruser.service.impl;
 
-import kim.zhyun.jwt.data.JwtConstants;
 import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.jwt.data.JwtUserInfo;
 import kim.zhyun.jwt.provider.JwtProvider;
@@ -84,6 +83,7 @@ class MemberServiceImplTest {
         
         @InjectMocks AuthenticationFilter authenticationFilter;
         @InjectMocks SecurityAuthenticationManager authenticationManager;
+        @Mock JwtProvider jwtProvider;
         @Mock UserRepository userRepository;
         @Mock MemberService userService;
         @Mock PasswordEncoder passwordEncoder;
@@ -106,6 +106,7 @@ class MemberServiceImplTest {
             servletRequest.setContentType(APPLICATION_JSON_VALUE);
             servletRequest.setContent(new ObjectMapper().writeValueAsString(signInInfo).getBytes());
             
+            authenticationFilter.setAuthenticationManager(authenticationManager);
             
             // when-then
             assertThrows(EXCEPTION_SIGNIN_FAIL, MemberException.class, () ->
@@ -131,12 +132,11 @@ class MemberServiceImplTest {
             when(userService.findByEmail(signInInfo.getEmail())).thenReturn(UserDto.from(member));
             when(passwordEncoder.matches(signInInfo.getPassword(), member.getPassword())).thenReturn(false);
             
-            authenticationFilter.setAuthenticationManager(authenticationManager);
-            
             MockHttpServletRequest servletRequest = new MockHttpServletRequest();
             servletRequest.setContentType(APPLICATION_JSON_VALUE);
             servletRequest.setContent(new ObjectMapper().writeValueAsString(signInInfo).getBytes());
             
+            authenticationFilter.setAuthenticationManager(authenticationManager);
             
             // when-then
             assertThrows(EXCEPTION_SIGNIN_FAIL,
@@ -144,7 +144,7 @@ class MemberServiceImplTest {
                     () -> authenticationManager.authenticate(
                             authenticationFilter.attemptAuthentication(servletRequest, new MockHttpServletResponse())));
             
-            verify(userService, times(2)).findByEmail(signInInfo.getEmail());
+            verify(userService, times(1)).findByEmail(signInInfo.getEmail());
         }
         
         @DisplayName("회원 접근 - 로그인 성공")
@@ -177,7 +177,7 @@ class MemberServiceImplTest {
             
             
             // then
-            verify(userService, times(2)).findByEmail(signInInfo.getEmail());
+            verify(userService, times(1)).findByEmail(signInInfo.getEmail());
             assertTrue(result.getPrincipal() instanceof JwtUserDto);
         }
         
@@ -192,24 +192,27 @@ class MemberServiceImplTest {
     @Nested
     class LogoutTest {
         
-        private final JwtConstants jwtItems;
         private final JwtProvider jwtProvider;
         private final JwtLogoutStorage jwtLogoutStorage;
         private final SignController controller;
         private final RedisTemplate<String, String> redisTemplate;
         private final MockMvc mvc;
-        public LogoutTest(@Autowired JwtConstants jwtItems,
-                          @Autowired JwtProvider jwtProvider,
+        private final Long expiredTime;
+        private final String expiredTimeUnit;
+        public LogoutTest(@Autowired JwtProvider jwtProvider,
                           @Autowired JwtLogoutStorage jwtLogoutStorage,
                           @Autowired RedisTemplate<String, String> redisTemplate,
                           @Autowired SignController controller,
-                          @Autowired MockMvc mvc) {
-            this.jwtItems = jwtItems;
+                          @Autowired MockMvc mvc,
+                          @Value("${token.expiration-time}") Long expiredTime,
+                          @Value("${token.expiration-time-unit}") String expiredTimeUnit) {
             this.jwtProvider = jwtProvider;
             this.jwtLogoutStorage = jwtLogoutStorage;
             this.redisTemplate = redisTemplate;
             this.controller = controller;
             this.mvc = mvc;
+            this.expiredTime = expiredTime;
+            this.expiredTimeUnit = expiredTimeUnit;
         }
         
         @DisplayName("로그아웃 성공")
@@ -227,6 +230,7 @@ class MemberServiceImplTest {
                     .nickname(nickname).build(), password, Set.of()));
             Authentication authentication = context.getAuthentication();
             
+            jwtProvider.setJwtExpired(expiredTime, expiredTimeUnit);
             String jwt = jwtProvider.tokenFrom(authentication);
             
             // when
@@ -252,6 +256,7 @@ class MemberServiceImplTest {
                     .nickname(nickname).build(), password, Set.of()));
             Authentication authentication = context.getAuthentication();
             
+            jwtProvider.setJwtExpired(expiredTime, expiredTimeUnit);
             String jwt = jwtProvider.tokenFrom(authentication);
             
             // when-then
@@ -280,6 +285,7 @@ class MemberServiceImplTest {
                     .nickname(nickname).build(), password, Set.of()));
             Authentication authentication = context.getAuthentication();
             
+            jwtProvider.setJwtExpired(expiredTime, expiredTimeUnit);
             String jwt = jwtProvider.tokenFrom(authentication);
             
             // when
@@ -287,7 +293,7 @@ class MemberServiceImplTest {
             controller.logout(JWT_PREFIX + jwt, authentication);
             assertTrue(jwtLogoutStorage.isLogoutToken(jwt, username));
             
-            Thread.sleep(Duration.of(jwtItems.expiredTime, jwtItems.expiredTimeUnit.toChronoUnit()));
+            Thread.sleep(Duration.of(jwtProvider.expiredTime, jwtProvider.expiredTimeUnit.toChronoUnit()));
             
             // then
             assertFalse(jwtLogoutStorage.isLogoutToken(jwt, username));
@@ -527,6 +533,7 @@ class MemberServiceImplTest {
         
         @AfterEach public void clean() {
             userRepository.deleteAll();
+            jwtUserInfoRepository.deleteAll();
         }
     }
     
