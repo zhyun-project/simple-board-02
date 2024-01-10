@@ -1,36 +1,50 @@
 ### 전체 조회
 GET http://localhost:8100/articles
-Content-Type: application/json
 
 ### 특정 유저 조회
-GET http://localhost:8100/1/articles
-Content-Type: application/json
+GET http://localhost:8100/5/articles
 
 ### 특정 유저 상세 조회
-GET http://localhost:8100/1/articles/1
+GET http://localhost:8100/2/articles/1
 Content-Type: application/json
 
 ### 게시글 등록
-POST http://localhost:8100/2/articles
-Content-Type: application/json
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug
-
-{
-
-}
-
-
-### 게시글 수정
-PUT http://localhost:8100/3/articles/1
+POST http://localhost:8100/3/articles
 Content-Type: application/json
 X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BkYXVtLm5ldCIsImlkIjozLCJleHAiOjE3MDc0MTc1OTN9.HcSGR1n6CHsXeztwnSKUFZq01L4quLRIyeJVskpmSKQsKtmWChcX9cZgT-XIN8egFOa71kpjiE62sFq8zlWILw
 
 {
+  "userId": 3,
+  "title": "유저id 2 제목 1",
+  "content": "유저id 2 내용 1"
+}
 
+
+### 게시글 수정
+PUT http://localhost:8100/2/articles/1
+Content-Type: application/json
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug
+
+{
+  "id": 6,
+  "userId": 2,
+  "articleId": 1,
+  "title": "유저id 2 1번 글 수정",
+  "content": "유저id 2 1번 내용 수정"
 }
 
 
 ### 게시글 삭제
-DELETE http://localhost:8100/5/articles/1
+DELETE http://localhost:8100/2/articles
 Content-Type: application/json
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzA3NDE3NTU4fQ.ET6WN0c6uilPXubDWy7PDbMRP_aZdSXRoRn-BgC9HhQ6aFO_vGnAlzeKl8b3DoPDai0Qg5lKz3iuBtEtUKwWDg
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug
+
+{
+  "userId": 2,
+  "articleIds": [1,3]
+}
+
+
+### 탈퇴자 게시글 삭제
+DELETE http://localhost:8100/withdrawal/5/articles
+Content-Type: application/json
