@@ -10,8 +10,11 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
 
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_SIGNIN_FAIL;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_WITHDRAWAL;
@@ -46,7 +49,7 @@ public class SecurityAuthenticationManager implements AuthenticationManager {
                         .email(userDto.getEmail())
                         .nickname(userDto.getNickname()).build(),
                 userDto.getPassword(),
-                authentication.getAuthorities());
+                Set.of(new SimpleGrantedAuthority("ROLE_" + userDto.getRole().getGrade())));
     }
     
 }

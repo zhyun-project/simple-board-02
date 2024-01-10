@@ -19,10 +19,12 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static kim.zhyun.jwt.data.JwtConstants.JWT_CLAIM_KEY_USER_ID;
 import static kim.zhyun.jwt.data.JwtResponseMessage.*;
+import static kim.zhyun.jwt.util.TimeUnitUtil.timeUnitFrom;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,16 +35,29 @@ public class JwtProvider implements InitializingBean {
     private final JwtConstants jwtItems;
     private SecretKey key;
     
+    public Long expiredTime;
+    public TimeUnit expiredTimeUnit;
+    
     @Override
     public void afterPropertiesSet() throws Exception {
         byte[] keyBytes = Decoders.BASE64.decode(jwtItems.secretKey);
         key = Keys.hmacShaKeyFor(keyBytes);
     }
     
+    public void setJwtExpired(Long expiredTime,
+                              String expiredTimeUnitString) {
+        this.expiredTime = expiredTime;
+        this.expiredTimeUnit = TimeUnit.of(timeUnitFrom(expiredTimeUnitString));
+    }
+    
     /**
      * security context -> jwt
      */
     public String tokenFrom(Authentication authentication) {
+        
+        if (expiredTime == null || expiredTimeUnit == null)
+            throw new JwtException(JWT_EXPIRED_IS_NULL);
+        
         return Jwts.builder()
                 .subject(emailFrom(authentication))
                 .claim(JWT_CLAIM_KEY_USER_ID, idFrom(authentication))
@@ -129,7 +144,7 @@ public class JwtProvider implements InitializingBean {
     private Date expiredDate() {
         return Date.from(new Date(System.currentTimeMillis())
                         .toInstant()
-                        .plus(jwtItems.expiredTime, jwtItems.expiredTimeUnit.toChronoUnit()));
+                        .plus(expiredTime, expiredTimeUnit.toChronoUnit()));
     }
     
     /**

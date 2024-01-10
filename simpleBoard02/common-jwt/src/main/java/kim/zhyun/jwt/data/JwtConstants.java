@@ -3,10 +3,6 @@ package kim.zhyun.jwt.data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.concurrent.TimeUnit;
-
-import static kim.zhyun.jwt.util.TimeUnitUtil.timeUnitFrom;
-
 @Component
 public class JwtConstants {
     
@@ -15,19 +11,7 @@ public class JwtConstants {
     public static final String JWT_CLAIM_KEY_USER_ID = "id";
     public static final String JWT_CLAIM_GRADE_SEPARATOR = ",";
     public static final String JWT_USER_INFO_KEY = "USER_INFO";
-
     
-    public String secretKey;
-    public Long expiredTime;
-    public TimeUnit expiredTimeUnit;
-    
-    
-    public JwtConstants(@Value("${token.secret}") String secretKey,
-                        @Value("${token.expiration-time-unit}")  String expiredTimeUnitString,
-                        @Value("${token.expiration-time}")  Long expiredTime) {
-        this.secretKey = secretKey;
-        this.expiredTime = expiredTime;
-        this.expiredTimeUnit = TimeUnit.of(timeUnitFrom(expiredTimeUnitString));
-    }
+    @Value("${token.secret}") public String secretKey;
     
 }

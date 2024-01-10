@@ -1,17 +1,14 @@
 package kim.zhyun.serveruser.config;
 
 import kim.zhyun.jwt.filter.JwtFilter;
-import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.filter.AuthenticationFilter;
 import kim.zhyun.serveruser.filter.ExceptionHandlerFilter;
 import kim.zhyun.serveruser.filter.SessionCheckFilter;
-import kim.zhyun.serveruser.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -33,11 +30,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig {
-    private final AuthenticationConfiguration authenticationConfiguration;
-    private final SecurityAuthenticationManager authenticationManager;
-    private final JwtProvider jwtProvider;
-    private final MemberService memberService;
-    
+    private final AuthenticationFilter authenticationFilter;
     private final SessionCheckFilter sessionCheckFilter;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
     private final JwtFilter jwtFilter;
@@ -76,16 +69,10 @@ public class SecurityConfig {
 
         http.addFilterBefore(exceptionHandlerFilter, SecurityContextHolderFilter.class);
         http.addFilterBefore(sessionCheckFilter, ExceptionHandlerFilter.class);
-        http.addFilterAt(authenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAt(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
         http.addFilterBefore(jwtFilter, AuthenticationFilter.class);
         
         return http.build();
-    }
-    
-    private AuthenticationFilter authenticationFilter() throws Exception {
-        AuthenticationFilter filter = new AuthenticationFilter(memberService, jwtProvider);
-        filter.setAuthenticationManager(authenticationManager);
-        return filter;
     }
     
 }
