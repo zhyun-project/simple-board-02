@@ -65,10 +65,12 @@ public class ArticleController {
     @PostMapping("/{userId}/articles")
     public ResponseEntity<Object> save(@PathVariable long userId,
                                        @RequestBody @Valid ArticleSaveRequest request) {
-        return ResponseEntity.ok(ApiResponse.builder()
-                .status(true)
-                .message(RESPONSE_ARTICLE_INSERT)
-                .result(articleService.save(request)).build());
+        return ResponseEntity.created(ServletUriComponentsBuilder
+                        .fromCurrentRequestUri().path("/{id}").build(userId))
+                .body(ApiResponse.builder()
+                        .status(true)
+                        .message(RESPONSE_ARTICLE_INSERT)
+                        .result(articleService.save(request)).build());
     }
     
     @Operation(summary = "게시글 수정")
