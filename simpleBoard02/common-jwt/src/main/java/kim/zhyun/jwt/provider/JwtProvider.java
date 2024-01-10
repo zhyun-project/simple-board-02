@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -75,11 +76,12 @@ public class JwtProvider implements InitializingBean {
         Long id = claims.get(JWT_CLAIM_KEY_USER_ID, Long.class);
         String email = claims.getSubject();
         
-        JwtUserInfo userInfo = userInfoStorage.findById(id)
-                .orElse(JwtUserInfo.builder()
-                        .id(id)
-                        .email(email)
-                        .grade("ROLE_WITHDRAWAL").build());
+        Optional<JwtUserInfo> userInfoContainer = userInfoStorage.findById(id);
+        
+        if (userInfoContainer.isEmpty())
+            throw new JwtException(JWT_EXPIRED);
+        
+        JwtUserInfo userInfo = userInfoContainer.get();
         String nickname = userInfo.getNickname();
         String grade = userInfo.getGrade();
         
