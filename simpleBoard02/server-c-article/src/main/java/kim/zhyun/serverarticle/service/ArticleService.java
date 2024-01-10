@@ -1,5 +1,6 @@
 package kim.zhyun.serverarticle.service;
 
+import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.serverarticle.data.ArticleSaveRequest;
 import kim.zhyun.serverarticle.data.ArticlesDeleteRequest;
 import kim.zhyun.serverarticle.data.ArticleUpdateRequest;
@@ -16,5 +17,7 @@ public interface ArticleService {
     void update(ArticleUpdateRequest request);
     void delete(ArticlesDeleteRequest request);
     void deleteUserAll(long userId);
+    
+    JwtUserDto getJwtUserDto(long userId);
     
 }

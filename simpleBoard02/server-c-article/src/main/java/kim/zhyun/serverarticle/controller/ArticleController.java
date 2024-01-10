@@ -3,6 +3,7 @@ package kim.zhyun.serverarticle.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.serverarticle.data.ArticleSaveRequest;
 import kim.zhyun.serverarticle.data.ArticleUpdateRequest;
 import kim.zhyun.serverarticle.data.ArticlesDeleteRequest;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -40,11 +42,12 @@ public class ArticleController {
     @Operation(summary = "유저 전체 게시글 조회")
     @GetMapping("/{userId}/articles")
     public ResponseEntity<Object> findAllByUser(@PathVariable long userId) {
+        String nickname = articleService.getJwtUserDto(userId).getNickname();
         List<ArticleResponse> response = articleService.findAllByUser(userId);
         
         return ResponseEntity.ok(ApiResponse.builder()
                 .status(true)
-                .message(String.format(RESPONSE_ARTICLE_FIND_ALL_BY_USER, response.get(0).getUser().getNickname()))
+                .message(String.format(RESPONSE_ARTICLE_FIND_ALL_BY_USER, nickname))
                 .result(response).build());
     }
     
@@ -52,11 +55,12 @@ public class ArticleController {
     @GetMapping("/{userId}/articles/{articleId}")
     public ResponseEntity<Object> findByArticleId(@PathVariable long userId,
                                                   @PathVariable long articleId) {
+        String nickname = articleService.getJwtUserDto(userId).getNickname();
         ArticleResponse response = articleService.findByArticleId(userId, articleId);
         
         return ResponseEntity.ok(ApiResponse.builder()
                 .status(true)
-                .message(String.format(RESPONSE_ARTICLE_FIND_ONE_BY_USER, response.getUser().getNickname(), articleId))
+                .message(String.format(RESPONSE_ARTICLE_FIND_ONE_BY_USER, nickname, articleId))
                 .result(response).build());
     }
     

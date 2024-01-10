@@ -135,7 +135,8 @@ public class ArticleServiceImpl implements ArticleService {
     /**
      * `redis`에서 `user` 정보 가져와서 반환
      */
-    private JwtUserDto getJwtUserDto(long userId) {
+    @Override
+    public JwtUserDto getJwtUserDto(long userId) {
         Optional<JwtUserInfo> jwtUserContainer = jwtUserInfoRepository.findById(userId);
         
         if (jwtUserContainer.isEmpty())
