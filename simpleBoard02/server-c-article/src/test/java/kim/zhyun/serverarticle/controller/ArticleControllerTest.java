@@ -393,6 +393,83 @@ class ArticleControllerTest {
     
     
     
+    @DisplayName("탈퇴자의 게시글 (삭제 전)")
+    @Nested
+    class ArticleWithdrawalNotDeletedTest {
+        
+        @DisplayName("전체 게시글 조회")
+        @Test
+        void find_all() throws Exception {
+            // given
+            makeArticleData("member1");
+            makeArticleData("member2");
+            makeArticleData("admin");
+            
+            JwtUserDto member1 = getJwtUserDto(jwtProvider, "member1");
+            updateUserRoleTo(member1, ROLE_WITHDRAWAL);
+            
+            // when - then
+            getPerformFindAll()
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.message").value(RESPONSE_ARTICLE_FIND_ALL))
+                    .andExpect(jsonPath("$.result.length()").value(3))
+                    .andDo(print());
+        }
+        
+        @DisplayName("유저 게시글 조회")
+        @Test
+        void find_all_by_user() throws Exception {
+            // given
+            makeArticleData("member1");
+            makeArticleData("member2");
+            makeArticleData("admin");
+            
+            JwtUserDto member1 = getJwtUserDto(jwtProvider, "member1");
+            updateUserRoleTo(member1, ROLE_WITHDRAWAL);
+            clearContext();
+            
+            // when - then
+            getPerformFindByUserId(member1.getId())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.message").value(RESPONSE_ARTICLE_FIND_ALL_BY_USER.formatted(member1.getNickname())))
+                    .andExpect(jsonPath("$.result.length()").value(1))
+                    .andDo(print());
+        }
+        
+        @DisplayName("유저 게시글 상세 조회")
+        @Test
+        void find_by_user_article_id() throws Exception {
+            // given
+            makeArticleData("member1");
+            makeArticleData("member2");
+            makeArticleData("admin");
+            
+            JwtUserDto member1 = getJwtUserDto(jwtProvider, "member1");
+            updateUserRoleTo(member1, ROLE_WITHDRAWAL);
+            clearContext();
+            
+            // when - then
+            Article article = articleRepository.findAllByUserIdOrderByCreatedAtDesc(member1.getId()).get(0);
+            
+            getPerformFindByUserArticleId(member1.getId(), article.getArticleId())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.message").value(RESPONSE_ARTICLE_FIND_ONE_BY_USER.formatted(member1.getNickname(), article.getArticleId())))
+                    .andExpect(jsonPath("$.result.id").value(article.getId()))
+                    .andExpect(jsonPath("$.result.articleId").value(article.getArticleId()))
+                    .andExpect(jsonPath("$.result.title").value(article.getTitle()))
+                    .andExpect(jsonPath("$.result.content").value(article.getContent()))
+                    .andExpect(jsonPath("$.result.createdAt").value(article.getCreatedAt().toString()))
+                    .andExpect(jsonPath("$.result.modifiedAt").value(article.getModifiedAt().toString()))
+                    .andDo(print());
+        }
+        
+    }
+    
+    
+    
     
     /**
      * article id 초기화 - `@BeforeEach` , `@AfterEach` 로 삭제를 해준다고 하는데도 삭제가 안되는 경우가 있어서 생성
