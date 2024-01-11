@@ -8,21 +8,17 @@ Content-Type: application/json
 }
 
 ### 유저 조회
-GET http://localhost:8090/user
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzA3NDE3NTU4fQ.ET6WN0c6uilPXubDWy7PDbMRP_aZdSXRoRn-BgC9HhQ6aFO_vGnAlzeKl8b3DoPDai0Qg5lKz3iuBtEtUKwWDg
-
-### 유저 조회
-GET http://localhost:8090/user/5
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzA3NDE3NTU4fQ.ET6WN0c6uilPXubDWy7PDbMRP_aZdSXRoRn-BgC9HhQ6aFO_vGnAlzeKl8b3DoPDai0Qg5lKz3iuBtEtUKwWDg
+GET http://localhost:8090/user/6
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NiwiZXhwIjoxNzA3NTcxODUyfQ.hJHr0EhHnhMsoREWFBRol1pGca0p41tI_R0QfNv7Q28gy4h-EGxLBcMN82Gcqa7JD497ZTnps0eqKixr7tZOeQ
 
 
 ### 유저 정보 수정
-PUT http://localhost:8090/user/5
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzA3NDE3NTU4fQ.ET6WN0c6uilPXubDWy7PDbMRP_aZdSXRoRn-BgC9HhQ6aFO_vGnAlzeKl8b3DoPDai0Qg5lKz3iuBtEtUKwWDg
+PUT http://localhost:8090/user/6
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NiwiZXhwIjoxNzA3NTcxODUyfQ.hJHr0EhHnhMsoREWFBRol1pGca0p41tI_R0QfNv7Q28gy4h-EGxLBcMN82Gcqa7JD497ZTnps0eqKixr7tZOeQ
 Content-Type: application/json
 
 {
-  "id": 5,
+  "id": 6,
   "email": "gimwlgus@kakao.com",
   "nickname": "얼구스",
   "password": "1234"
@@ -30,10 +26,10 @@ Content-Type: application/json
 
 ### 로그아웃
 POST http://localhost:8090/logout
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzA3NDE3NTU4fQ.ET6WN0c6uilPXubDWy7PDbMRP_aZdSXRoRn-BgC9HhQ6aFO_vGnAlzeKl8b3DoPDai0Qg5lKz3iuBtEtUKwWDg
+X-TOKEN: Bearer
 
 ### 탈퇴
 DELETE http://localhost:8090/withdrawal
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzA3NDE3NTU4fQ.ET6WN0c6uilPXubDWy7PDbMRP_aZdSXRoRn-BgC9HhQ6aFO_vGnAlzeKl8b3DoPDai0Qg5lKz3iuBtEtUKwWDg
+X-TOKEN: Bearer
 
 
