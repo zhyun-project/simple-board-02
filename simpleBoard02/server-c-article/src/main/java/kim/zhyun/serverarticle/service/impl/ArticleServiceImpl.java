@@ -121,7 +121,10 @@ public class ArticleServiceImpl implements ArticleService {
     public void deleteUserAll(long userId) {
         Optional<JwtUserInfo> container = jwtUserInfoRepository.findById(userId);
         
-        if (container.isEmpty() || !container.get().getGrade().equals(ROLE_WITHDRAWAL))
+        if (container.isEmpty())
+            throw new MemberException(EXCEPTION_DELETED_WITHDRAWAL);
+        
+        if (!container.get().getGrade().equals(ROLE_WITHDRAWAL))
             throw new MemberException(EXCEPTION_NOT_WITHDRAWAL);
             
         List<Article> list = articleRepository.findAllByUserIdOrderByCreatedAtDesc(userId);

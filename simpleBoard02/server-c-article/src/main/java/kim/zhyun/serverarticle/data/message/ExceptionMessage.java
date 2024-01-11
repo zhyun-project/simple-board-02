@@ -18,6 +18,7 @@ public class ExceptionMessage {
     public static final String EXCEPTION_TITLE_FORMAT = "제목은 1~30글자 사이로 입력 가능합니다.";
     public static final String EXCEPTION_ARTICLE_NOT_FOUND = "게시글이 없습니다.";
     public static final String EXCEPTION_NOT_WITHDRAWAL = "탈퇴 회원이 아닙니다.";
+    public static final String EXCEPTION_DELETED_WITHDRAWAL = "존재하지 않습니다.";
     
     
     
