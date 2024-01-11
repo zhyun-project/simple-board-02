@@ -11,6 +11,7 @@ import kim.zhyun.serverarticle.data.ArticlesDeleteRequest;
 import kim.zhyun.serverarticle.data.entity.Article;
 import kim.zhyun.serverarticle.respository.ArticleRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +35,7 @@ import java.util.Set;
 
 import static java.time.LocalDateTime.now;
 import static kim.zhyun.serverarticle.data.message.ExceptionMessage.*;
-import static kim.zhyun.serverarticle.data.message.ResponseMessage.RESPONSE_ARTICLE_INSERT;
+import static kim.zhyun.serverarticle.data.message.ResponseMessage.*;
 import static kim.zhyun.serverarticle.data.type.RoleType.*;
 import static kim.zhyun.serverarticle.util.TestSecurityUser.getJwtUserDto;
 import static kim.zhyun.serverarticle.util.TestSecurityUser.setAuthentication;
@@ -163,6 +164,81 @@ class ArticleControllerTest {
         
     }
     
+    @DisplayName("게시글 없음")
+    @Nested
+    class EmptyTest {
+        
+        @DisplayName("전체 게시글 조회")
+        @Test
+        void find_all() throws Exception {
+            // when - then
+            getPerformFindAll()
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.message").value(RESPONSE_ARTICLE_FIND_ALL))
+                    .andExpect(jsonPath("$.result").isEmpty())
+                    .andDo(print());
+        }
+        
+        @DisplayName("유저 게시글 조회")
+        @Test
+        void find_all_by_user() throws Exception {
+            // when - then
+            JwtUserDto member1 = getJwtUserDto(jwtProvider, "member1");
+            clearContext();
+            
+            getPerformFindByUserId(member1.getId())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.message").value(RESPONSE_ARTICLE_FIND_ALL_BY_USER.formatted(member1.getNickname())))
+                    .andExpect(jsonPath("$.result").isEmpty())
+                    .andDo(print());
+        }
+        
+        @DisplayName("유저 게시글 상세 조회")
+        @Test
+        void find_by_user_article_id() throws Exception {
+            // when - then
+            JwtUserDto member1 = getJwtUserDto(jwtProvider, "member1");
+            clearContext();
+            
+            getPerformFindByUserArticleId(member1.getId(), 1)
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_ARTICLE_NOT_FOUND))
+                    .andDo(print());
+        }
+        
+        @DisplayName("유저 게시글 수정")
+        @Test
+        void update_by_user_article_id() throws Exception {
+            // when - then
+            JwtUserDto member1 = getJwtUserDto(jwtProvider, "member1");
+            
+            getPerformUpdate(member1.getId(), 1, Article.builder()
+                    .id(1L).articleId(1)
+                    .title("1").content("1").build())
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_ARTICLE_NOT_FOUND))
+                    .andDo(print());
+        }
+        
+        @DisplayName("유저 게시글 삭제")
+        @Test
+        void delete_by_user_article_id() throws Exception {
+            // when - then
+            JwtUserDto member1 = getJwtUserDto(jwtProvider, "member1");
+            
+            getPerformDelete(member1.getId(), Set.of(1L))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.message").value(RESPONSE_ARTICLE_DELETE))
+                    .andDo(print());
+        }
+        
+    }
+    
     
     
     
@@ -282,7 +358,7 @@ class ArticleControllerTest {
     /**
      * rdb - 게시글 전체 삭제 , redis - article_id:OO 전체 삭제
      */
-    @BeforeEach @AfterEach
+    @AfterEach
     void clean() {
         log.info("🧹 init [article all, ARTICLE_ID:] ------------------------------------------------------------------------------------------------");
         articleRepository.deleteAllInBatch();
