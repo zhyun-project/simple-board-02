@@ -1,5 +1,6 @@
 package kim.zhyun.serverarticle.service.impl;
 
+import io.netty.util.internal.StringUtil;
 import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.jwt.data.JwtUserInfo;
 import kim.zhyun.jwt.repository.JwtUserInfoRepository;
@@ -118,17 +119,35 @@ public class ArticleServiceImpl implements ArticleService {
     }
     
     @Override
-    public void deleteUserAll(long userId) {
-        Optional<JwtUserInfo> container = jwtUserInfoRepository.findById(userId);
+    public void deleteUserAll(Collection<Long> userIds) {
+        String failMessage = userIds.stream()
+                .filter(userId -> {
+                    Optional<JwtUserInfo> container = jwtUserInfoRepository.findById(userId);
+                    
+                    if (container.isPresent() && container.get().getGrade().equals(ROLE_WITHDRAWAL)) {
+                        List<Article> list = articleRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+                        articleRepository.deleteAllInBatch(list);
+                        return false;
+                    }
+                    
+                    return true;
+                })
+                .map(userId -> {
+                    Optional<JwtUserInfo> container = jwtUserInfoRepository.findById(userId);
+                    
+                    if (container.isEmpty())
+                        return EXCEPTION_DELETED_WITHDRAWAL.formatted(userId);
+                    
+                    if (!container.get().getGrade().equals(ROLE_WITHDRAWAL))
+                        return EXCEPTION_NOT_WITHDRAWAL.formatted(userId, container.get().getEmail());
+                    
+                    return "";
+                })
+                .collect(Collectors.joining());
         
-        if (container.isEmpty())
-            throw new MemberException(EXCEPTION_DELETED_WITHDRAWAL);
+        if (!StringUtil.isNullOrEmpty(failMessage.trim()))
+            throw new MemberException(failMessage);
         
-        if (!container.get().getGrade().equals(ROLE_WITHDRAWAL))
-            throw new MemberException(EXCEPTION_NOT_WITHDRAWAL);
-            
-        List<Article> list = articleRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
-        articleRepository.deleteAllInBatch(list);
     }
     
     
