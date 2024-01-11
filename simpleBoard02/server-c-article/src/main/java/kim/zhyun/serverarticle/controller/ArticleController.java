@@ -20,6 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.Collection;
 import java.util.List;
 
 import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_NOT_FOUND;
@@ -112,9 +113,9 @@ public class ArticleController {
     }
     
     @Operation(summary = "탈퇴 유저 게시글 삭제")
-    @DeleteMapping("/withdrawal/{userId}/articles")
-    public ResponseEntity<Object> deleteAllByUser(@PathVariable long userId) {
-        articleService.deleteUserAll(userId);
+    @DeleteMapping("/withdrawal/articles")
+    public ResponseEntity<Object> deleteAllByUser(@RequestBody Collection<Long> userIds) {
+        articleService.deleteUserAll(userIds);
         return ResponseEntity.ok(ApiResponse.builder()
                         .status(true)
                         .message(RESPONSE_ARTICLE_DELETE_FOR_WITHDRAWAL).build());

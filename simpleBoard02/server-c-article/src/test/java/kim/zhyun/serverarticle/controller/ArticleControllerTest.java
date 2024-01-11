@@ -470,6 +470,24 @@ class ArticleControllerTest {
     
     
     
+    @DisplayName("탈퇴자의 게시글 (삭제 후)")
+    @Nested
+    class ArticleWithdrawalDeletedTest {
+        
+        @DisplayName("전체 게시글 조회")
+        @Test
+        void find_all() throws Exception {
+            mvc.perform(delete("/withdrawal/articles")
+                            .contentType(APPLICATION_JSON)
+                            .content(new ObjectMapper().writeValueAsString(Set.of(1L,3L))))
+                    .andDo(print());
+        }
+        
+        
+    }
+    
+    
+    
     
     /**
      * article id 초기화 - `@BeforeEach` , `@AfterEach` 로 삭제를 해준다고 하는데도 삭제가 안되는 경우가 있어서 생성
