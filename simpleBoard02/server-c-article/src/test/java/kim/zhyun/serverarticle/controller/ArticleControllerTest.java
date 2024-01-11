@@ -11,7 +11,6 @@ import kim.zhyun.serverarticle.data.ArticlesDeleteRequest;
 import kim.zhyun.serverarticle.data.entity.Article;
 import kim.zhyun.serverarticle.respository.ArticleRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,14 +22,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.test.context.TestSecurityContextHolder;
-import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.Collection;
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.time.LocalDateTime.now;
@@ -38,7 +35,6 @@ import static kim.zhyun.serverarticle.data.message.ExceptionMessage.*;
 import static kim.zhyun.serverarticle.data.message.ResponseMessage.*;
 import static kim.zhyun.serverarticle.data.type.RoleType.*;
 import static kim.zhyun.serverarticle.util.TestSecurityUser.getJwtUserDto;
-import static kim.zhyun.serverarticle.util.TestSecurityUser.setAuthentication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -234,6 +230,162 @@ class ArticleControllerTest {
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
                     .andExpect(jsonPath("$.message").value(RESPONSE_ARTICLE_DELETE))
+                    .andDo(print());
+        }
+        
+    }
+    
+    
+    @DisplayName("게시글 있음")
+    @Nested
+    class ArticleExistTrueTest {
+        
+        @DisplayName("전체 게시글 조회")
+        @Test
+        void find_all() throws Exception {
+            // given
+            makeArticleData("member1");
+            makeArticleData("member2");
+            makeArticleData("admin");
+            
+            // when - then
+            getPerformFindAll()
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.message").value(RESPONSE_ARTICLE_FIND_ALL))
+                    .andExpect(jsonPath("$.result.length()").value(3))
+                    .andDo(print());
+        }
+        
+        @DisplayName("유저 게시글 조회")
+        @Test
+        void find_all_by_user() throws Exception {
+            // given
+            makeArticleData("member1");
+            makeArticleData("member2");
+            makeArticleData("admin");
+            
+            // when - then
+            JwtUserDto member1 = getJwtUserDto(jwtProvider, "member1");
+            clearContext();
+            
+            getPerformFindByUserId(member1.getId())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.message").value(RESPONSE_ARTICLE_FIND_ALL_BY_USER.formatted(member1.getNickname())))
+                    .andExpect(jsonPath("$.result.length()").value(1))
+                    .andDo(print());
+        }
+        
+        @DisplayName("유저 게시글 상세 조회")
+        @Test
+        void find_by_user_article_id() throws Exception {
+            // given
+            makeArticleData("member1");
+            makeArticleData("member2");
+            makeArticleData("admin");
+            
+            // when - then
+            JwtUserDto member1 = getJwtUserDto(jwtProvider, "member1");
+            Article article = articleRepository.findAllByUserIdOrderByCreatedAtDesc(member1.getId()).get(0);
+            clearContext();
+            
+            getPerformFindByUserArticleId(member1.getId(), article.getArticleId())
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.message").value(RESPONSE_ARTICLE_FIND_ONE_BY_USER.formatted(member1.getNickname(), article.getArticleId())))
+                    .andExpect(jsonPath("$.result.id").value(article.getId()))
+                    .andExpect(jsonPath("$.result.articleId").value(article.getArticleId()))
+                    .andExpect(jsonPath("$.result.title").value(article.getTitle()))
+                    .andExpect(jsonPath("$.result.content").value(article.getContent()))
+                    .andExpect(jsonPath("$.result.createdAt").value(article.getCreatedAt().toString()))
+                    .andExpect(jsonPath("$.result.modifiedAt").value(article.getModifiedAt().toString()))
+                    .andDo(print());
+        }
+        
+        @DisplayName("유저 게시글 수정 - 실패 : 다른사람것")
+        @Test
+        void update_fail_by_user_article_id() throws Exception {
+            // given
+            makeArticleData("member1");
+            makeArticleData("member2");
+            makeArticleData("admin");
+            
+            // when - then
+            JwtUserDto member2 = getJwtUserDto(jwtProvider, "member2");
+            JwtUserDto member1 = getJwtUserDto(jwtProvider, "member1");
+            Article article = articleRepository.findAllByUserIdOrderByCreatedAtDesc(member2.getId()).get(0);
+            
+            getPerformUpdate(member2.getId(), article.getArticleId(), article)
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_PERMISSION))
+                    .andDo(print());
+        }
+        
+        @DisplayName("유저 게시글 수정 - 성공")
+        @Test
+        void update_by_user_article_id() throws Exception {
+            // given
+            makeArticleData("member1");
+            makeArticleData("member2");
+            makeArticleData("admin");
+            
+            // when - then
+            JwtUserDto member1 = getJwtUserDto(jwtProvider, "member1");
+            Article article = articleRepository.findAllByUserIdOrderByCreatedAtDesc(member1.getId()).get(0);
+            
+            getPerformUpdate(member1.getId(), article.getArticleId(), article)
+                    .andExpect(status().isCreated())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.message").value(RESPONSE_ARTICLE_UPDATE))
+                    .andDo(print());
+            
+            Article articleUpdated = articleRepository.findAllByUserIdOrderByCreatedAtDesc(member1.getId()).get(0);
+            assertThat(articleUpdated.getCreatedAt()).isEqualTo(article.getCreatedAt());
+            assertThat(articleUpdated.getModifiedAt()).isNotEqualTo(article.getModifiedAt());
+        }
+        
+        @DisplayName("유저 게시글 삭제")
+        @Test
+        void delete_by_user_article_id() throws Exception {
+            // given
+            makeArticleData("member1");
+            makeArticleData("member2");
+            makeArticleData("admin");
+            
+            // when - then
+            JwtUserDto member1 = getJwtUserDto(jwtProvider, "member1");
+            Article article = articleRepository.findAllByUserIdOrderByCreatedAtDesc(member1.getId()).get(0);
+            
+            getPerformDelete(member1.getId(), Set.of(article.getArticleId()))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.message").value(RESPONSE_ARTICLE_DELETE))
+                    .andDo(print());
+            
+            Optional<Article> container = articleRepository.findByUserIdAndArticleId(member1.getId(), article.getArticleId());
+            assertThat(container).isEmpty();
+            
+        }
+        
+        @DisplayName("유저 게시글 삭제 : fail - 다른사람것")
+        @Test
+        void delete_fail_by_user_article_id() throws Exception {
+            // given
+            makeArticleData("member1");
+            makeArticleData("member2");
+            makeArticleData("admin");
+            
+            // when - then
+            JwtUserDto member2 = getJwtUserDto(jwtProvider, "member2");
+            JwtUserDto member1 = getJwtUserDto(jwtProvider, "member1");
+            Article article = articleRepository.findAllByUserIdOrderByCreatedAtDesc(member2.getId()).get(0);
+            
+            getPerformDelete(member2.getId(), Set.of(article.getArticleId()))
+                    .andExpect(status().isBadRequest())
+                    .andExpect(jsonPath("$.status").value(false))
+                    .andExpect(jsonPath("$.message").value(EXCEPTION_PERMISSION))
                     .andDo(print());
         }
         
