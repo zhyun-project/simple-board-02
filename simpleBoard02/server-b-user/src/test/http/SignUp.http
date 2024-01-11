@@ -13,7 +13,7 @@ Content-Type: application/json
 }
 
 ### 이메일 인증 코드 검증
-GET http://localhost:8090/check/auth?code=b7b894
+GET http://localhost:8090/check/auth?code=9a6f6b
 
 ### 회원가입
 POST http://localhost:8090/sign-up
