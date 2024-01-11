@@ -127,6 +127,7 @@ public class ArticleServiceImpl implements ArticleService {
                     if (container.isPresent() && container.get().getGrade().equals(ROLE_WITHDRAWAL)) {
                         List<Article> list = articleRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
                         articleRepository.deleteAllInBatch(list);
+                        redisTemplate.delete(REDIS_ARTICLE_ID_KEY + userId);
                         return false;
                     }
                     
