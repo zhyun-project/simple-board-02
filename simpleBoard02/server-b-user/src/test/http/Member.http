@@ -34,6 +34,6 @@ X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI
 
 ### 탈퇴
 DELETE http://localhost:8090/withdrawal
-X-TOKEN: Bearer
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzA3NDE3NTU4fQ.ET6WN0c6uilPXubDWy7PDbMRP_aZdSXRoRn-BgC9HhQ6aFO_vGnAlzeKl8b3DoPDai0Qg5lKz3iuBtEtUKwWDg
 
 
