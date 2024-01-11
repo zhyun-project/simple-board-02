@@ -27,7 +27,8 @@ public class TestSecurityUser {
         TestSecurityContextHolder.setContext(securityContext);
     }
     
-    public static JwtUserDto getJwtUserDto() {
+    public static JwtUserDto getJwtUserDto(JwtProvider jwtProvider, String userType) {
+        setAuthentication(jwtProvider, userType);
         return JwtUserDto.from(TestSecurityContextHolder.getContext().getAuthentication().getPrincipal());
     }
 }

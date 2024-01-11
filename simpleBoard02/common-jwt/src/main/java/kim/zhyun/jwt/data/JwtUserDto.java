@@ -1,15 +1,13 @@
 package kim.zhyun.jwt.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Objects;
 
 import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -23,8 +21,17 @@ public class JwtUserDto {
 
     /**  @apiNote ⚠️ `Authentication.principal` 객체에만 사용  */
     public static JwtUserDto from(Object principal) {
+        
+        if (principal instanceof JwtUserInfo source) {
+            return JwtUserDto.builder()
+                    .id(source.getId())
+                    .email(source.getEmail())
+                    .nickname(source.getNickname()).build();
+        }
+        
         return (JwtUserDto) principal;
     }
+    
     
     @Override
     public boolean equals(Object o) {

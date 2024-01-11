@@ -31,7 +31,8 @@ public class GlobalAdvice extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler({
             MemberException.class,
-            AuthenticateException.class
+            AuthenticateException.class,
+            ArticleException.class
     })
     public ResponseEntity<Object> mailException(RuntimeException e) {
         return ResponseEntity

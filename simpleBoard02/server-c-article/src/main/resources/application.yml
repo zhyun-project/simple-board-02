@@ -18,7 +18,7 @@ spring:
       enabled: true
 
   datasource:
-    url: jdbc:h2:./simpleBoard02/server-b-user/h2/article;AUTO_SERVER=true;mode=MYSQL;
+    url: jdbc:h2:./simpleBoard02/server-c-article/h2/article;AUTO_SERVER=true;mode=MYSQL;
     username: sa
 
   sql:
@@ -48,5 +48,8 @@ logging:
 
 ---
 
+key:
+  redis:
+    articleId: "ARTICLE_ID:"
 token:
   secret: VGhpc2lzSnd0U2VjcmV0S2V5Rm9yU2ltcGxlQm9hcmQwMlByb2plY3RNYWRlQnlaaHl1bktpbU9yV2xndXNLaW0=
