@@ -32,16 +32,17 @@ public class UserSchedulerImpl implements UserScheduler {
         Set<Long> userIds = deleteUserIdList(rdbList);
         Set<String> redisList = deleteListForRedis(rdbList);
         
-        log.info("📆 Scheduler start - delete count = RDB: {}, userIds: {}, Redis: {} ----┐", rdbList.size(), userIds.size(), redisList.size());
-        
-        var response = articleClient.withdrawalArticleDelete(userIds);
-        
-        if (response.getBody().getStatus()) {
-            userRepository.deleteAllInBatch(rdbList);
-            redisTemplate.delete(redisList);
+        if (rdbList.size() > 0) {
+            log.info("📆 Scheduler start - delete count = RDB: {}, userIds: {}, Redis: {} ----┐", rdbList.size(), userIds.size(), redisList.size());
+            var response = articleClient.withdrawalArticleDelete(userIds);
+            
+            if (response.getBody().getStatus()) {
+                userRepository.deleteAllInBatch(rdbList);
+                redisTemplate.delete(redisList);
+            }
+            
+            log.info("📆 Scheduler end--------------------------------------------------------┘");
         }
-        
-        log.info("📆 Scheduler end--------------------------------------------------------┘");
     }
     
     /**
