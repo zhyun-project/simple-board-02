@@ -2,6 +2,8 @@ server:
   port: 8100
 
 spring:
+  application:
+    name: article-server
   profiles:
     active: local
 
