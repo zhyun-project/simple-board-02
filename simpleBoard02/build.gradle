@@ -77,22 +77,17 @@ subprojects {
     }
 }
 
-project(":server-a-gateway") {
-    bootJar { enabled = true }
-    jar { enabled = false}
-}
-
-project(":server-b-user") {
-    bootJar { enabled = true }
-    jar { enabled = false}
-}
-
-project(":server-c-article") {
-    bootJar { enabled = true }
-    jar { enabled = false}
-}
-
-project(":common-jwt") {
+project(":a-common-jwt") {
     bootJar { enabled = false }
     jar { enabled = true }
+}
+
+project(":b-server-user") {
+    bootJar { enabled = true }
+    jar { enabled = false}
+}
+
+project(":c-server-article") {
+    bootJar { enabled = true }
+    jar { enabled = false}
 }

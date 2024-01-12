@@ -1,0 +1,43 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-server
+
+  cloud:
+    gateway:
+      routes:
+        - id: user-server
+          uri: lb://user-server
+          predicates:
+            - Path=/sign-up,/check/**,/login
+
+        - id: user-server
+          uri: lb://user-server
+          predicates:
+            - Path=/user/**,/logout,/withdrawal
+
+        - id: article-server
+          uri: lb://article-server
+          predicates:
+            - Path=/articles,/{userId}/articles,/{userId}/articles/{articleId},/withdrawal/articles
+            - Method=GET,DELETE
+
+        - id: article-server
+          uri: lb://article-server
+          predicates:
+            - Path=/{userId}/articles,/{userId}/articles/{articleId},/{userId}/articles,
+            - Method=POST,PUT,DELETE
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${spring.application.instance_id:${random.value}}
+
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka
