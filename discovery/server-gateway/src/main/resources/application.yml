@@ -1,0 +1,33 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: gateway-server
+
+  cloud:
+    gateway:
+      routes:
+        - id: user-server
+          uri: lb://user-server
+          predicates:
+            - Path=/login
+            - Method=POST
+
+        - id: article-server
+          uri: lb://article-server
+          predicates:
+            - Path=/articles
+            - Method=GET
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${spring.application.instance_id:${random.value}}
+
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka

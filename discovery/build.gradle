@@ -1,0 +1,59 @@
+buildscript {
+    ext {
+        set('javaVersion', "17");
+        set('springBootVersion', "3.2.1");
+        set('dependencyManagementVersion', "1.1.4");
+
+        set('springCloudVersion', "2023.0.0")
+    }
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "io.spring.gradle:dependency-management-plugin:${dependencyManagementVersion}"
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+
+    group = 'kim.zhyun'
+    sourceCompatibility = "${javaVersion}"
+    compileJava.options.encoding = 'UTF-8'
+
+    repositories {
+        mavenCentral()
+    }
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+        }
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+}
+
+project(":server-eureka") {
+    bootJar { enabled = true }
+    jar { enabled = false }
+}
+
+project(":server-gateway") {
+    bootJar { enabled = true }
+    jar { enabled = false}
+}
+

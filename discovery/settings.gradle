@@ -1,0 +1,4 @@
+rootProject.name = 'discovery'
+include 'server-eureka'
+include 'server-gateway'
+
