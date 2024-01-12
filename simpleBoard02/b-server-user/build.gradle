@@ -13,7 +13,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
 
     // jwt
-    implementation project(":common-jwt")
+    implementation project(":a-common-jwt")
 
     // open feign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'

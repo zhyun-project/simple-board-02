@@ -1,6 +1,5 @@
 rootProject.name = 'simpleBoard02'
-include 'server-a-gateway'
-include 'server-b-user'
-include 'server-c-article'
-include 'common-jwt'
+include 'a-common-jwt'
+include 'b-server-user'
+include 'c-server-article'
 
