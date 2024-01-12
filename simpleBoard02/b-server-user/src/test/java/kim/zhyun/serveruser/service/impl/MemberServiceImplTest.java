@@ -598,6 +598,7 @@ class MemberServiceImplTest {
             assertThat(targetUpdated.getCreatedAt()).isEqualTo(target.getCreatedAt());
         }
         
+        @Disabled("article server 실행되어있어야 통과")
         @DisplayName("탈퇴 유예기간이 끝난 후 db 데이터 확인")
         @Test
         void check_database_deleted_user() throws Exception {

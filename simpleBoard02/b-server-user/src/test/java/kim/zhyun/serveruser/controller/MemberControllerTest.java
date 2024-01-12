@@ -622,6 +622,7 @@ class MemberControllerTest {
                     .andDo(print());
         }
         
+        @Disabled("article server 실행되어있어야 통과")
         @DisplayName("탈퇴 유예기간이 끝나고 로그인 시도 (cron 삭제 실행 후 : cron 설정 - 5초마다 실행)")
         @Test
         public void hoxy_scheduler() throws Exception {
