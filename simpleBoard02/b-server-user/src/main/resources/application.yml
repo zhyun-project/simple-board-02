@@ -21,7 +21,7 @@ spring:
       enabled: true
 
   datasource:
-    url: jdbc:h2:./simpleBoard02/server-b-user/h2/member;AUTO_SERVER=true;mode=MYSQL;
+    url: jdbc:h2:./simpleBoard02/b-server-user/h2/member;AUTO_SERVER=true;mode=MYSQL;
     username: sa
 
   sql:
