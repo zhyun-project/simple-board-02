@@ -1,0 +1,44 @@
+### 로그인
+POST http://localhost:8080/api/user/login
+Content-Type: application/json
+
+{
+  "email": "gimwlgus@kakao.com",
+  "password": "1234"
+}
+
+### 유저 조회
+GET http://localhost:8080/api/user/all
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzE2NzUyNjAyfQ.qGMNCj1PzTpu9SjmT3kzivEFt-16-WH_IFSZinc2QBbbqAjA78oxdu4SRr4Q7jow6mktg1EG2y8SQVpY1G2Iag
+
+### 유저 조회
+GET http://localhost:8080/api/user/5
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzE2NzUyNjAyfQ.qGMNCj1PzTpu9SjmT3kzivEFt-16-WH_IFSZinc2QBbbqAjA78oxdu4SRr4Q7jow6mktg1EG2y8SQVpY1G2Iag
+
+### 유저 정보 수정
+PUT http://localhost:8080/api/user/5
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzE2NzUyNjAyfQ.qGMNCj1PzTpu9SjmT3kzivEFt-16-WH_IFSZinc2QBbbqAjA78oxdu4SRr4Q7jow6mktg1EG2y8SQVpY1G2Iag
+Content-Type: application/json
+
+{
+  "id": 5,
+  "email": "gimwlgus@kakao.com",
+  "nickname": "ergus",
+  "password": "1234"
+}
+
+### 유저 권한 수정
+PUT http://localhost:8080/api/user/role
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzE2NzUyNjAyfQ.qGMNCj1PzTpu9SjmT3kzivEFt-16-WH_IFSZinc2QBbbqAjA78oxdu4SRr4Q7jow6mktg1EG2y8SQVpY1G2Iag
+Content-Type: application/json
+
+{
+  "id": 5,
+  "role": "ADMIN"
+}
+
+### 로그아웃
+POST http://localhost:8080/api/user/logout
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzE2NzUyNjAyfQ.qGMNCj1PzTpu9SjmT3kzivEFt-16-WH_IFSZinc2QBbbqAjA78oxdu4SRr4Q7jow6mktg1EG2y8SQVpY1G2Iag
+
+
