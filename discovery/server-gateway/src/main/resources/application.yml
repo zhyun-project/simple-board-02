@@ -8,8 +8,10 @@ spring:
   cloud:
     gateway:
       routes:
+# User Server
         - id: user-server
           uri: lb://user-server
+          order: 0
           predicates:
             - Path=/sign-up,/check/**,/login
 
@@ -17,18 +19,42 @@ spring:
           uri: lb://user-server
           predicates:
             - Path=/user/**,/logout,/withdrawal
+          order: 1
+          filters:
+            - JwtVerifyFilter
+
+# Article Server
+        - id: article-server
+          uri: lb://article-server
+          order: 0
+          predicates:
+            - Path=/withdrawal/articles
+            - Method=DELETE
 
         - id: article-server
           uri: lb://article-server
+          order: 0
           predicates:
-            - Path=/articles,/{userId}/articles,/{userId}/articles/{articleId},/withdrawal/articles
-            - Method=GET,DELETE
+            - Path=/articles,/{userId}/articles,/{userId}/articles/{articleId}
+            - Method=GET
 
         - id: article-server
           uri: lb://article-server
+          order: 1
           predicates:
-            - Path=/{userId}/articles,/{userId}/articles/{articleId},/{userId}/articles,
-            - Method=POST,PUT,DELETE
+            - Path=/{userId}/articles
+            - Method=DELETE
+          filters:
+            - JwtVerifyFilter
+
+        - id: article-server
+          uri: lb://article-server
+          order: 1
+          predicates:
+            - Path=/{userId}/articles,/{userId}/articles/{articleId}
+            - Method=POST,PUT
+          filters:
+            - JwtVerifyFilter
 
 
 eureka:
@@ -41,3 +67,18 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka
+
+---
+
+token:
+  secret: VGhpc2lzSnd0U2VjcmV0S2V5Rm9yU2ltcGxlQm9hcmQwMlByb2plY3RNYWRlQnlaaHl1bktpbU9yV2xndXNLaW0=
+
+---
+
+# logging:
+#   level:
+#     org.springframework.cloud.gateway: TRACE
+#     org.springframework.http.server.reactive: DEBUG
+#     org.springframework.web.reactive: DEBUG
+#     reactor.ipc.netty: DEBUG
+#     reactor.netty: DEBUG

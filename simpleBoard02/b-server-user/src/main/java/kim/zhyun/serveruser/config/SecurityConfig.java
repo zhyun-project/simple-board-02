@@ -44,6 +44,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(config -> config
                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                 .requestMatchers(
+                        mvcMatcher.pattern("/error/**"),
                         mvcMatcher.pattern("/sign-up/**"),
                         mvcMatcher.pattern("/check/**"),
                         mvcMatcher.pattern("/login/**")).permitAll()
