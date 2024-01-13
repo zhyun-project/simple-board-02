@@ -1,0 +1,35 @@
+### 유저 조회
+GET http://localhost:8080/user
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug
+
+### 유저 조회
+GET http://localhost:8080/user/6
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug
+
+### 유저 정보 수정
+PUT http://localhost:8080/user/2
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug
+Content-Type: application/json
+
+{
+  "id": 2,
+  "email": "gimwlgus@gmail.com",
+  "nickname": "얼거스",
+  "password": "1234"
+}
+
+### 유저 권한 수정
+PUT http://localhost:8080/user/role
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug
+Content-Type: application/json
+
+{
+  "id": 6,
+  "role": "MEMBER"
+}
+
+### 로그아웃
+POST http://localhost:8080/logout
+X-TOKEN: Bearer
+
+
