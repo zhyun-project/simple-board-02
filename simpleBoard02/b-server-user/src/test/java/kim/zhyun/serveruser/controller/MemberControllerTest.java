@@ -85,7 +85,7 @@ class MemberControllerTest {
         @Test
         @WithMockUser(roles = TYPE_WITHDRAWAL)
         public void find_by_all_from_withdrawal() throws Exception {
-            mvc.perform(get("/user"))
+            mvc.perform(get("/all"))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
                     .andExpect(jsonPath("$.message").value(EXCEPTION_PERMISSION))
@@ -96,7 +96,7 @@ class MemberControllerTest {
         @Test
         @WithMockUser(roles = TYPE_MEMBER)
         public void find_by_all_from_member() throws Exception {
-            mvc.perform(get("/user"))
+            mvc.perform(get("/all"))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
                     .andExpect(jsonPath("$.message").value(EXCEPTION_PERMISSION))
@@ -107,7 +107,7 @@ class MemberControllerTest {
         @Test
         @WithMockUser(roles = TYPE_ADMIN)
         public void find_by_all_from_admin() throws Exception {
-            mvc.perform(get("/user"))
+            mvc.perform(get("/all"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
                     .andExpect(jsonPath("$.message").value(RESPONSE_USER_REFERENCE_ALL))
@@ -120,7 +120,7 @@ class MemberControllerTest {
             User me = withdrawal();
             setAuthentication(me);
             
-            mvc.perform(get("/user/{id}", me.getId()))
+            mvc.perform(get("/{id}", me.getId()))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
                     .andExpect(jsonPath("$.message").value(EXCEPTION_PERMISSION))
@@ -133,7 +133,7 @@ class MemberControllerTest {
             User me = member_1();
             setAuthentication(me);
             
-            mvc.perform(get("/user/{id}", me.getId()))
+            mvc.perform(get("/{id}", me.getId()))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
                     .andExpect(jsonPath("$.message").value(RESPONSE_USER_REFERENCE_ME))
@@ -148,7 +148,7 @@ class MemberControllerTest {
             User other = member_2();
             setAuthentication(me);
             
-            mvc.perform(get("/user/{id}", other.getId()))
+            mvc.perform(get("/{id}", other.getId()))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
                     .andExpect(jsonPath("$.message").value(EXCEPTION_PERMISSION))
@@ -170,7 +170,7 @@ class MemberControllerTest {
             setAuthentication(me);
             
             // when-then
-            mvc.perform(put("/user/{}", other.getId())
+            mvc.perform(put("/{}", other.getId())
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(UserUpdateRequest.builder()
                                     .id(other.getId())
@@ -190,7 +190,7 @@ class MemberControllerTest {
             setAuthentication(me);
             
             // when-then
-            mvc.perform(put("/user/{}", me.getId())
+            mvc.perform(put("/{}", me.getId())
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(UserUpdateRequest.builder()
                                     .id(me.getId())
@@ -213,7 +213,7 @@ class MemberControllerTest {
                 setAuthentication(me);
                 
                 // when-then
-                mvc.perform(put("/user/{}", me.getId())
+                mvc.perform(put("/{}", me.getId())
                                 .contentType(APPLICATION_JSON)
                                 .content(new ObjectMapper().writeValueAsString(UserUpdateRequest.builder()
                                         .id(me.getId())
@@ -235,7 +235,7 @@ class MemberControllerTest {
                 setAuthentication(me);
                 
                 // when-then
-                mvc.perform(put("/user/{}", me.getId())
+                mvc.perform(put("/{}", me.getId())
                                 .contentType(APPLICATION_JSON)
                                 .content(new ObjectMapper().writeValueAsString(UserUpdateRequest.builder()
                                         .id(me.getId())
@@ -255,7 +255,7 @@ class MemberControllerTest {
                 setAuthentication(me);
                 
                 // when-then
-                mvc.perform(put("/user/{}", me.getId())
+                mvc.perform(put("/{}", me.getId())
                                 .contentType(APPLICATION_JSON)
                                 .content(new ObjectMapper().writeValueAsString(UserUpdateRequest.builder()
                                         .id(me.getId())
@@ -278,12 +278,14 @@ class MemberControllerTest {
                 String newNickname = "얼거스";
                 
                 MockHttpSession session = new MockHttpSession();
-                nicknameReserveService.saveNickname(NicknameDto.builder()
+                
+                NicknameDto reserveNicknameDto = NicknameDto.builder()
                         .sessionId(session.getId())
-                        .nickname(newNickname).build());
+                        .nickname(newNickname).build();
+                nicknameReserveService.saveNickname(reserveNicknameDto);
                 
                 // when-then
-                mvc.perform(put("/user/{}", me.getId())
+                mvc.perform(put("/{}", me.getId())
                                 .session(session)
                                 .contentType(APPLICATION_JSON)
                                 .content(new ObjectMapper().writeValueAsString(UserUpdateRequest.builder()
@@ -309,7 +311,7 @@ class MemberControllerTest {
                 setAuthentication(me);
                 
                 // when-then
-                mvc.perform(put("/user/{}", me.getId())
+                mvc.perform(put("/{}", me.getId())
                                 .contentType(APPLICATION_JSON)
                                 .content(new ObjectMapper().writeValueAsString(UserUpdateRequest.builder()
                                         .id(me.getId())
@@ -331,7 +333,7 @@ class MemberControllerTest {
                 setAuthentication(me);
                 
                 // when-then
-                mvc.perform(put("/user/{}", me.getId())
+                mvc.perform(put("/{}", me.getId())
                                 .contentType(APPLICATION_JSON)
                                 .content(new ObjectMapper().writeValueAsString(UserUpdateRequest.builder()
                                         .id(me.getId())
@@ -353,7 +355,7 @@ class MemberControllerTest {
                 setAuthentication(me);
                 
                 // when-then
-                mvc.perform(put("/user/{}", me.getId())
+                mvc.perform(put("/{}", me.getId())
                                 .contentType(APPLICATION_JSON)
                                 .content(new ObjectMapper().writeValueAsString(UserUpdateRequest.builder()
                                         .id(me.getId())
@@ -376,7 +378,7 @@ class MemberControllerTest {
                 String newPassword = "변경하고갑니다";
                 
                 // when-then
-                mvc.perform(put("/user/{}", me.getId())
+                mvc.perform(put("/{}", me.getId())
                                 .contentType(APPLICATION_JSON)
                                 .content(new ObjectMapper().writeValueAsString(UserUpdateRequest.builder()
                                         .id(me.getId())
@@ -409,7 +411,7 @@ class MemberControllerTest {
             setAuthentication(member);
             
             // when-then
-            mvc.perform(put("/user/role")
+            mvc.perform(put("/role")
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
                                     .id(target.getId())
@@ -432,7 +434,7 @@ class MemberControllerTest {
             setAuthentication(withdrawal);
             
             // when-then
-            mvc.perform(put("/user/role")
+            mvc.perform(put("/role")
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
                                     .id(target.getId())
@@ -455,7 +457,7 @@ class MemberControllerTest {
             setAuthentication(admin);
             
             // when-then
-            mvc.perform(put("/user/role")
+            mvc.perform(put("/role")
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
                                     .id(target.getId()).build())))
@@ -479,7 +481,7 @@ class MemberControllerTest {
             
             assertNotEquals(target.getRole().getGrade(), updateRoleType);
             
-            mvc.perform(put("/user/role")
+            mvc.perform(put("/role")
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
                                     .id(target.getId())
@@ -553,7 +555,7 @@ class MemberControllerTest {
             // 2. `member`로 재설정
             setAuthentication(admin);
             
-            mvc.perform(put("/user/role")
+            mvc.perform(put("/role")
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
                                     .id(target.getId())
@@ -589,7 +591,7 @@ class MemberControllerTest {
             setAuthentication(admin);
             
             // when-then
-            mvc.perform(put("/user/role")
+            mvc.perform(put("/role")
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
                                     .id(target.getId())

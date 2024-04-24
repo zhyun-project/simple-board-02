@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Set;
 
-@FeignClient(name = "articleClient", url = "http://localhost:8100")
+@FeignClient(name = "articleClient", url = "http://localhost:8080/api/article")
 public interface ArticleClient {
     
-    @DeleteMapping("/withdrawal/articles")
+    @DeleteMapping("/withdrawal")
     ResponseEntity<ApiResponse<Object>> withdrawalArticleDelete(@RequestBody Set<Long> userIds);
     
 }

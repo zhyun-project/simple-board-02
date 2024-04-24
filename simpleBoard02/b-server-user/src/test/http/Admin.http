@@ -1,13 +1,13 @@
 ### 유저 조회
-GET http://localhost:8090/user
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug
+GET http://localhost:8080/api/user/all
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ
 
 ### 유저 조회
-GET http://localhost:8090/user/6
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug
+GET http://localhost:8080/api/user/1
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ
 
 ### 유저 정보 수정
-PUT http://localhost:8090/user/2
+PUT http://localhost:8080/api/user/1
 X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug
 Content-Type: application/json
 
@@ -19,17 +19,17 @@ Content-Type: application/json
 }
 
 ### 유저 권한 수정
-PUT http://localhost:8090/user/role
+PUT http://localhost:8080/api/user/role
 X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug
 Content-Type: application/json
 
 {
-  "id": 6,
-  "role": "MEMBER"
+  "id": 1,
+  "role": "ADMIN"
 }
 
 ### 로그아웃
-POST http://localhost:8090/logout
+POST http://localhost:8080/api/user/logout
 X-TOKEN: Bearer
 
 

@@ -1,5 +1,5 @@
 ### 로그인
-POST http://localhost:8090/login
+POST http://localhost:8080/api/user/login
 Content-Type: application/json
 
 {
@@ -8,28 +8,28 @@ Content-Type: application/json
 }
 
 ### 유저 조회
-GET http://localhost:8090/user/6
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NiwiZXhwIjoxNzA3NTcxODUyfQ.hJHr0EhHnhMsoREWFBRol1pGca0p41tI_R0QfNv7Q28gy4h-EGxLBcMN82Gcqa7JD497ZTnps0eqKixr7tZOeQ
+GET http://localhost:8080/api/user/user/1
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ
 
 
 ### 유저 정보 수정
-PUT http://localhost:8090/user/6
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NiwiZXhwIjoxNzA3NTcxODUyfQ.hJHr0EhHnhMsoREWFBRol1pGca0p41tI_R0QfNv7Q28gy4h-EGxLBcMN82Gcqa7JD497ZTnps0eqKixr7tZOeQ
+PUT http://localhost:8080/api/user/user/1
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ
 Content-Type: application/json
 
 {
-  "id": 6,
+  "id": 1,
   "email": "gimwlgus@kakao.com",
   "nickname": "얼구스",
   "password": "1234"
 }
 
 ### 로그아웃
-POST http://localhost:8090/logout
+POST http://localhost:8080/api/user/logout
 X-TOKEN: Bearer
 
 ### 탈퇴
-DELETE http://localhost:8090/withdrawal
+DELETE http://localhost:8080/api/user/withdrawal
 X-TOKEN: Bearer
 
 
