@@ -103,7 +103,7 @@ public class ArticleController {
     @Operation(summary = "게시글 삭제")
     @PreAuthorize("(#userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id) " +
             "&& (#request.userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id)")
-    @DeleteMapping("/{userId}/articles")
+    @PostMapping("/{userId}/delete")
     public ResponseEntity<Object> deleteByArticleId(@PathVariable long userId,
                                                     @RequestBody ArticlesDeleteRequest request) {
         articleService.delete(request);
@@ -113,7 +113,7 @@ public class ArticleController {
     }
     
     @Operation(summary = "탈퇴 유저 게시글 삭제")
-    @DeleteMapping("/withdrawal/articles")
+    @PostMapping("/withdrawal")
     public ResponseEntity<Object> deleteAllByUser(@RequestBody Collection<Long> userIds) {
         articleService.deleteUserAll(userIds);
         return ResponseEntity.ok(ApiResponse.builder()
