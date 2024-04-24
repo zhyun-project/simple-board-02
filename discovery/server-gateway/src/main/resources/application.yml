@@ -11,24 +11,29 @@ spring:
         - id: user-server
           uri: lb://user-server
           predicates:
-            - Path=/sign-up,/check/**,/login
-
-        - id: user-server
-          uri: lb://user-server
-          predicates:
-            - Path=/user/**,/logout,/withdrawal
+            - Path=/api/user/**
 
         - id: article-server
           uri: lb://article-server
           predicates:
-            - Path=/articles,/{userId}/articles,/{userId}/articles/{articleId},/withdrawal/articles
-            - Method=GET,DELETE
-
-        - id: article-server
-          uri: lb://article-server
-          predicates:
-            - Path=/{userId}/articles,/{userId}/articles/{articleId},/{userId}/articles,
-            - Method=POST,PUT,DELETE
+            - Path=/api/article/**
+#
+#        - id: user-server
+#          uri: lb://user-server
+#          predicates:
+#            - Path=/user/**,/logout,/withdrawal
+#
+#        - id: article-server
+#          uri: lb://article-server
+#          predicates:
+#            - Path=/articles,/{userId}/articles,/{userId}/articles/{articleId},/withdrawal/articles
+#            - Method=GET,DELETE
+#
+#        - id: article-server
+#          uri: lb://article-server
+#          predicates:
+#            - Path=/{userId}/articles,/{userId}/articles/{articleId},/{userId}/articles,
+#            - Method=POST,PUT,DELETE
 
 
 eureka:

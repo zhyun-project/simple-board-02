@@ -16,8 +16,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_AUTHENTICATION;
 import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_PERMISSION;
@@ -34,21 +32,26 @@ public class SecurityConfig {
     private final SessionCheckFilter sessionCheckFilter;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
     private final JwtFilter jwtFilter;
-
+    
     
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-                                                   HandlerMappingIntrospector introspector) throws Exception {
-        MvcRequestMatcher.Builder mvcMatcher = new MvcRequestMatcher.Builder(introspector);
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.authorizeHttpRequests(config -> config
                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                 .requestMatchers(
-                        mvcMatcher.pattern("/sign-up/**"),
-                        mvcMatcher.pattern("/check/**"),
-                        mvcMatcher.pattern("/login/**")).permitAll()
+                        "/swagger-ui/**",
+                        "/v3/api-docs/**",
+                        
+                        "/sign-up/**",
+                        "/check/**",
+                        "/login/**"
+                ).permitAll()
+                
                 .requestMatchers(
-                        mvcMatcher.pattern("/withdrawal/**")).authenticated()
+                        "/withdrawal/**"
+                ).authenticated()
+                
                 .anyRequest().hasAnyRole(TYPE_ADMIN, TYPE_MEMBER));
         
         http.exceptionHandling(config -> config
