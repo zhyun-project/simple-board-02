@@ -525,7 +525,7 @@ class MemberControllerTest {
                     .getResponse().getHeader(JWT_HEADER);
             
             // when-then
-            mvc.perform(delete("/withdrawal")
+            mvc.perform(post("/withdrawal")
                             .header(JWT_HEADER, JWT_PREFIX + jwt))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))

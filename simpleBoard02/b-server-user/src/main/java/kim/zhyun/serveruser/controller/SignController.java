@@ -13,7 +13,10 @@ import kim.zhyun.serveruser.service.SignUpService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RestController;
 
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
 import static kim.zhyun.serveruser.data.message.ResponseMessage.*;
@@ -49,7 +52,7 @@ public class SignController {
     }
     
     @Operation(summary = "회원탈퇴")
-    @DeleteMapping("/withdrawal")
+    @PostMapping("/withdrawal")
     public ResponseEntity<Object> withdrawal(@RequestHeader(JWT_HEADER) String jwt) {
         UserDto withdrawal = memberService.withdrawal(jwt);
         
