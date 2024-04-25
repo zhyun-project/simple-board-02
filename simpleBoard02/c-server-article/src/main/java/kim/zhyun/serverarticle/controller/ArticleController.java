@@ -3,12 +3,10 @@ package kim.zhyun.serverarticle.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.serverarticle.advice.ArticleException;
 import kim.zhyun.serverarticle.data.ArticleSaveRequest;
 import kim.zhyun.serverarticle.data.ArticleUpdateRequest;
 import kim.zhyun.serverarticle.data.ArticlesDeleteRequest;
-import kim.zhyun.serverarticle.data.message.ExceptionMessage;
 import kim.zhyun.serverarticle.data.response.ApiResponse;
 import kim.zhyun.serverarticle.data.response.ArticleResponse;
 import kim.zhyun.serverarticle.service.ArticleService;
@@ -16,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -25,7 +22,6 @@ import java.util.List;
 
 import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_NOT_FOUND;
 import static kim.zhyun.serverarticle.data.message.ResponseMessage.*;
-import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 @Slf4j
 @Tag(name = "게시글 관련 API")
@@ -35,7 +31,7 @@ public class ArticleController {
     private final ArticleService articleService;
     
     @Operation(summary = "전체 게시글 조회")
-    @GetMapping("/articles")
+    @GetMapping("/all")
     public ResponseEntity<Object> findAll() {
         return ResponseEntity.ok(ApiResponse.builder()
                 .status(true)
@@ -44,7 +40,7 @@ public class ArticleController {
     }
     
     @Operation(summary = "유저 전체 게시글 조회")
-    @GetMapping("/{userId}/articles")
+    @GetMapping("/{userId}/all")
     public ResponseEntity<Object> findAllByUser(@PathVariable long userId) {
         String nickname = articleService.getJwtUserDto(userId).getNickname();
         List<ArticleResponse> response = articleService.findAllByUser(userId);
@@ -56,7 +52,7 @@ public class ArticleController {
     }
     
     @Operation(summary = "유저 게시글 상세 조회")
-    @GetMapping("/{userId}/articles/{articleId}")
+    @GetMapping("/{userId}/{articleId}")
     public ResponseEntity<Object> findByArticleId(@PathVariable long userId,
                                                   @PathVariable long articleId) {
         String nickname = articleService.getJwtUserDto(userId).getNickname();
@@ -71,7 +67,7 @@ public class ArticleController {
     @Operation(summary = "게시글 등록")
     @PreAuthorize("(#userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id) " +
             "&& (#request.userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id)")
-    @PostMapping("/{userId}/articles")
+    @PostMapping("/{userId}")
     public ResponseEntity<Object> save(@PathVariable long userId,
                                        @RequestBody @Valid ArticleSaveRequest request) {
         return ResponseEntity.created(ServletUriComponentsBuilder
@@ -85,7 +81,7 @@ public class ArticleController {
     @Operation(summary = "게시글 수정")
     @PreAuthorize("(#userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id) " +
             "&& (#request.userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id)")
-    @PutMapping("/{userId}/articles/{articleId}")
+    @PutMapping("/{userId}/{articleId}")
     public ResponseEntity<Object> updateByArticleId(@PathVariable long userId,
                                                     @PathVariable long articleId,
                                                     @RequestBody @Valid ArticleUpdateRequest request) {

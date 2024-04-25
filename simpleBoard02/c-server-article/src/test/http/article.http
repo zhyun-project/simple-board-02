@@ -1,50 +1,53 @@
 ### 전체 조회
-GET http://localhost:8100/articles
+GET http://localhost:8080/api/article/all
 
 ### 특정 유저 조회
-GET http://localhost:8100/6/articles
+GET http://localhost:8080/api/article/1/all
 
 ### 특정 유저 상세 조회
-GET http://localhost:8100/2/articles/1
+GET http://localhost:8080/api/article/1/1
 Content-Type: application/json
 
 ### 게시글 등록
-POST http://localhost:8100/3/articles
+POST http://localhost:8080/api/article/1
 Content-Type: application/json
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BkYXVtLm5ldCIsImlkIjozLCJleHAiOjE3MDc0MTc1OTN9.HcSGR1n6CHsXeztwnSKUFZq01L4quLRIyeJVskpmSKQsKtmWChcX9cZgT-XIN8egFOa71kpjiE62sFq8zlWILw
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg5MzA0fQ.T1QIxZPw3MUuxEIohGaBIlyVxLpDycQsgVC__Kdr5Jz-A8KQ32hnltx-OgSKnYBSIq_ZnCxZjhal_WISL0FJjQ
 
 {
-  "userId": 3,
+  "userId": 1,
   "title": "제목 ",
   "content": "내용 "
 }
 
 
 ### 게시글 수정
-PUT http://localhost:8100/2/articles/1
+PUT http://localhost:8080/api/article/1/1
 Content-Type: application/json
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg5MzA0fQ.T1QIxZPw3MUuxEIohGaBIlyVxLpDycQsgVC__Kdr5Jz-A8KQ32hnltx-OgSKnYBSIq_ZnCxZjhal_WISL0FJjQ
 
 {
-  "id": 6,
-  "userId": 2,
+  "id": 1,
+  "userId": 1,
   "articleId": 1,
-  "title": "유저id 2 1번 글 수정",
-  "content": "유저id 2 1번 내용 수정"
+  "title": "유저id 1 1번 글 수정",
+  "content": "유저id 1 1번 내용 수정"
 }
 
 
 ### 게시글 삭제
 POST http://localhost:8080/api/article/1/delete
 Content-Type: application/json
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg5MzA0fQ.T1QIxZPw3MUuxEIohGaBIlyVxLpDycQsgVC__Kdr5Jz-A8KQ32hnltx-OgSKnYBSIq_ZnCxZjhal_WISL0FJjQ
 
 {
-  "userId": 2,
+  "userId": 1,
   "articleIds": [1,3]
 }
 
 
 ### 탈퇴자 게시글 삭제
-POST http://localhost:8080/api/article/withdrawal/1
+POST http://localhost:8080/api/article/withdrawal
 Content-Type: application/json
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg5MzA0fQ.T1QIxZPw3MUuxEIohGaBIlyVxLpDycQsgVC__Kdr5Jz-A8KQ32hnltx-OgSKnYBSIq_ZnCxZjhal_WISL0FJjQ
+
+[1]

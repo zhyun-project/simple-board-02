@@ -18,8 +18,7 @@ import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_AU
 import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_PERMISSION;
 import static kim.zhyun.serverarticle.data.type.RoleType.TYPE_ADMIN;
 import static kim.zhyun.serverarticle.data.type.RoleType.TYPE_MEMBER;
-import static org.springframework.http.HttpMethod.DELETE;
-import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 
 @RequiredArgsConstructor
@@ -39,12 +38,11 @@ public class SecurityConfig {
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
                         
-                        "/error/**"
+                        "/error/**",
+                        
+                        "/withdrawal"
                 ).permitAll()
-                .requestMatchers(
-                        antMatcher(GET, "/**/articles/**"),
-                        antMatcher(DELETE,"/withdrawal/**")
-                ).permitAll()
+                .requestMatchers(GET).permitAll()
                 
                 .anyRequest().hasAnyRole(TYPE_ADMIN, TYPE_MEMBER));
         
