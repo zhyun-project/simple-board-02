@@ -24,14 +24,13 @@ import static org.springframework.web.servlet.support.ServletUriComponentsBuilde
 @Tag(name = "계정 조회, 계정 정보 수정, 계정 권한 수정 API")
 @Validated
 @RequiredArgsConstructor
-@RequestMapping("/user")
 @RestController
 public class MemberController {
     private final MemberService memberService;
     
     @Operation(summary = "모든 계정 정보 조회")
     @PreAuthorize("hasRole('"+TYPE_ADMIN+"')")
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<Object> findAll() {
         return ResponseEntity.ok(ApiResponse.builder()
                 .status(true)

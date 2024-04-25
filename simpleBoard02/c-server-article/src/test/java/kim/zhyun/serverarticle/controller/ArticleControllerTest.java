@@ -4,6 +4,7 @@ import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.jwt.data.JwtUserInfo;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.jwt.repository.JwtUserInfoRepository;
+import kim.zhyun.serverarticle.config.SecurityConfig;
 import kim.zhyun.serverarticle.container.RedisTestContainer;
 import kim.zhyun.serverarticle.data.ArticleSaveRequest;
 import kim.zhyun.serverarticle.data.ArticleUpdateRequest;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -44,6 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 @ExtendWith(RedisTestContainer.class)
+@Import(SecurityConfig.class)
 @AutoConfigureMockMvc
 @SpringBootTest
 class ArticleControllerTest {
@@ -477,9 +480,15 @@ class ArticleControllerTest {
         @DisplayName("전체 게시글 조회")
         @Test
         void find_all() throws Exception {
-            mvc.perform(delete("/withdrawal/articles")
+            mvc.perform(post("/delete/withdrawal")
                             .contentType(APPLICATION_JSON)
-                            .content(new ObjectMapper().writeValueAsString(Set.of(1L,3L))))
+                            .content(new ObjectMapper().writeValueAsString(Set.of(1L))))
+                    .andDo(print());
+            
+            mvc.perform(get("/all/user/{userId}", 1))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.status").value(true))
+                    .andExpect(jsonPath("$.result.length()").value(0))
                     .andDo(print());
         }
         
@@ -517,7 +526,7 @@ class ArticleControllerTest {
      */
     private ResultActions getPerformUpdate(long userId, long articleId, Article article) throws Exception {
         
-        return mvc.perform(put("/{userId}/articles/{articleId}", userId, articleId)
+        return mvc.perform(put("/{articleId}/user/{userId}", articleId, userId)
                 .contentType(APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(ArticleUpdateRequest.builder()
                         .id(article.getId())
@@ -532,7 +541,7 @@ class ArticleControllerTest {
      */
     private ResultActions getPerformDelete(long userId, Collection<Long> articleIds) throws Exception {
         
-        return mvc.perform(delete("/{userId}/articles", userId)
+        return mvc.perform(post("/delete/user/{userId}", userId)
                 .contentType(APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(ArticlesDeleteRequest.builder()
                         .userId(userId)
@@ -544,7 +553,7 @@ class ArticleControllerTest {
      */
     private ResultActions getPerformSave(JwtUserDto user) throws Exception {
         
-        return mvc.perform(post("/{userId}/articles", user.getId())
+        return mvc.perform(post("/save/user/{userId}", user.getId())
                 .contentType(APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(ArticleSaveRequest.builder()
                         .userId(user.getId())
@@ -556,13 +565,13 @@ class ArticleControllerTest {
      * 게시글 조회 perform
      */
     private ResultActions getPerformFindAll() throws Exception {
-        return mvc.perform(get("/articles"));
+        return mvc.perform(get("/all"));
     }
     private ResultActions getPerformFindByUserId(long userId) throws Exception {
-        return mvc.perform(get("/{userId}/articles", userId));
+        return mvc.perform(get("/all/user/{userId}", userId));
     }
     private ResultActions getPerformFindByUserArticleId(long userId, long articleId) throws Exception {
-        return mvc.perform(get("/{userId}/articles/{articleId}", userId, articleId));
+        return mvc.perform(get("/{articleId}/user/{userId}", articleId, userId));
     }
     
     
@@ -592,7 +601,7 @@ class ArticleControllerTest {
     @BeforeEach void init() {
         initRedisUserInfo(2, "gimwlgus@gmail.com", "얼거스", TYPE_ADMIN);
         initRedisUserInfo(3, "gimwlgus@daum.net", "zhyun", TYPE_MEMBER);
-        initRedisUserInfo(5, "gimwlgus@kakao.com", "얼구스", TYPE_MEMBER);
+        initRedisUserInfo(1, "gimwlgus@kakao.com", "얼구스", TYPE_MEMBER);
     }
     private void initRedisUserInfo(long id, String email, String nickname, String grade) {
         jwtUserInfoRepository.save(JwtUserInfo.builder()

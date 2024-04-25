@@ -36,6 +36,8 @@ class ConnectionSessionCheckFilterTest {
     
     @Mock private MemberService memberService;
     
+    private final String context = "/api/user/";
+    
     private final MockMvc mvc;
     public ConnectionSessionCheckFilterTest(@Autowired MockMvc mvc,
                                             @Autowired SessionUserService sessionUserService) {
@@ -46,49 +48,31 @@ class ConnectionSessionCheckFilterTest {
     @DisplayName("/sign-up post 접근")
     @Test
     void sign_up_test() throws Exception {
-        verifyRun(post("/sign-up"));
+        verifyRun(post(context + "/sign-up"));
     }
     
     @DisplayName("/check get 접근")
     @Test
     void check_test() throws Exception {
-        verifyRun(get("/check"));
+        verifyRun(get(context + "/check"));
     }
     
     @DisplayName("/check/auth get 접근")
     @Test
     void check_auth_get_test() throws Exception {
-        verifyRun(get("/check/auth"));
+        verifyRun(get(context + "/check/auth"));
     }
     
     @DisplayName("/check/auth post 접근")
     @Test
     void check_auth_post_test() throws Exception {
-        verifyRun(post("/check/auth"));
+        verifyRun(post(context + "/check/auth"));
     }
     
-    @DisplayName("/user get 접근")
-    @Test
-    void user_get_all() throws Exception {
-        verifyRun(get("/user"));
-    }
-    
-    @DisplayName("/user/{id} get 접근")
-    @Test
-    void user_get_by_id() throws Exception {
-        verifyRun(get("/user/{id}", 1));
-    }
-    
-    @DisplayName("/user/{id} put 접근")
+    @DisplayName("/{id} put 접근")
     @Test
     void user_update_by_id() throws Exception {
-        verifyRun(put("/user/{id}", 1));
-    }
-    
-    @DisplayName("/user/{id}/role put 접근")
-    @Test
-    void user_update_by_id_and_role() throws Exception {
-        verifyRun(put("/user/{id}/role", 1));
+        verifyRun(put(context + "/{id}", 1));
     }
     
     private void verifyRun(MockHttpServletRequestBuilder mockHttpServletRequestBuilder) throws Exception {

@@ -264,7 +264,7 @@ class MemberServiceImplTest {
             controller.logout(JWT_PREFIX + jwt, authentication);
             assertTrue(jwtLogoutStorage.isLogoutToken(jwt, username));
             
-            mvc.perform(get("/user").header(JWT_HEADER, JWT_PREFIX + jwt))
+            mvc.perform(get("/all").header(JWT_HEADER, JWT_PREFIX + jwt))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
                     .andExpect(jsonPath("$.message").value(JWT_EXPIRED));
@@ -578,7 +578,7 @@ class MemberServiceImplTest {
             
             // when
             setAuthentication(admin);
-            mvc.perform(put("/user/role")
+            mvc.perform(put("/role")
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
                                     .id(target.getId())
@@ -632,7 +632,7 @@ class MemberServiceImplTest {
             
             // when
             setAuthentication(admin);
-            mvc.perform(put("/user/role")
+            mvc.perform(put("/role")
                     .contentType(APPLICATION_JSON_VALUE)
                     .content(new ObjectMapper().writeValueAsString(UserGradeUpdateRequest.builder()
                             .id(target.getId())
