@@ -20,6 +20,8 @@ spring:
     console:
       path: /h2-console
       enabled: true
+      settings:
+        web-allow-others: true
 
   datasource:
     url: jdbc:h2:./simpleBoard02/b-server-article/h2/article;AUTO_SERVER=true;mode=MYSQL;

@@ -8,6 +8,13 @@ spring:
   cloud:
     gateway:
       routes:
+        - id: h2-console
+          uri: lb://article-server
+          predicates:
+            - Path=/h2-console
+          filters:
+            - RewritePath=/(?<segment>.*), /api/article/$\{segment}
+
         - id: user-server
           uri: lb://user-server
           predicates:
