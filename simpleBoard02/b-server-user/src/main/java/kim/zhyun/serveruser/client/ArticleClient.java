@@ -12,7 +12,7 @@ import java.util.Set;
 @FeignClient(name = "articleClient", url = "http://localhost:8080/api/article")
 public interface ArticleClient {
     
-    @PostMapping("/withdrawal")
+    @PostMapping("/delete/withdrawal")
     ResponseEntity<ApiResponse<Object>> withdrawalArticleDelete(@RequestBody Set<Long> userIds);
     
 }

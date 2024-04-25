@@ -40,7 +40,7 @@ public class ArticleController {
     }
     
     @Operation(summary = "유저 전체 게시글 조회")
-    @GetMapping("/{userId}/all")
+    @GetMapping("/all/user/{userId}")
     public ResponseEntity<Object> findAllByUser(@PathVariable long userId) {
         String nickname = articleService.getJwtUserDto(userId).getNickname();
         List<ArticleResponse> response = articleService.findAllByUser(userId);
@@ -52,7 +52,7 @@ public class ArticleController {
     }
     
     @Operation(summary = "유저 게시글 상세 조회")
-    @GetMapping("/{userId}/{articleId}")
+    @GetMapping("/{articleId}/user/{userId}")
     public ResponseEntity<Object> findByArticleId(@PathVariable long userId,
                                                   @PathVariable long articleId) {
         String nickname = articleService.getJwtUserDto(userId).getNickname();
@@ -67,11 +67,10 @@ public class ArticleController {
     @Operation(summary = "게시글 등록")
     @PreAuthorize("(#userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id) " +
             "&& (#request.userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id)")
-    @PostMapping("/{userId}")
+    @PostMapping("/save/user/{userId}")
     public ResponseEntity<Object> save(@PathVariable long userId,
                                        @RequestBody @Valid ArticleSaveRequest request) {
-        return ResponseEntity.created(ServletUriComponentsBuilder
-                        .fromCurrentRequestUri().path("/{id}").build(userId))
+        return ResponseEntity.created(ServletUriComponentsBuilder.fromPath("/all/user/{id}").build(userId))
                 .body(ApiResponse.builder()
                         .status(true)
                         .message(RESPONSE_ARTICLE_INSERT)
@@ -81,7 +80,7 @@ public class ArticleController {
     @Operation(summary = "게시글 수정")
     @PreAuthorize("(#userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id) " +
             "&& (#request.userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id)")
-    @PutMapping("/{userId}/{articleId}")
+    @PutMapping("/{articleId}/user/{userId}")
     public ResponseEntity<Object> updateByArticleId(@PathVariable long userId,
                                                     @PathVariable long articleId,
                                                     @RequestBody @Valid ArticleUpdateRequest request) {
@@ -99,7 +98,7 @@ public class ArticleController {
     @Operation(summary = "게시글 삭제")
     @PreAuthorize("(#userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id) " +
             "&& (#request.userId == T(kim.zhyun.jwt.data.JwtUserDto).from(principal).id)")
-    @PostMapping("/{userId}/delete")
+    @PostMapping("/delete/user/{userId}")
     public ResponseEntity<Object> deleteByArticleId(@PathVariable long userId,
                                                     @RequestBody ArticlesDeleteRequest request) {
         articleService.delete(request);
@@ -109,7 +108,7 @@ public class ArticleController {
     }
     
     @Operation(summary = "탈퇴 유저 게시글 삭제")
-    @PostMapping("/withdrawal")
+    @PostMapping("/delete/withdrawal")
     public ResponseEntity<Object> deleteAllByUser(@RequestBody Collection<Long> userIds) {
         articleService.deleteUserAll(userIds);
         return ResponseEntity.ok(ApiResponse.builder()

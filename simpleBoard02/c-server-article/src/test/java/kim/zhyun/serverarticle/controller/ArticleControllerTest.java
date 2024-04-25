@@ -480,12 +480,12 @@ class ArticleControllerTest {
         @DisplayName("전체 게시글 조회")
         @Test
         void find_all() throws Exception {
-            mvc.perform(post("/withdrawal")
+            mvc.perform(post("/delete/withdrawal")
                             .contentType(APPLICATION_JSON)
                             .content(new ObjectMapper().writeValueAsString(Set.of(1L))))
                     .andDo(print());
             
-            mvc.perform(get("/{userId}/all", 1))
+            mvc.perform(get("/all/user/{userId}", 1))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
                     .andExpect(jsonPath("$.result.length()").value(0))
@@ -526,7 +526,7 @@ class ArticleControllerTest {
      */
     private ResultActions getPerformUpdate(long userId, long articleId, Article article) throws Exception {
         
-        return mvc.perform(put("/{userId}/{articleId}", userId, articleId)
+        return mvc.perform(put("/{articleId}/user/{userId}", articleId, userId)
                 .contentType(APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(ArticleUpdateRequest.builder()
                         .id(article.getId())
@@ -541,7 +541,7 @@ class ArticleControllerTest {
      */
     private ResultActions getPerformDelete(long userId, Collection<Long> articleIds) throws Exception {
         
-        return mvc.perform(post("/{userId}/delete", userId)
+        return mvc.perform(post("/delete/user/{userId}", userId)
                 .contentType(APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(ArticlesDeleteRequest.builder()
                         .userId(userId)
@@ -553,7 +553,7 @@ class ArticleControllerTest {
      */
     private ResultActions getPerformSave(JwtUserDto user) throws Exception {
         
-        return mvc.perform(post("/{userId}", user.getId())
+        return mvc.perform(post("/save/user/{userId}", user.getId())
                 .contentType(APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(ArticleSaveRequest.builder()
                         .userId(user.getId())
@@ -568,10 +568,10 @@ class ArticleControllerTest {
         return mvc.perform(get("/all"));
     }
     private ResultActions getPerformFindByUserId(long userId) throws Exception {
-        return mvc.perform(get("/{userId}/all", userId));
+        return mvc.perform(get("/all/user/{userId}", userId));
     }
     private ResultActions getPerformFindByUserArticleId(long userId, long articleId) throws Exception {
-        return mvc.perform(get("/{userId}/{articleId}", userId, articleId));
+        return mvc.perform(get("/{articleId}/user/{userId}", articleId, userId));
     }
     
     
