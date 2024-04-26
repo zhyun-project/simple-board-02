@@ -18,29 +18,35 @@ spring:
         - id: user-server
           uri: lb://user-server
           predicates:
+            - Path=/api/user/sign-up, /api/user/login, /api/user/check/**
+
+        - id: user-server
+          uri: lb://user-server
+          predicates:
             - Path=/api/user/**
+          filters:
+            - JwtVerifyFilter
+
+
+        - id: article-server
+          uri: lb://article-server
+          predicates:
+            - Path=/api/article/save/user/{userId}, /api/article/delete/user/{userId}
+          filters:
+            - JwtVerifyFilter
+
+        - id: article-server
+          uri: lb://article-server
+          predicates:
+            - Path=/api/article/{articleId}/user/{userId}
+            - Method=PUT
+          filters:
+            - JwtVerifyFilter
 
         - id: article-server
           uri: lb://article-server
           predicates:
             - Path=/api/article/**
-#
-#        - id: user-server
-#          uri: lb://user-server
-#          predicates:
-#            - Path=/user/**,/logout,/withdrawal
-#
-#        - id: article-server
-#          uri: lb://article-server
-#          predicates:
-#            - Path=/articles,/{userId}/articles,/{userId}/articles/{articleId},/withdrawal/articles
-#            - Method=GET,DELETE
-#
-#        - id: article-server
-#          uri: lb://article-server
-#          predicates:
-#            - Path=/{userId}/articles,/{userId}/articles/{articleId},/{userId}/articles,
-#            - Method=POST,PUT,DELETE
 
 
 eureka:
@@ -53,3 +59,9 @@ eureka:
     fetch-registry: true
     service-url:
       defaultZone: http://127.0.0.1:8761/eureka
+
+token:
+  header: X-TOKEN
+  prefix: "Bearer "
+  secret: VGhpc2lzSnd0U2VjcmV0S2V5Rm9yU2ltcGxlQm9hcmQwMlByb2plY3RNYWRlQnlaaHl1bktpbU9yV2xndXNLaW0=
+
