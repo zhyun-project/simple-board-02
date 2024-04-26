@@ -1,6 +1,8 @@
 package kim.zhyun.jwt.provider;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import kim.zhyun.jwt.data.JwtConstants;
@@ -24,7 +26,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static kim.zhyun.jwt.data.JwtConstants.JWT_CLAIM_KEY_USER_ID;
-import static kim.zhyun.jwt.data.JwtResponseMessage.*;
+import static kim.zhyun.jwt.data.JwtResponseMessage.JWT_EXPIRED;
+import static kim.zhyun.jwt.data.JwtResponseMessage.JWT_EXPIRED_IS_NULL;
 import static kim.zhyun.jwt.util.TimeUnitUtil.timeUnitFrom;
 
 @Slf4j
@@ -95,25 +98,6 @@ public class JwtProvider implements InitializingBean {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toSet()));
     }
-    
-    /**
-     * 토큰 검증
-     */
-    public boolean validateToken(String token) {
-        try {
-            Jwts.parser().verifyWith(key).build().parseSignedClaims(token);
-            return true;
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            throw new JwtException(JWT_INVALID_SIGNATURE);
-        } catch (ExpiredJwtException e) {
-            throw new JwtException(JWT_EXPIRED);
-        } catch (UnsupportedJwtException e) {
-            throw new JwtException(JWT_UNSUPPORTED);
-        } catch (IllegalArgumentException e) {
-            throw new JwtException(JWT_DECODE_FAIL);
-        }
-    }
-    
     
     /**
      * token -> email 추출
