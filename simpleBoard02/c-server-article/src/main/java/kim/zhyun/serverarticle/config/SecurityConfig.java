@@ -40,7 +40,7 @@ public class SecurityConfig {
                         
                         "/error/**",
                         
-                        "/withdrawal"
+                        "/delete/withdrawal"
                 ).permitAll()
                 .requestMatchers(GET).permitAll()
                 

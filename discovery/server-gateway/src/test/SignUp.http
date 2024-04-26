@@ -1,0 +1,31 @@
+### 닉네임 중복 확인
+GET http://localhost:8080/api/user/check?nickname=ergus
+
+### 이메일 중복 확인
+GET http://localhost:8080/api/user/check?email=gimwlgus@kakao.com
+
+### 이메일 전송
+POST http://localhost:8080/api/user/check/auth
+Content-Type: application/json
+
+{
+  "email": "gimwlgus@kakao.com"
+}
+
+### 이메일 인증 코드 검증
+GET http://localhost:8080/api/user/check/auth?code=9714a6
+
+### 회원가입
+POST http://localhost:8080/api/user/sign-up
+Content-Type: application/json
+
+{
+  "email": "gimwlgus@kakao.com",
+  "nickname": "ergus",
+  "password": "1234"
+}
+
+### 탈퇴
+POST http://localhost:8080/api/user/withdrawal
+Content-Type: application/json
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ

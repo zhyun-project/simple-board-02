@@ -48,6 +48,5 @@ X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI
 ### 탈퇴자 게시글 삭제
 POST http://localhost:8080/api/article/delete/withdrawal
 Content-Type: application/json
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg5MzA0fQ.T1QIxZPw3MUuxEIohGaBIlyVxLpDycQsgVC__Kdr5Jz-A8KQ32hnltx-OgSKnYBSIq_ZnCxZjhal_WISL0FJjQ
 
 [1]

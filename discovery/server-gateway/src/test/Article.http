@@ -1,0 +1,52 @@
+### 전체 조회
+GET http://localhost:8080/api/article/all
+
+### 특정 유저 조회
+GET http://localhost:8080/api/article/all/user/1
+
+### 특정 유저 상세 조회
+GET http://localhost:8080/api/article/3/user/1
+Content-Type: application/json
+
+### 게시글 등록
+POST http://localhost:8080/api/article/save/user/1
+Content-Type: application/json
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ
+
+{
+  "userId": 1,
+  "title": "제목 ",
+  "content": "내용 "
+}
+
+
+### 게시글 수정
+PUT http://localhost:8080/api/article/3/user/1
+Content-Type: application/json
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ
+
+{
+  "id": 1,
+  "userId": 1,
+  "articleId": 3,
+  "title": "유저id 1 3번 글 수정",
+  "content": "유저id 1 3번 내용 수정"
+}
+
+
+### 게시글 삭제
+POST http://localhost:8080/api/article/delete/user/1
+Content-Type: application/json
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ
+
+{
+  "userId": 1,
+  "articleIds": [1,3]
+}
+
+
+### 탈퇴 유저 게시글 삭제
+POST http://localhost:8080/api/article/delete/withdrawal
+Content-Type: application/json
+
+[1]
