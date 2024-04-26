@@ -21,6 +21,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
 
 import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
@@ -398,17 +399,22 @@ class SignControllerTest {
             
             SignInRequest signInInfo = SignInRequest.of(email, password);
             
+            String jwtHeader = mvc.perform(post("/login")
+                            .contentType(APPLICATION_JSON)
+                            .content(new ObjectMapper().writeValueAsString(signInInfo)))
+                    .andDo(print())
+                    .andReturn()
+                    .getResponse()
+                    .getHeader(JWT_HEADER);
+            
             String jwt = String.format("%s%s",
                     JWT_PREFIX,
-                    mvc.perform(post("/login")
-                                    .contentType(APPLICATION_JSON)
-                                    .content(new ObjectMapper().writeValueAsString(signInInfo)))
-                            .andReturn()
-                            .getResponse()
-                            .getHeader(JWT_HEADER));
+                    jwtHeader
+            );
             
             // when-then
-            mvc.perform(post("/logout").header(JWT_HEADER, jwt))
+            mvc.perform(post("/logout")
+                            .header(JWT_HEADER, jwt))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
                     .andExpect(jsonPath("$.message").value(String.format(RESPONSE_SUCCESS_FORMAT_SIGN_OUT, nickname, email)))

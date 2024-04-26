@@ -7,15 +7,14 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import kim.zhyun.jwt.data.JwtConstants;
-import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.jwt.storage.JwtLogoutStorage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
@@ -34,11 +33,13 @@ public class JwtFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request,
                          ServletResponse response,
                          FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        String jwt = getToken(httpServletRequest);
-        String requestURI = httpServletRequest.getRequestURI();
         
-        if (StringUtils.hasText(jwt) && provider.validateToken(jwt)) {
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+        String requestURI = httpServletRequest.getRequestURI();
+        String jwtHeader  = httpServletRequest.getHeader(JwtConstants.JWT_HEADER);
+        
+        if (!Strings.isBlank(jwtHeader) && jwtHeader.length() > JWT_PREFIX.length()) {
+            String jwt = jwtHeader.substring(JWT_PREFIX.length());
             
             if (jwtLogoutStorage.isLogoutToken(jwt, provider.emailFrom(jwt)))
                 throw new JwtException(JWT_EXPIRED);
@@ -47,23 +48,14 @@ public class JwtFilter extends GenericFilterBean {
             SecurityContextHolder.getContext().setAuthentication(authentication);
             
             log.info("Security Context에 {} {}({}) 인증 정보를 저장했습니다. uri: {}",
-                    authentication.getAuthorities(),
-                    ((JwtUserDto) authentication.getPrincipal()).getNickname(),
-                    ((JwtUserDto) authentication.getPrincipal()).getEmail(),
-                    requestURI);
+                    provider.gradeFrom(authentication),
+                    provider.nicknameFrom(authentication),
+                    provider.emailFrom(authentication),
+                    requestURI
+            );
         }
         
         chain.doFilter(request, response);
-    }
-    
-    private String getToken(HttpServletRequest request) {
-        String jwt = request.getHeader(JwtConstants.JWT_HEADER);
-        
-        if (StringUtils.hasText(jwt) && jwt.startsWith(JWT_PREFIX)) {
-            return jwt.substring(JWT_PREFIX.length());
-        }
-        
-        return null;
     }
     
 }

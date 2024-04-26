@@ -5,13 +5,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kim.zhyun.jwt.data.JwtUserDto;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
 import kim.zhyun.serveruser.data.SignInRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -68,14 +66,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
         String token = jwtProvider.tokenFrom(authResult);
-        JwtUserDto principal = (JwtUserDto) authResult.getPrincipal();
         
         response.addHeader(JWT_HEADER, token);
         
         sendMessage(response,
                 SC_OK,
                 true,
-                String.format(RESPONSE_SUCCESS_FORMAT_SIGN_IN, principal.getNickname(), principal.getEmail()));
+                String.format(RESPONSE_SUCCESS_FORMAT_SIGN_IN, jwtProvider.nicknameFrom(authResult), jwtProvider.emailFrom(authResult)));
     }
     
 }

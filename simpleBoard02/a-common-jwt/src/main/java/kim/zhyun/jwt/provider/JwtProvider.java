@@ -152,14 +152,14 @@ public class JwtProvider implements InitializingBean {
     /**
      * authentication -> email 추출
      */
-    private String emailFrom(Authentication authentication) {
+    public String emailFrom(Authentication authentication) {
         return ((JwtUserDto) authentication.getPrincipal()).getEmail();
     }
     
     /**
      * authentication -> nickname 추출
      */
-    private String nicknameFrom(Authentication authentication) {
+    public String nicknameFrom(Authentication authentication) {
         return ((JwtUserDto) authentication.getPrincipal()).getNickname();
     }
     
@@ -173,7 +173,7 @@ public class JwtProvider implements InitializingBean {
     /**
      * authentication -> 권한(grade) 추출
      */
-    private String gradeFrom(Authentication authentication) {
+    public String gradeFrom(Authentication authentication) {
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR));
