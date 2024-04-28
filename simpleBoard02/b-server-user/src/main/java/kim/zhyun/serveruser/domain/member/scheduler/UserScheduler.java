@@ -1,7 +1,7 @@
-package kim.zhyun.serveruser.scheduler;
+package kim.zhyun.serveruser.domain.member.scheduler;
 
 
-import kim.zhyun.serveruser.client.ArticleClient;
+import kim.zhyun.serveruser.domain.member.client.ArticleClient;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
 import kim.zhyun.serveruser.domain.member.repository.UserRepository;
 import lombok.RequiredArgsConstructor;

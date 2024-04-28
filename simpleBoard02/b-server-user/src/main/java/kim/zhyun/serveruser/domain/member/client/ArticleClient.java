@@ -1,4 +1,4 @@
-package kim.zhyun.serveruser.client;
+package kim.zhyun.serveruser.domain.member.client;
 
 import kim.zhyun.serveruser.common.model.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
