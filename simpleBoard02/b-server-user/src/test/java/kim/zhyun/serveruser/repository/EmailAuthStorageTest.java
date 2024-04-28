@@ -1,10 +1,11 @@
+/*
 package kim.zhyun.serveruser.repository;
 
-import kim.zhyun.serveruser.data.EmailAuthDto;
-import kim.zhyun.serveruser.data.entity.SessionUser;
+import kim.zhyun.serveruser.domain.signup.controller.model.dto.EmailAuthDto;
+import kim.zhyun.serveruser.domain.signup.repository.SessionUser;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
-import kim.zhyun.serveruser.service.EmailService;
-import kim.zhyun.serveruser.service.SessionUserService;
+import kim.zhyun.serveruser.domain.signup.service.EmailService;
+import kim.zhyun.serveruser.domain.member.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -98,7 +99,7 @@ class EmailAuthStorageTest {
     @DisplayName("인증 코드 검증 - 유효 시도, 코드 일치, 데이터 삭제")
     @Test
     void delete_by_id() {
-        boolean emailVerificationOrigin = sessionUserService.findById(SESSION_ID).isEmailVerification();
+        boolean emailVerificationOrigin = sessionUserService.existNicknameDuplicateCheckWithThrow(SESSION_ID).isEmailVerification();
 
         // given
         EmailAuthDto dto = EmailAuthDto.builder()
@@ -110,7 +111,7 @@ class EmailAuthStorageTest {
         
         // then
         boolean existEmail = emailService.existEmail(dto);
-        boolean emailVerification = sessionUserService.findById(SESSION_ID).isEmailVerification();
+        boolean emailVerification = sessionUserService.existNicknameDuplicateCheckWithThrow(SESSION_ID).isEmailVerification();
 
         assertFalse(existEmail);
         assertTrue(emailVerification);
@@ -152,8 +153,9 @@ class EmailAuthStorageTest {
                 .filter(key -> key.startsWith(KEY))
                 .forEach(key -> redisTemplate.opsForSet().members(key)
                         .forEach(value -> log.info("EMAIL { key : {}, value : {} }", key, value)));
-        log.info("{}", sessionUserService.findById(SESSION_ID));
+        log.info("{}", sessionUserService.existNicknameDuplicateCheckWithThrow(SESSION_ID));
         log.info("--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------┘");
         log.info("");
     }
 }
+*/

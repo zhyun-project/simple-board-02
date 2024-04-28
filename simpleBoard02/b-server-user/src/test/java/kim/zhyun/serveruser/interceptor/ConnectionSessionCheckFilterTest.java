@@ -1,10 +1,10 @@
 package kim.zhyun.serveruser.interceptor;
 
 import kim.zhyun.serveruser.config.SecurityConfig;
-import kim.zhyun.serveruser.data.entity.SessionUser;
+import kim.zhyun.serveruser.domain.signup.repository.SessionUser;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
-import kim.zhyun.serveruser.service.MemberService;
-import kim.zhyun.serveruser.service.SessionUserService;
+import kim.zhyun.serveruser.domain.member.service.MemberService;
+import kim.zhyun.serveruser.domain.member.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

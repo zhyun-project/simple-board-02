@@ -1,7 +1,7 @@
 package kim.zhyun.serveruser.config;
 
 import kim.zhyun.jwt.filter.JwtFilter;
-import kim.zhyun.serveruser.advice.MemberException;
+import kim.zhyun.serveruser.common.advice.MemberException;
 import kim.zhyun.serveruser.filter.AuthenticationFilter;
 import kim.zhyun.serveruser.filter.ExceptionHandlerFilter;
 import kim.zhyun.serveruser.filter.SessionCheckFilter;
@@ -17,10 +17,10 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_AUTHENTICATION;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_PERMISSION;
-import static kim.zhyun.serveruser.data.type.RoleType.TYPE_ADMIN;
-import static kim.zhyun.serveruser.data.type.RoleType.TYPE_MEMBER;
+import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_AUTHENTICATION;
+import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_PERMISSION;
+import static kim.zhyun.serveruser.common.model.type.RoleType.TYPE_ADMIN;
+import static kim.zhyun.serveruser.common.model.type.RoleType.TYPE_MEMBER;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @RequiredArgsConstructor

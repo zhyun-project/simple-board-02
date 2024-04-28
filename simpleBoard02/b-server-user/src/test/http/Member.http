@@ -1,5 +1,5 @@
 ### 로그인
-POST http://localhost:8080/api/user/login
+POST http://localhost:8080/api/userEntity/login
 Content-Type: application/json
 
 {
@@ -8,12 +8,12 @@ Content-Type: application/json
 }
 
 ### 유저 조회
-GET http://localhost:8080/api/user/user/1
+GET http://localhost:8080/api/userEntity/userEntity/1
 X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ
 
 
 ### 유저 정보 수정
-PUT http://localhost:8080/api/user/user/1
+PUT http://localhost:8080/api/userEntity/userEntity/1
 X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ
 Content-Type: application/json
 
@@ -25,11 +25,11 @@ Content-Type: application/json
 }
 
 ### 로그아웃
-POST http://localhost:8080/api/user/logout
+POST http://localhost:8080/api/userEntity/logout
 X-TOKEN: Bearer
 
 ### 탈퇴
-POST http://localhost:8080/api/user/withdrawal
+POST http://localhost:8080/api/userEntity/withdrawal
 X-TOKEN: Bearer
 
 

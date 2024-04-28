@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
-import kim.zhyun.serveruser.data.SignInRequest;
+import kim.zhyun.serveruser.filter.model.SignInRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,9 +20,9 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_OK;
-import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
-import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_IN;
+import static kim.zhyun.jwt.constants.JwtConstants.JWT_HEADER;
+import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
+import static kim.zhyun.serveruser.common.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_IN;
 import static kim.zhyun.serveruser.utils.FilterApiResponseUtil.sendMessage;
 
 @Slf4j

@@ -1,29 +1,30 @@
 package kim.zhyun.serveruser.service.impl;
 
-import kim.zhyun.jwt.data.JwtUserDto;
-import kim.zhyun.jwt.data.JwtUserInfo;
+import kim.zhyun.jwt.dto.JwtUserInfoDto;
+import kim.zhyun.jwt.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.jwt.repository.JwtUserInfoRepository;
-import kim.zhyun.jwt.storage.JwtLogoutStorage;
+import kim.zhyun.jwt.service.JwtLogoutService;
 import kim.zhyun.jwt.util.TimeUnitUtil;
-import kim.zhyun.serveruser.advice.MemberException;
+import kim.zhyun.serveruser.common.advice.MemberException;
 import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
 import kim.zhyun.serveruser.config.SecurityConfig;
-import kim.zhyun.serveruser.controller.SignController;
-import kim.zhyun.serveruser.data.SignInRequest;
-import kim.zhyun.serveruser.data.UserDto;
-import kim.zhyun.serveruser.data.UserGradeUpdateRequest;
-import kim.zhyun.serveruser.data.UserUpdateRequest;
-import kim.zhyun.serveruser.data.entity.Role;
-import kim.zhyun.serveruser.data.entity.SessionUser;
-import kim.zhyun.serveruser.data.entity.User;
-import kim.zhyun.serveruser.data.response.UserResponse;
+import kim.zhyun.serveruser.domain.member.repository.UserEntity;
+import kim.zhyun.serveruser.domain.member.business.MemberBusiness;
+import kim.zhyun.serveruser.domain.member.controller.MemberApiController;
+import kim.zhyun.serveruser.filter.model.SignInRequest;
+import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
+import kim.zhyun.serveruser.domain.member.controller.model.UserUpdateRequest;
+import kim.zhyun.serveruser.domain.signup.repository.Role;
+import kim.zhyun.serveruser.domain.signup.repository.SessionUser;
+import kim.zhyun.serveruser.domain.member.controller.model.UserResponse;
+import kim.zhyun.serveruser.domain.member.converter.UserConverter;
 import kim.zhyun.serveruser.filter.AuthenticationFilter;
-import kim.zhyun.serveruser.repository.RoleRepository;
-import kim.zhyun.serveruser.repository.UserRepository;
+import kim.zhyun.serveruser.domain.signup.repository.RoleRepository;
+import kim.zhyun.serveruser.domain.member.repository.UserRepository;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
-import kim.zhyun.serveruser.service.MemberService;
-import kim.zhyun.serveruser.service.SessionUserService;
+import kim.zhyun.serveruser.domain.member.service.MemberService;
+import kim.zhyun.serveruser.domain.member.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,12 +53,12 @@ import java.time.temporal.ChronoUnit;
 import java.util.Optional;
 import java.util.Set;
 
-import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
-import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
-import static kim.zhyun.jwt.data.JwtResponseMessage.JWT_EXPIRED;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_SIGNIN_FAIL;
-import static kim.zhyun.serveruser.data.type.RoleType.*;
+import static kim.zhyun.jwt.constants.JwtConstants.JWT_HEADER;
+import static kim.zhyun.jwt.constants.JwtConstants.JWT_PREFIX;
+import static kim.zhyun.jwt.constants.JwtExceptionMessageConstants.JWT_EXPIRED;
+import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK;
+import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_SIGNIN_FAIL;
+import static kim.zhyun.serveruser.common.model.type.RoleType.*;
 import static kim.zhyun.serveruser.util.TestSecurityUser.setAuthentication;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertThrows;
@@ -89,8 +90,11 @@ class MemberServiceImplTest {
         @Mock PasswordEncoder passwordEncoder;
         
         private final RoleRepository roleRepository;
-        public LoginTest(@Autowired RoleRepository roleRepository) {
+        private final UserConverter userConverter;
+        public LoginTest(@Autowired RoleRepository roleRepository,
+                         @Autowired UserConverter userConverter) {
             this.roleRepository = roleRepository;
+            this.userConverter = userConverter;
         }
         
         @DisplayName("비회원 접근")
@@ -100,7 +104,7 @@ class MemberServiceImplTest {
             SignInRequest signInInfo = SignInRequest.of("asdsad@gmail.com", "qwer");
             
             when(userRepository.findByEmail(signInInfo.getEmail())).thenReturn(Optional.empty());
-            doThrow(new MemberException(EXCEPTION_SIGNIN_FAIL)).when(userService).findByEmail(signInInfo.getEmail());
+            doThrow(new MemberException(EXCEPTION_SIGNIN_FAIL)).when(userService).findByEmailWithThrow(signInInfo.getEmail());
             
             MockHttpServletRequest servletRequest = new MockHttpServletRequest();
             servletRequest.setContentType(APPLICATION_JSON_VALUE);
@@ -112,7 +116,7 @@ class MemberServiceImplTest {
             assertThrows(EXCEPTION_SIGNIN_FAIL, MemberException.class, () ->
                     authenticationFilter.attemptAuthentication(servletRequest, new MockHttpServletResponse()));
             
-            verify(userService, times(1)).findByEmail(signInInfo.getEmail());
+            verify(userService, times(1)).findByEmailWithThrow(signInInfo.getEmail());
         }
         
         @DisplayName("회원 접근 - 비밀번호 틀림")
@@ -121,7 +125,7 @@ class MemberServiceImplTest {
             // given
             SignInRequest signInInfo = SignInRequest.of("asdsad@gmail.com", "qwer");
             Role role = roleRepository.findByGrade(TYPE_MEMBER);
-            User member = User.builder()
+            UserEntity member = UserEntity.builder()
                     .id(1L)
                     .email(signInInfo.getEmail())
                     .nickname("nickname")
@@ -129,7 +133,7 @@ class MemberServiceImplTest {
                     .role(role).build();
             
             when(userRepository.findByEmail(signInInfo.getEmail())).thenReturn(Optional.of(member));
-            when(userService.findByEmail(signInInfo.getEmail())).thenReturn(UserDto.from(member));
+            when(userService.findByEmailWithThrow(signInInfo.getEmail())).thenReturn(member);
             when(passwordEncoder.matches(signInInfo.getPassword(), member.getPassword())).thenReturn(false);
             
             MockHttpServletRequest servletRequest = new MockHttpServletRequest();
@@ -144,7 +148,7 @@ class MemberServiceImplTest {
                     () -> authenticationManager.authenticate(
                             authenticationFilter.attemptAuthentication(servletRequest, new MockHttpServletResponse())));
             
-            verify(userService, times(1)).findByEmail(signInInfo.getEmail());
+            verify(userService, times(1)).findByEmailWithThrow(signInInfo.getEmail());
         }
         
         @DisplayName("회원 접근 - 로그인 성공")
@@ -153,7 +157,7 @@ class MemberServiceImplTest {
             // given-when
             SignInRequest signInInfo = SignInRequest.of("asdsad@gmail.com", "qwer");
             Role role = roleRepository.findByGrade(TYPE_MEMBER);
-            User member = User.builder()
+            UserEntity member = UserEntity.builder()
                     .id(1L)
                     .email(signInInfo.getEmail())
                     .nickname("nickname")
@@ -161,7 +165,7 @@ class MemberServiceImplTest {
                     .role(role).build();
             
             when(userRepository.findByEmail(signInInfo.getEmail())).thenReturn(Optional.of(member));
-            when(userService.findByEmail(signInInfo.getEmail())).thenReturn(UserDto.from(member));
+            when(userService.findByEmailWithThrow(signInInfo.getEmail())).thenReturn(member);
             when(passwordEncoder.matches(signInInfo.getPassword(), member.getPassword())).thenReturn(true);
             
             authenticationFilter.setAuthenticationManager(authenticationManager);
@@ -171,14 +175,14 @@ class MemberServiceImplTest {
             servletRequest.setContent(new ObjectMapper().writeValueAsString(signInInfo).getBytes());
             
             Authentication processing = authenticationFilter.attemptAuthentication(servletRequest, new MockHttpServletResponse());
-            when(userService.findByEmail(processing.getName())).thenReturn(UserDto.from(member));
+            when(userService.findByEmailWithThrow(processing.getName())).thenReturn(member);
             
             Authentication result = authenticationManager.authenticate(processing);
             
             
             // then
-            verify(userService, times(1)).findByEmail(signInInfo.getEmail());
-            assertTrue(result.getPrincipal() instanceof JwtUserDto);
+            verify(userService, times(1)).findByEmailWithThrow(signInInfo.getEmail());
+            assertTrue(result.getPrincipal() instanceof JwtUserInfoDto);
         }
         
         @AfterEach
@@ -193,21 +197,21 @@ class MemberServiceImplTest {
     class LogoutTest {
         
         private final JwtProvider jwtProvider;
-        private final JwtLogoutStorage jwtLogoutStorage;
-        private final SignController controller;
+        private final JwtLogoutService jwtLogoutService;
+        private final MemberApiController controller;
         private final RedisTemplate<String, String> redisTemplate;
         private final MockMvc mvc;
         private final Long expiredTime;
         private final String expiredTimeUnit;
         public LogoutTest(@Autowired JwtProvider jwtProvider,
-                          @Autowired JwtLogoutStorage jwtLogoutStorage,
+                          @Autowired JwtLogoutService jwtLogoutService,
                           @Autowired RedisTemplate<String, String> redisTemplate,
-                          @Autowired SignController controller,
+                          @Autowired MemberApiController controller,
                           @Autowired MockMvc mvc,
                           @Value("${token.expiration-time}") Long expiredTime,
                           @Value("${token.expiration-time-unit}") String expiredTimeUnit) {
             this.jwtProvider = jwtProvider;
-            this.jwtLogoutStorage = jwtLogoutStorage;
+            this.jwtLogoutService = jwtLogoutService;
             this.redisTemplate = redisTemplate;
             this.controller = controller;
             this.mvc = mvc;
@@ -224,7 +228,7 @@ class MemberServiceImplTest {
             String password = "1234";
             
             SecurityContext context = SecurityContextHolder.getContext();
-            context.setAuthentication(new UsernamePasswordAuthenticationToken(JwtUserDto.builder()
+            context.setAuthentication(new UsernamePasswordAuthenticationToken(JwtUserInfoDto.builder()
                     .id(1L)
                     .email(username)
                     .nickname(nickname).build(), password, Set.of()));
@@ -234,11 +238,11 @@ class MemberServiceImplTest {
             String jwt = jwtProvider.tokenFrom(authentication);
             
             // when
-            assertFalse(jwtLogoutStorage.isLogoutToken(jwt, username));
-            controller.logout(JWT_PREFIX + jwt, authentication);
+            assertFalse(jwtLogoutService.isLogoutToken(jwt, username));
+            controller.logout(JWT_PREFIX + jwt);
             
             // then
-            assertTrue(jwtLogoutStorage.isLogoutToken(jwt, username));
+            assertTrue(jwtLogoutService.isLogoutToken(jwt, username));
         }
         
         @DisplayName("로그아웃 후 토큰 사용 실패")
@@ -250,7 +254,7 @@ class MemberServiceImplTest {
             String password = "1234";
             
             SecurityContext context = SecurityContextHolder.getContext();
-            context.setAuthentication(new UsernamePasswordAuthenticationToken(JwtUserDto.builder()
+            context.setAuthentication(new UsernamePasswordAuthenticationToken(JwtUserInfoDto.builder()
                     .id(1L)
                     .email(username)
                     .nickname(nickname).build(), password, Set.of()));
@@ -260,9 +264,9 @@ class MemberServiceImplTest {
             String jwt = jwtProvider.tokenFrom(authentication);
             
             // when-then
-            assertFalse(jwtLogoutStorage.isLogoutToken(jwt, username));
-            controller.logout(JWT_PREFIX + jwt, authentication);
-            assertTrue(jwtLogoutStorage.isLogoutToken(jwt, username));
+            assertFalse(jwtLogoutService.isLogoutToken(jwt, username));
+            controller.logout(JWT_PREFIX + jwt);
+            assertTrue(jwtLogoutService.isLogoutToken(jwt, username));
             
             mvc.perform(get("/all").header(JWT_HEADER, JWT_PREFIX + jwt))
                     .andExpect(status().isBadRequest())
@@ -279,7 +283,7 @@ class MemberServiceImplTest {
             String password = "1234";
             
             SecurityContext context = SecurityContextHolder.getContext();
-            context.setAuthentication(new UsernamePasswordAuthenticationToken(JwtUserDto.builder()
+            context.setAuthentication(new UsernamePasswordAuthenticationToken(JwtUserInfoDto.builder()
                     .id(1L)
                     .email(username)
                     .nickname(nickname).build(), password, Set.of()));
@@ -289,14 +293,14 @@ class MemberServiceImplTest {
             String jwt = jwtProvider.tokenFrom(authentication);
             
             // when
-            assertFalse(jwtLogoutStorage.isLogoutToken(jwt, username));
-            controller.logout(JWT_PREFIX + jwt, authentication);
-            assertTrue(jwtLogoutStorage.isLogoutToken(jwt, username));
+            assertFalse(jwtLogoutService.isLogoutToken(jwt, username));
+            controller.logout(JWT_PREFIX + jwt);
+            assertTrue(jwtLogoutService.isLogoutToken(jwt, username));
             
             Thread.sleep(Duration.of(jwtProvider.expiredTime, jwtProvider.expiredTimeUnit.toChronoUnit()));
             
             // then
-            assertFalse(jwtLogoutStorage.isLogoutToken(jwt, username));
+            assertFalse(jwtLogoutService.isLogoutToken(jwt, username));
         }
         
         @BeforeEach
@@ -309,18 +313,21 @@ class MemberServiceImplTest {
     @Nested
     class MemberInfoUpdate {
         
-        private final MemberServiceImpl memberService;
+        private final MemberBusiness memberBusiness;
         private final UserRepository userRepository;
         private final SessionUserService sessionUserService;
         private final RoleRepository roleRepository;
-        public MemberInfoUpdate(@Autowired MemberServiceImpl memberService,
-                                         @Autowired UserRepository userRepository,
-                                         @Autowired SessionUserService sessionUserService,
-                                         @Autowired RoleRepository roleRepository) {
-            this.memberService = memberService;
+        private final UserConverter userConverter;
+        public MemberInfoUpdate(@Autowired MemberBusiness memberBusiness,
+                                @Autowired UserRepository userRepository,
+                                @Autowired SessionUserService sessionUserService,
+                                @Autowired RoleRepository roleRepository,
+                                @Autowired UserConverter userConverter) {
+            this.memberBusiness = memberBusiness;
             this.userRepository = userRepository;
             this.sessionUserService = sessionUserService;
             this.roleRepository = roleRepository;
+            this.userConverter = userConverter;
         }
         
         @DisplayName("닉네임 수정 테스트")
@@ -335,18 +342,18 @@ class MemberServiceImplTest {
             @Test
             public void pass() {
                 // given
-                User user = mem1();
+                UserEntity userEntity = mem1();
                 UserUpdateRequest request = UserUpdateRequest.builder()
-                        .id(user.getId())
-                        .email(user.getEmail())
-                        .nickname(user.getNickname()).build();
+                        .id(userEntity.getId())
+                        .email(userEntity.getEmail())
+                        .nickname(userEntity.getNickname()).build();
                 
                 // when
                 MockHttpSession session = new MockHttpSession();
-                UserResponse result = memberService.updateUserInfo(session.getId(), request);
+                UserResponse result = memberBusiness.updateUserInfo(session.getId(), request);
                 
                 // then
-                assertThat(UserResponse.from(user)).isEqualTo(result);
+                assertThat(userConverter.toResponse(userEntity)).isEqualTo(result);
             }
             
             
@@ -354,17 +361,17 @@ class MemberServiceImplTest {
             @Test
             public void fail_nickname_duplicate_passed() {
                 // given
-                User user = mem1();
+                UserEntity userEntity = mem1();
                 UserUpdateRequest request = UserUpdateRequest.builder()
-                        .id(user.getId())
-                        .email(user.getEmail())
+                        .id(userEntity.getId())
+                        .email(userEntity.getEmail())
                         .nickname(nicknameChange).build();
                 
                 // when-then
                 MockHttpSession session = new MockHttpSession();
                 assertThrows(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK,
                         MemberException.class,
-                        () -> memberService.updateUserInfo(session.getId(), request));
+                        () -> memberBusiness.updateUserInfo(session.getId(), request));
             }
             
             
@@ -372,26 +379,26 @@ class MemberServiceImplTest {
             @Test
             public void success() {
                 // given
-                User user = mem1();
+                UserEntity userEntity = mem1();
                 UserUpdateRequest request = UserUpdateRequest.builder()
-                        .id(user.getId())
-                        .email(user.getEmail())
+                        .id(userEntity.getId())
+                        .email(userEntity.getEmail())
                         .nickname(nicknameChange).build();
                 
                 MockHttpSession session = new MockHttpSession();
                 
                 SessionUser sessionUser = SessionUser.builder()
                         .sessionId(session.getId())
-                        .email(user.getEmail())
+                        .email(userEntity.getEmail())
                         .nickname(nicknameChange).build();
                 
                 sessionUserService.save(sessionUser);
                 
                 // when
-                UserResponse result = memberService.updateUserInfo(session.getId(), request);
+                UserResponse result = memberBusiness.updateUserInfo(session.getId(), request);
                 
                 // then
-                assertThat(result).isNotEqualTo(UserResponse.from(user));
+                assertThat(result).isNotEqualTo(userConverter.toResponse(userEntity));
                 assertThat(result.getNickname()).isEqualTo(nicknameChange);
             }
             
@@ -399,7 +406,7 @@ class MemberServiceImplTest {
             @BeforeEach public void init() {
                 Role roleMember = roleRepository.findByGrade(TYPE_MEMBER);
                 
-                User mem1 = User.builder()
+                UserEntity mem1 = UserEntity.builder()
                         .email(username)
                         .nickname(nickname)
                         .password(password)
@@ -411,7 +418,7 @@ class MemberServiceImplTest {
                 userRepository.deleteAll();
             }
             
-            private User mem1() {
+            private UserEntity mem1() {
                 return userRepository.findByEmail(username).get();
             }
         }
@@ -432,7 +439,7 @@ class MemberServiceImplTest {
             @Test
             public void success() {
                 // given
-                User before = mem1();
+                UserEntity before = mem1();
                 String passwordChange = "passwordChange";
                 
                 UserUpdateRequest request = UserUpdateRequest.builder()
@@ -442,11 +449,11 @@ class MemberServiceImplTest {
                 
                 // when
                 MockHttpSession session = new MockHttpSession();
-                UserResponse afterResponse = memberService.updateUserInfo(session.getId(), request);
+                UserResponse afterResponse = memberBusiness.updateUserInfo(session.getId(), request);
                 
                 // then
-                User after = mem1();
-                UserResponse beforeResponse = UserResponse.from(before);
+                UserEntity after = mem1();
+                UserResponse beforeResponse = userConverter.toResponse(before);
                 
                 assertThat(before).isNotEqualTo(after);
                 assertThat(beforeResponse).isEqualTo(afterResponse);
@@ -459,7 +466,7 @@ class MemberServiceImplTest {
             @BeforeEach public void init() {
                 Role roleMember = roleRepository.findByGrade(TYPE_MEMBER);
                 
-                User mem1 = User.builder()
+                UserEntity mem1 = UserEntity.builder()
                         .email(username)
                         .nickname(nickname)
                         .password(password)
@@ -471,7 +478,7 @@ class MemberServiceImplTest {
                 userRepository.deleteAll();
             }
             
-            public User mem1() {
+            public UserEntity mem1() {
                 return userRepository.findByEmail(username).get();
             }
         }
@@ -482,11 +489,11 @@ class MemberServiceImplTest {
     @Nested
     class MemberGradeUpdateRealTest {
         
-        private final MemberServiceImpl memberService;
+        private final MemberService memberService;
         private final UserRepository userRepository;
         private final JwtUserInfoRepository jwtUserInfoRepository;
         private final RoleRepository roleRepository;
-        public MemberGradeUpdateRealTest(@Autowired MemberServiceImpl memberService,
+        public MemberGradeUpdateRealTest(@Autowired MemberService memberService,
                                          @Autowired UserRepository userRepository,
                                          @Autowired JwtUserInfoRepository jwtUserInfoRepository,
                                          @Autowired RoleRepository roleRepository) {
@@ -501,7 +508,7 @@ class MemberServiceImplTest {
         public void success() {
             Role roleMember = roleRepository.findByGrade(TYPE_MEMBER);
             
-            User mem1 = User.builder()
+            UserEntity mem1 = UserEntity.builder()
                     .email("member@mem.ber")
                     .nickname("mem1")
                     .password("1234")
@@ -520,15 +527,15 @@ class MemberServiceImplTest {
             // then
             assertThat(before).isNotEqualTo(after);
             
-            JwtUserInfo jwtUserInfo = jwtUserInfoRepository.findById(mem1.getId()).get();
-            User user = userRepository.findById(mem1.getId()).get();
+            JwtUserInfoEntity jwtUserInfoEntity = jwtUserInfoRepository.findById(mem1.getId()).get();
+            UserEntity userEntity = userRepository.findById(mem1.getId()).get();
             
-            assertThat(jwtUserInfo.getId()).isEqualTo(user.getId());
-            assertThat(jwtUserInfo.getEmail()).isEqualTo(user.getEmail());
-            assertThat(jwtUserInfo.getNickname()).isEqualTo(user.getNickname());
-            assertThat(jwtUserInfo.getGrade()).contains(user.getRole().getGrade());
+            assertThat(jwtUserInfoEntity.getId()).isEqualTo(userEntity.getId());
+            assertThat(jwtUserInfoEntity.getEmail()).isEqualTo(userEntity.getEmail());
+            assertThat(jwtUserInfoEntity.getNickname()).isEqualTo(userEntity.getNickname());
+            assertThat(jwtUserInfoEntity.getGrade()).contains(userEntity.getRole().getGrade());
             
-            assertThat(jwtUserInfo.getGrade()).doesNotContain(mem1.getRole().getGrade());
+            assertThat(jwtUserInfoEntity.getGrade()).doesNotContain(mem1.getRole().getGrade());
         }
         
         @AfterEach public void clean() {
@@ -573,8 +580,8 @@ class MemberServiceImplTest {
         @Test
         void check_database_re_member() throws Exception {
             // given
-            User target = withdrawal().get();
-            User admin = admin();
+            UserEntity target = withdrawal().get();
+            UserEntity admin = admin();
             
             // when
             setAuthentication(admin);
@@ -587,7 +594,7 @@ class MemberServiceImplTest {
             TestSecurityContextHolder.clearContext();
             
             // then
-            User targetUpdated = withdrawal().get();
+            UserEntity targetUpdated = withdrawal().get();
             assertThat(targetUpdated.getRole()).isNotEqualTo(target.getRole());
             assertThat(targetUpdated.isWithdrawal()).isNotEqualTo(target.isWithdrawal());
             assertThat(targetUpdated.getModifiedAt()).isNotEqualTo(target.getModifiedAt());
@@ -603,10 +610,10 @@ class MemberServiceImplTest {
         @Test
         void check_database_deleted_user() throws Exception {
             // given
-            Optional<User> targetContainer = withdrawal();
-            User target = targetContainer.get();
+            Optional<UserEntity> targetContainer = withdrawal();
+            UserEntity target = targetContainer.get();
             
-            Optional<JwtUserInfo> redisTarget = withdrawalFromRedis(target);
+            Optional<JwtUserInfoEntity> redisTarget = withdrawalFromRedis(target);
             
             assertThat(targetContainer).isNotEmpty();
             assertThat(redisTarget).isNotEmpty();
@@ -615,8 +622,8 @@ class MemberServiceImplTest {
             Thread.sleep(Duration.of(EXPIRE_TIME + 11, EXPIRE_TIME_UNIT));
             
             // then
-            Optional<User> targetUpdated = withdrawal();
-            Optional<JwtUserInfo> redisTargetUpdated = withdrawalFromRedis(target);
+            Optional<UserEntity> targetUpdated = withdrawal();
+            Optional<JwtUserInfoEntity> redisTargetUpdated = withdrawalFromRedis(target);
             
             assertThat(targetUpdated).isEmpty();
             assertThat(redisTargetUpdated).isEmpty();
@@ -656,21 +663,21 @@ class MemberServiceImplTest {
             
             String password = passwordEncoder.encode("1234");
             
-            userRepository.save(User.builder()
+            userRepository.save(UserEntity.builder()
                     .email(ADMIN_USERNAME)
                     .password(password)
                     .nickname("admin")
                     .withdrawal(false)
                     .role(roleAdmin).build());
             
-            User savedWithdrawal = userRepository.save(User.builder()
+            UserEntity savedWithdrawal = userRepository.save(UserEntity.builder()
                     .email(WITHDRAWAL_USERNAME)
                     .password(password)
                     .nickname("탈퇴🖐️")
                     .withdrawal(true)
                     .role(roleWithdrawal).build());
             
-            jwtUserInfoRepository.save(JwtUserInfo.builder()
+            jwtUserInfoRepository.save(JwtUserInfoEntity.builder()
                     .id(savedWithdrawal.getId())
                     .email(savedWithdrawal.getEmail())
                     .nickname(savedWithdrawal.getNickname())
@@ -681,14 +688,14 @@ class MemberServiceImplTest {
             jwtUserInfoRepository.deleteAll();
         }
         
-        private User admin() {
+        private UserEntity admin() {
             return userRepository.findByEmail(ADMIN_USERNAME).get();
         }
-        private Optional<User> withdrawal() {
+        private Optional<UserEntity> withdrawal() {
             return userRepository.findByEmail(WITHDRAWAL_USERNAME);
         }
-        private Optional<JwtUserInfo> withdrawalFromRedis(User target) {
-            return jwtUserInfoRepository.findById(JwtUserInfo.builder().id(target.getId()).build().getId());
+        private Optional<JwtUserInfoEntity> withdrawalFromRedis(UserEntity target) {
+            return jwtUserInfoRepository.findById(JwtUserInfoEntity.builder().id(target.getId()).build().getId());
         }
     }
 }

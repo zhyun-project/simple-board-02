@@ -1,13 +1,13 @@
 package kim.zhyun.serveruser.interceptor;
 
 import kim.zhyun.serveruser.config.SecurityConfig;
-import kim.zhyun.serveruser.data.NicknameDto;
-import kim.zhyun.serveruser.data.SignInRequest;
-import kim.zhyun.serveruser.data.entity.SessionUser;
+import kim.zhyun.serveruser.domain.signup.controller.model.dto.NicknameFindDto;
+import kim.zhyun.serveruser.filter.model.SignInRequest;
+import kim.zhyun.serveruser.domain.signup.repository.SessionUser;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
-import kim.zhyun.serveruser.service.MemberService;
-import kim.zhyun.serveruser.service.NicknameReserveService;
-import kim.zhyun.serveruser.service.SessionUserService;
+import kim.zhyun.serveruser.domain.member.service.MemberService;
+import kim.zhyun.serveruser.domain.signup.service.NicknameReserveService;
+import kim.zhyun.serveruser.domain.member.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -81,7 +81,7 @@ class DisconnectSessionCheckFilterTest {
         var resultSavedSessionUserContainNickname = SessionUser.builder()
                 .sessionId(sessionId)
                 .nickname(reservedNickname).build();
-        var nicknameReserved = NicknameDto.builder()
+        var nicknameReserved = NicknameFindDto.builder()
                 .nickname(reservedNickname)
                 .sessionId(sessionId).build();
         

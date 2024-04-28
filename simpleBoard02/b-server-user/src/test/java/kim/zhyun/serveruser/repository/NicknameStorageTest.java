@@ -1,12 +1,11 @@
 package kim.zhyun.serveruser.repository;
 
-import kim.zhyun.serveruser.data.NicknameDto;
-import kim.zhyun.serveruser.data.entity.SessionUser;
+import kim.zhyun.serveruser.domain.signup.controller.model.dto.NicknameFindDto;
+import kim.zhyun.serveruser.domain.signup.repository.SessionUser;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
-import kim.zhyun.serveruser.service.NicknameReserveService;
-import kim.zhyun.serveruser.service.SessionUserService;
+import kim.zhyun.serveruser.domain.signup.service.NicknameReserveService;
+import kim.zhyun.serveruser.domain.member.service.SessionUserService;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,7 @@ class NicknameStorageTest {
     @Test
     void not_available_by_nickname() {
         //given
-        NicknameDto dto = NicknameDto.builder()
+        NicknameFindDto dto = NicknameFindDto.builder()
                 .nickname(NICKNAME_RESERVED)
                 .sessionId(SESSION_ID_RESERVATION_PERSON_NOT).build();
         
@@ -58,7 +57,7 @@ class NicknameStorageTest {
     @Test
     void available_nickname() {
         //given
-        NicknameDto dto = NicknameDto.builder()
+        NicknameFindDto dto = NicknameFindDto.builder()
                 .nickname(NICKNAME_RESERVED_NOT)
                 .sessionId(SESSION_ID_RESERVATION_PERSON_NOT).build();
         
@@ -73,7 +72,7 @@ class NicknameStorageTest {
     @Test
     void available_nickname_its_mine() {
         //given
-        NicknameDto dto = NicknameDto.builder()
+        NicknameFindDto dto = NicknameFindDto.builder()
                 .nickname(NICKNAME_RESERVED)
                 .sessionId(SESSION_ID_RESERVATION_PERSON).build();
         
@@ -88,10 +87,10 @@ class NicknameStorageTest {
     @Test
     void available_by_nickname_reserve_canceled() {
         //given
-        NicknameDto dto1 = NicknameDto.builder()
+        NicknameFindDto dto1 = NicknameFindDto.builder()
                 .nickname(NICKNAME_RESERVED)
                 .sessionId(SESSION_ID_RESERVATION_PERSON_NOT).build();
-        NicknameDto dto2 = NicknameDto.builder()
+        NicknameFindDto dto2 = NicknameFindDto.builder()
                 .nickname(NICKNAME_RESERVED_NOT)
                 .sessionId(SESSION_ID_RESERVATION_PERSON).build();
         
@@ -111,7 +110,7 @@ class NicknameStorageTest {
     @Test
     void delete_by_nickname() {
         //given
-        NicknameDto dto = NicknameDto.of(NICKNAME_RESERVED);
+        NicknameFindDto dto = NicknameFindDto.of(NICKNAME_RESERVED);
         
         // when
         nicknameReserveService.deleteNickname(dto);
@@ -125,7 +124,7 @@ class NicknameStorageTest {
     @Test
     void delete_by_nickname_reserved_not() {
         //given
-        NicknameDto dto = NicknameDto.of("asdasdasdasd");
+        NicknameFindDto dto = NicknameFindDto.of("asdasdasdasd");
         
         // when
         nicknameReserveService.deleteNickname(dto);
@@ -135,13 +134,13 @@ class NicknameStorageTest {
     }
     
     
-    private Boolean existNickname(NicknameDto dto) {
+    private Boolean existNickname(NicknameFindDto dto) {
         return redisTemplate.hasKey(dto.getNickname());
     }
     
     @BeforeEach
     void save_init_data() {
-        NicknameDto dto = NicknameDto.builder()
+        NicknameFindDto dto = NicknameFindDto.builder()
                 .nickname(NICKNAME_RESERVED)
                 .sessionId(SESSION_ID_RESERVATION_PERSON).build();
         
@@ -155,7 +154,7 @@ class NicknameStorageTest {
     @AfterEach
     void print_after_log() {
         print();
-        nicknameReserveService.deleteNickname(NicknameDto.of(NICKNAME_RESERVED));
+        nicknameReserveService.deleteNickname(NicknameFindDto.of(NICKNAME_RESERVED));
     }
     
     private void print() {

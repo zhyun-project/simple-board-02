@@ -1,14 +1,13 @@
 package kim.zhyun.serveruser.repository;
 
-import kim.zhyun.serveruser.data.entity.SessionUser;
+import kim.zhyun.serveruser.domain.signup.repository.SessionUser;
+import kim.zhyun.serveruser.domain.signup.repository.SessionUserRepository;
 import kim.zhyun.serveruser.repository.container.RedisTestContainer;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import org.testcontainers.shaded.org.checkerframework.checker.index.qual.IndexOrHigh;
 
 import java.util.Optional;
 

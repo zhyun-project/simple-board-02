@@ -72,6 +72,8 @@ logging:
     org.hibernate.sql: debug
     org.hibernate.type: trace
 
+
+
 ---
 
 sign-up:
