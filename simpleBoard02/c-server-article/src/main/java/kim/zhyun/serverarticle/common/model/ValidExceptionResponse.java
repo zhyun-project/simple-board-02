@@ -1,8 +1,12 @@
-package kim.zhyun.serverarticle.common.response;
+package kim.zhyun.serverarticle.common.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter @Builder
 public class ValidExceptionResponse implements Comparable<ValidExceptionResponse> {
     

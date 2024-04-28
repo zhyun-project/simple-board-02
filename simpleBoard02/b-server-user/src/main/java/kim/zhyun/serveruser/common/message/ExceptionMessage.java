@@ -1,8 +1,5 @@
 package kim.zhyun.serveruser.common.message;
 
-import lombok.Getter;
-
-@Getter
 public class ExceptionMessage {
     
     // email 관련

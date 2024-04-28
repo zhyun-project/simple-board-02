@@ -1,4 +1,4 @@
-package kim.zhyun.serveruser.common.advice;
+package kim.zhyun.serveruser.advice;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;

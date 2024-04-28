@@ -1,7 +1,7 @@
 package kim.zhyun.serveruser.domain.signup.business;
 
-import kim.zhyun.serveruser.common.advice.MailAuthException;
-import kim.zhyun.serveruser.common.advice.SignUpException;
+import kim.zhyun.serveruser.advice.MailAuthException;
+import kim.zhyun.serveruser.advice.SignUpException;
 import kim.zhyun.serveruser.domain.member.converter.UserConverter;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
 import kim.zhyun.serveruser.domain.member.service.SessionUserService;

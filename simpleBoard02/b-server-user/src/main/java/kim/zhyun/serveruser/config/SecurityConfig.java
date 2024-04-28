@@ -1,7 +1,7 @@
 package kim.zhyun.serveruser.config;
 
 import kim.zhyun.jwt.filter.JwtFilter;
-import kim.zhyun.serveruser.common.advice.MemberException;
+import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.filter.AuthenticationFilter;
 import kim.zhyun.serveruser.filter.ExceptionHandlerFilter;
 import kim.zhyun.serveruser.filter.SessionCheckFilter;

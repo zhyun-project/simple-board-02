@@ -35,7 +35,7 @@ import java.util.Set;
 import static java.time.LocalDateTime.now;
 import static kim.zhyun.serverarticle.common.message.ExceptionMessage.*;
 import static kim.zhyun.serverarticle.common.message.ResponseMessage.*;
-import static kim.zhyun.serverarticle.common.type.RoleType.*;
+import static kim.zhyun.serverarticle.common.model.type.RoleType.*;
 import static kim.zhyun.serverarticle.util.TestSecurityUser.getJwtUserDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;

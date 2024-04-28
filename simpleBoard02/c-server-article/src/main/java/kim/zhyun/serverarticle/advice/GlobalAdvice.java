@@ -2,8 +2,8 @@ package kim.zhyun.serverarticle.advice;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
-import kim.zhyun.serverarticle.common.response.ApiResponse;
-import kim.zhyun.serverarticle.common.response.ValidExceptionResponse;
+import kim.zhyun.serverarticle.common.model.ApiResponse;
+import kim.zhyun.serverarticle.common.model.ValidExceptionResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;

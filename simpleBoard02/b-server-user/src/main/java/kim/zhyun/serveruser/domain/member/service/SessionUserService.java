@@ -1,7 +1,7 @@
 package kim.zhyun.serveruser.domain.member.service;
 
-import kim.zhyun.serveruser.common.advice.MailAuthException;
-import kim.zhyun.serveruser.common.advice.MemberException;
+import kim.zhyun.serveruser.advice.MailAuthException;
+import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.domain.signup.business.model.SessionUserEmailUpdateDto;
 import kim.zhyun.serveruser.domain.signup.controller.model.dto.NicknameUpdateDto;
 import kim.zhyun.serveruser.domain.signup.repository.SessionUser;

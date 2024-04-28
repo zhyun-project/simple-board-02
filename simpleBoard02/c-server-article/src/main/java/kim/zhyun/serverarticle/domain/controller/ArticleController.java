@@ -3,7 +3,7 @@ package kim.zhyun.serverarticle.domain.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kim.zhyun.serverarticle.common.response.ApiResponse;
+import kim.zhyun.serverarticle.common.model.ApiResponse;
 import kim.zhyun.serverarticle.domain.business.ArticleBusiness;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleResponse;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleSaveRequest;

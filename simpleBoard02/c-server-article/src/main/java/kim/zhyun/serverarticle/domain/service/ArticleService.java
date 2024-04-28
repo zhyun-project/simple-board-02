@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static kim.zhyun.serverarticle.common.message.ExceptionMessage.*;
-import static kim.zhyun.serverarticle.common.type.RoleType.ROLE_WITHDRAWAL;
+import static kim.zhyun.serverarticle.common.model.type.RoleType.ROLE_WITHDRAWAL;
 import static org.springframework.data.domain.Sort.Order.desc;
 
 @RequiredArgsConstructor

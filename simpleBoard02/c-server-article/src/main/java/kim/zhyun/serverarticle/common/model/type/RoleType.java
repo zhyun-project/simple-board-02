@@ -1,4 +1,4 @@
-package kim.zhyun.serverarticle.common.type;
+package kim.zhyun.serverarticle.common.model.type;
 
 public class RoleType {
     public static final String TYPE_ADMIN = "ADMIN";

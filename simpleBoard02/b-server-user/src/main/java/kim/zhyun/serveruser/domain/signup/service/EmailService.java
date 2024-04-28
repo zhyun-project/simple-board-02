@@ -3,7 +3,7 @@ package kim.zhyun.serveruser.domain.signup.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import kim.zhyun.serveruser.common.advice.MailAuthException;
+import kim.zhyun.serveruser.advice.MailAuthException;
 import kim.zhyun.serveruser.domain.member.service.SessionUserService;
 import kim.zhyun.serveruser.domain.signup.business.model.SessionUserEmailUpdateDto;
 import kim.zhyun.serveruser.domain.signup.controller.model.dto.EmailAuthDto;

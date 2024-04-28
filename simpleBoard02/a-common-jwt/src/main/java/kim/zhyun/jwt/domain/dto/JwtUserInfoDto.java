@@ -1,19 +1,15 @@
 package kim.zhyun.jwt.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import lombok.*;
 
 import java.util.Objects;
-
-import static com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL;
 
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Builder
-@JsonInclude(NON_NULL)
 public class JwtUserInfoDto {
 
     private Long id;

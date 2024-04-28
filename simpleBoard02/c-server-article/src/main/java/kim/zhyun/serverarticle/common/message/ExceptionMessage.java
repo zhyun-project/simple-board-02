@@ -1,8 +1,5 @@
 package kim.zhyun.serverarticle.common.message;
 
-import lombok.Getter;
-
-@Getter
 public class ExceptionMessage {
     
     // 공통

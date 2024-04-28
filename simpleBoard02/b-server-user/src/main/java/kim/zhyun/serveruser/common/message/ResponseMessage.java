@@ -1,8 +1,5 @@
 package kim.zhyun.serveruser.common.message;
 
-import lombok.Getter;
-
-@Getter
 public class ResponseMessage {
     // 회원 가입
     public static final String RESPONSE_SUCCESS_FORMAT_SIGN_UP = "%s님 가입을 축하합니다! 🥳";

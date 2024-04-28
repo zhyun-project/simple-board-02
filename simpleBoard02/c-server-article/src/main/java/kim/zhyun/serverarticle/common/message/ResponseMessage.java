@@ -1,8 +1,5 @@
 package kim.zhyun.serverarticle.common.message;
 
-import lombok.Getter;
-
-@Getter
 public class ResponseMessage {
     public static final String RESPONSE_ARTICLE_DELETE_FOR_WITHDRAWAL = "탈퇴 회원의 게시글이 전부 삭제되었습니다.";
     public static final String RESPONSE_ARTICLE_DELETE = "게시글이 삭제되었습니다.";

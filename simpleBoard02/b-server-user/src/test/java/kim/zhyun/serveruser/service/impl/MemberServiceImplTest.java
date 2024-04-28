@@ -6,7 +6,7 @@ import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
 import kim.zhyun.jwt.domain.service.JwtLogoutService;
 import kim.zhyun.jwt.util.TimeUnitUtil;
-import kim.zhyun.serveruser.common.advice.MemberException;
+import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
 import kim.zhyun.serveruser.config.SecurityConfig;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;

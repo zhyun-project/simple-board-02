@@ -1,4 +1,4 @@
-package kim.zhyun.serverarticle.config;
+package kim.zhyun.jwt.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;

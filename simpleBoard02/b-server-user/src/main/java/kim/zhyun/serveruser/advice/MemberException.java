@@ -1,4 +1,4 @@
-package kim.zhyun.serveruser.common.advice;
+package kim.zhyun.serveruser.advice;
 
 public class MemberException extends RuntimeException {
     

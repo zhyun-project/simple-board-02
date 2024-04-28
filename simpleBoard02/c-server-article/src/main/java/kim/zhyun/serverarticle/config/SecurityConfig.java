@@ -16,8 +16,8 @@ import org.springframework.security.web.context.SecurityContextHolderFilter;
 
 import static kim.zhyun.serverarticle.common.message.ExceptionMessage.EXCEPTION_AUTHENTICATION;
 import static kim.zhyun.serverarticle.common.message.ExceptionMessage.EXCEPTION_PERMISSION;
-import static kim.zhyun.serverarticle.common.type.RoleType.TYPE_ADMIN;
-import static kim.zhyun.serverarticle.common.type.RoleType.TYPE_MEMBER;
+import static kim.zhyun.serverarticle.common.model.type.RoleType.TYPE_ADMIN;
+import static kim.zhyun.serverarticle.common.model.type.RoleType.TYPE_MEMBER;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 

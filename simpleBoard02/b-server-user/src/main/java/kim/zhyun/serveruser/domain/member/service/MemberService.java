@@ -4,7 +4,7 @@ import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
-import kim.zhyun.serveruser.common.advice.MemberException;
+import kim.zhyun.serveruser.advice.MemberException;
 import kim.zhyun.serveruser.domain.signup.repository.Role;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserUpdateRequest;
