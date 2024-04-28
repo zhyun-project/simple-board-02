@@ -1,4 +1,4 @@
-package kim.zhyun.jwt.data;
+package kim.zhyun.jwt.constants;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package kim.zhyun.jwt.storage;
+package kim.zhyun.jwt.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-public class JwtLogoutStorage {
+public class JwtLogoutService {
     private final RedisTemplate<String, String> redisTemplate;
     
     public boolean isLogoutToken(String token, String email) {

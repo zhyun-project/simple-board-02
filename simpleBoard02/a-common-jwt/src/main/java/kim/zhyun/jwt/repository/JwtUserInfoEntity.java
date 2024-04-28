@@ -1,4 +1,4 @@
-package kim.zhyun.jwt.data;
+package kim.zhyun.jwt.repository;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -6,14 +6,14 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.util.Objects;
 
-import static kim.zhyun.jwt.data.JwtConstants.JWT_USER_INFO_KEY;
+import static kim.zhyun.jwt.constants.JwtConstants.JWT_USER_INFO_KEY;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Getter @Setter
 @RedisHash(JWT_USER_INFO_KEY)
-public class JwtUserInfo {
+public class JwtUserInfoEntity {
     
     @Id
     private Long id;
@@ -21,10 +21,12 @@ public class JwtUserInfo {
     private String nickname;
     private String grade;
     
+    
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof JwtUserInfo that)) return false;
+        if (!(o instanceof JwtUserInfoEntity that)) return false;
         return Objects.equals(getId(), that.getId())
                 && Objects.equals(getEmail(), that.getEmail())
                 && Objects.equals(getNickname(), that.getNickname())

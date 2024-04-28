@@ -6,9 +6,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import kim.zhyun.jwt.data.JwtConstants;
+import kim.zhyun.jwt.constants.JwtConstants;
 import kim.zhyun.jwt.provider.JwtProvider;
-import kim.zhyun.jwt.storage.JwtLogoutStorage;
+import kim.zhyun.jwt.service.JwtLogoutService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
@@ -19,15 +19,15 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 
-import static kim.zhyun.jwt.data.JwtConstants.JWT_PREFIX;
-import static kim.zhyun.jwt.data.JwtResponseMessage.JWT_EXPIRED;
+import static kim.zhyun.jwt.constants.JwtConstants.JWT_PREFIX;
+import static kim.zhyun.jwt.constants.JwtExceptionMessageConstants.JWT_EXPIRED;
 
 @Slf4j
 @RequiredArgsConstructor
 @Component
 public class JwtFilter extends GenericFilterBean {
     private final JwtProvider provider;
-    private final JwtLogoutStorage jwtLogoutStorage;
+    private final JwtLogoutService jwtLogoutService;
     
     @Override
     public void doFilter(ServletRequest request,
@@ -38,10 +38,10 @@ public class JwtFilter extends GenericFilterBean {
         String requestURI = httpServletRequest.getRequestURI();
         String jwtHeader  = httpServletRequest.getHeader(JwtConstants.JWT_HEADER);
         
-        if (!Strings.isBlank(jwtHeader) && jwtHeader.length() > JWT_PREFIX.length()) {
+        if (Strings.isNotBlank(jwtHeader) && jwtHeader.length() > JWT_PREFIX.length()) {
             String jwt = jwtHeader.substring(JWT_PREFIX.length());
             
-            if (jwtLogoutStorage.isLogoutToken(jwt, provider.emailFrom(jwt)))
+            if (jwtLogoutService.isLogoutToken(jwt, provider.emailFrom(jwt)))
                 throw new JwtException(JWT_EXPIRED);
             
             Authentication authentication = provider.authenticationFrom(jwt);
