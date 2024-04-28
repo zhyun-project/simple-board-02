@@ -1,9 +1,9 @@
 package kim.zhyun.serveruser.domain.member.service;
 
-import kim.zhyun.jwt.dto.JwtUserInfoDto;
+import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.provider.JwtProvider;
-import kim.zhyun.jwt.repository.JwtUserInfoEntity;
-import kim.zhyun.jwt.repository.JwtUserInfoRepository;
+import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
+import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
 import kim.zhyun.serveruser.common.advice.MemberException;
 import kim.zhyun.serveruser.domain.signup.repository.Role;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;

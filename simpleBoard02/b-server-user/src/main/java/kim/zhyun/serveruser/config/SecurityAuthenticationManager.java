@@ -1,6 +1,6 @@
 package kim.zhyun.serveruser.config;
 
-import kim.zhyun.jwt.dto.JwtUserInfoDto;
+import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.serveruser.common.advice.MemberException;
 import kim.zhyun.serveruser.config.model.UserDto;
 import kim.zhyun.serveruser.domain.member.converter.UserConverter;

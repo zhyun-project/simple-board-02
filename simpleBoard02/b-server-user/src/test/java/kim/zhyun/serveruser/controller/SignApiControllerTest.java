@@ -1,7 +1,7 @@
 package kim.zhyun.serveruser.controller;
 
-import kim.zhyun.jwt.repository.JwtUserInfoEntity;
-import kim.zhyun.jwt.repository.JwtUserInfoRepository;
+import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
+import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
 import kim.zhyun.serveruser.filter.model.SignInRequest;
 import kim.zhyun.serveruser.domain.signup.controller.model.SignupRequest;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;

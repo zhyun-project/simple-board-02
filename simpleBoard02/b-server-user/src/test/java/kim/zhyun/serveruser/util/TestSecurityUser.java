@@ -1,6 +1,6 @@
 package kim.zhyun.serveruser.util;
 
-import kim.zhyun.jwt.dto.JwtUserInfoDto;
+import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;

@@ -1,10 +1,10 @@
 package kim.zhyun.serveruser.service.impl;
 
-import kim.zhyun.jwt.dto.JwtUserInfoDto;
-import kim.zhyun.jwt.repository.JwtUserInfoEntity;
+import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
+import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.provider.JwtProvider;
-import kim.zhyun.jwt.repository.JwtUserInfoRepository;
-import kim.zhyun.jwt.service.JwtLogoutService;
+import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
+import kim.zhyun.jwt.domain.service.JwtLogoutService;
 import kim.zhyun.jwt.util.TimeUnitUtil;
 import kim.zhyun.serveruser.common.advice.MemberException;
 import kim.zhyun.serveruser.config.SecurityAuthenticationManager;

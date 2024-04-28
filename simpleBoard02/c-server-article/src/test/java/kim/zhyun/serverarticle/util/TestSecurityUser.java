@@ -1,6 +1,6 @@
 package kim.zhyun.serverarticle.util;
 
-import kim.zhyun.jwt.data.JwtUserDto;
+import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.provider.JwtProvider;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -27,8 +27,8 @@ public class TestSecurityUser {
         TestSecurityContextHolder.setContext(securityContext);
     }
     
-    public static JwtUserDto getJwtUserDto(JwtProvider jwtProvider, String userType) {
+    public static JwtUserInfoDto getJwtUserDto(JwtProvider jwtProvider, String userType) {
         setAuthentication(jwtProvider, userType);
-        return JwtUserDto.from(TestSecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        return JwtUserInfoDto.from(TestSecurityContextHolder.getContext().getAuthentication().getPrincipal());
     }
 }

@@ -46,7 +46,7 @@ public class MemberApiController {
     }
     
     @Operation(summary = "본인 계정 정보 조회")
-    @PostAuthorize("returnObject.body.result.email == T(kim.zhyun.jwt.dto.JwtUserInfoDto).from(principal).email")
+    @PostAuthorize("returnObject.body.result.email == T(kim.zhyun.jwt.domain.dto.JwtUserInfoDto).from(principal).email")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> findById(
             @PathVariable long id
@@ -61,7 +61,7 @@ public class MemberApiController {
     }
     
     @Operation(summary = "본인 계정 정보 수정 (닉네임, 비밀번호만 변경)")
-    @PreAuthorize("#request.email == T(kim.zhyun.jwt.dto.JwtUserInfoDto).from(principal).email")
+    @PreAuthorize("#request.email == T(kim.zhyun.jwt.domain.dto.JwtUserInfoDto).from(principal).email")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> updateById(
             HttpServletRequest http,

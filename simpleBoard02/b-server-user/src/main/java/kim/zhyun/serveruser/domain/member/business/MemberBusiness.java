@@ -1,6 +1,6 @@
 package kim.zhyun.serveruser.domain.member.business;
 
-import kim.zhyun.jwt.dto.JwtUserInfoDto;
+import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserResponse;

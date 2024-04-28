@@ -1,7 +1,7 @@
 package kim.zhyun.serveruser.domain.signup.service;
 
-import kim.zhyun.jwt.repository.JwtUserInfoEntity;
-import kim.zhyun.jwt.repository.JwtUserInfoRepository;
+import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
+import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
 import kim.zhyun.serveruser.domain.member.repository.UserRepository;
 import kim.zhyun.serveruser.domain.signup.repository.Role;

@@ -6,9 +6,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import kim.zhyun.jwt.constants.JwtConstants;
-import kim.zhyun.jwt.dto.JwtUserInfoDto;
-import kim.zhyun.jwt.repository.JwtUserInfoEntity;
-import kim.zhyun.jwt.repository.JwtUserInfoRepository;
+import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
+import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
+import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -35,7 +35,7 @@ import static kim.zhyun.jwt.util.TimeUnitUtil.timeUnitFrom;
 @Component
 public class JwtProvider implements InitializingBean {
     
-    private final JwtUserInfoRepository userInfoStorage;
+    private final JwtUserInfoRepository jwtUserInfoRepository;
     private final JwtConstants jwtItems;
     private SecretKey key;
     
@@ -79,7 +79,7 @@ public class JwtProvider implements InitializingBean {
         Long id = claims.get(JWT_CLAIM_KEY_USER_ID, Long.class);
         String email = claims.getSubject();
         
-        Optional<JwtUserInfoEntity> userInfoContainer = userInfoStorage.findById(id);
+        Optional<JwtUserInfoEntity> userInfoContainer = jwtUserInfoRepository.findById(id);
         
         if (userInfoContainer.isEmpty())
             throw new JwtException(JWT_EXPIRED);

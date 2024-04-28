@@ -14,10 +14,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 
-import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_AUTHENTICATION;
-import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_PERMISSION;
-import static kim.zhyun.serverarticle.data.type.RoleType.TYPE_ADMIN;
-import static kim.zhyun.serverarticle.data.type.RoleType.TYPE_MEMBER;
+import static kim.zhyun.serverarticle.common.message.ExceptionMessage.EXCEPTION_AUTHENTICATION;
+import static kim.zhyun.serverarticle.common.message.ExceptionMessage.EXCEPTION_PERMISSION;
+import static kim.zhyun.serverarticle.common.type.RoleType.TYPE_ADMIN;
+import static kim.zhyun.serverarticle.common.type.RoleType.TYPE_MEMBER;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
 

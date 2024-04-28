@@ -8,7 +8,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import kim.zhyun.jwt.constants.JwtConstants;
 import kim.zhyun.jwt.provider.JwtProvider;
-import kim.zhyun.jwt.service.JwtLogoutService;
+import kim.zhyun.jwt.domain.service.JwtLogoutService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;

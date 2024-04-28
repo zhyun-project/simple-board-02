@@ -2,8 +2,8 @@ package kim.zhyun.serverarticle.advice;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
-import kim.zhyun.serverarticle.data.response.ApiResponse;
-import kim.zhyun.serverarticle.data.response.ValidExceptionResponse;
+import kim.zhyun.serverarticle.common.response.ApiResponse;
+import kim.zhyun.serverarticle.common.response.ValidExceptionResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
-import static kim.zhyun.serverarticle.data.message.ExceptionMessage.EXCEPTION_VALID_FORMAT;
+import static kim.zhyun.serverarticle.common.message.ExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
+import static kim.zhyun.serverarticle.common.message.ExceptionMessage.EXCEPTION_VALID_FORMAT;
 
 @RestControllerAdvice
 public class GlobalAdvice extends ResponseEntityExceptionHandler {
