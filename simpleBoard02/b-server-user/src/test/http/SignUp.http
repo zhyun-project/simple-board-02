@@ -1,11 +1,11 @@
 ### 닉네임 중복 확인
-GET http://localhost:8080/api/userEntity/check?nickname=얼구스
+GET http://localhost:8080/api/user/check?nickname=얼구스
 
 ### 이메일 중복 확인
-GET http://localhost:8080/api/userEntity/check?email=gimwlgus@kakao.com
+GET http://localhost:8080/api/user/check?email=gimwlgus@kakao.com
 
 ### 이메일 전송
-POST http://localhost:8080/api/userEntity/check/auth
+POST http://localhost:8080/api/user/check/auth
 Content-Type: application/json
 
 {
@@ -13,10 +13,10 @@ Content-Type: application/json
 }
 
 ### 이메일 인증 코드 검증
-GET http://localhost:8080/api/userEntity/check/auth?code=3577ef
+GET http://localhost:8080/api/user/check/auth?code=3577ef
 
 ### 회원가입
-POST http://localhost:8080/api/userEntity/sign-up
+POST http://localhost:8080/api/user/sign-up
 Content-Type: application/json
 
 {
