@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -23,6 +24,8 @@ public class ObjectMapperConfig {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false); // 모르는 `json field`는 무시함
         objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false); // 비어있는 `field`는 무시함
         objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL); // `not null field`만 출력
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY); // `not empty field`만 출력
+        
         
         return objectMapper;
     }

@@ -1,6 +1,6 @@
 package kim.zhyun.serverarticle.domain.business;
 
-import kim.zhyun.serverarticle.advice.ArticleException;
+import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleResponse;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleSaveRequest;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleUpdateRequest;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.List;
 
-import static kim.zhyun.serverarticle.common.message.ExceptionMessage.EXCEPTION_NOT_FOUND;
+import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Service
@@ -58,7 +58,7 @@ public class ArticleBusiness {
         ArticleEntity articleEntity = articleService.findByUserIdAndArticleId(request.getUserId(), request.getArticleId());
         
         if (articleEntity.getArticleId() != request.getArticleId() || articleEntity.getUserId() != request.getUserId())
-            throw new ArticleException(EXCEPTION_NOT_FOUND);
+            throw new ApiException(EXCEPTION_NOT_FOUND);
         
         ArticleEntity updatedEntity = articleService.update(articleEntity, request);
         return articleConverter.toResponse(updatedEntity);

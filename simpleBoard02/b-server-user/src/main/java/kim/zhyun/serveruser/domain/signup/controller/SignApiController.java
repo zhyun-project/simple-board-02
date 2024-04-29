@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kim.zhyun.serveruser.domain.signup.controller.model.SignupRequest;
-import kim.zhyun.serveruser.common.model.ApiResponse;
+import kim.zhyun.jwt.common.model.ApiResponse;
 import kim.zhyun.serveruser.domain.signup.business.SignUpBusiness;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

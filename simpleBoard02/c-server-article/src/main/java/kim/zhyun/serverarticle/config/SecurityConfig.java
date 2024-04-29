@@ -1,8 +1,8 @@
 package kim.zhyun.serverarticle.config;
 
+import kim.zhyun.jwt.exception.ApiException;
+import kim.zhyun.jwt.filter.ExceptionHandlerFilter;
 import kim.zhyun.jwt.filter.JwtFilter;
-import kim.zhyun.serverarticle.advice.MemberException;
-import kim.zhyun.serverarticle.filter.ExceptionHandlerFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -14,12 +14,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 
-import static kim.zhyun.serverarticle.common.message.ExceptionMessage.EXCEPTION_AUTHENTICATION;
-import static kim.zhyun.serverarticle.common.message.ExceptionMessage.EXCEPTION_PERMISSION;
-import static kim.zhyun.serverarticle.common.model.type.RoleType.TYPE_ADMIN;
-import static kim.zhyun.serverarticle.common.model.type.RoleType.TYPE_MEMBER;
-import static org.springframework.http.HttpMethod.*;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_ADMIN;
+import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_MEMBER;
+import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_AUTHENTICATION;
+import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_PERMISSION;
+import static org.springframework.http.HttpMethod.GET;
 
 @RequiredArgsConstructor
 @EnableWebSecurity(debug = true)
@@ -49,11 +48,11 @@ public class SecurityConfig {
         http.exceptionHandling(config -> config
                 .accessDeniedHandler((request, response, exception) -> {
                     // 접근할 수 없는 권한
-                    throw new MemberException(EXCEPTION_PERMISSION);
+                    throw new ApiException(EXCEPTION_PERMISSION);
                 })
                 .authenticationEntryPoint((request, response, exception) -> {
                     // 유효한 자격증명을 제공하지 않고 접근하려 할때
-                    throw new MemberException(EXCEPTION_AUTHENTICATION);
+                    throw new ApiException(EXCEPTION_AUTHENTICATION);
                 }));
         
         http.httpBasic(AbstractHttpConfigurer::disable);

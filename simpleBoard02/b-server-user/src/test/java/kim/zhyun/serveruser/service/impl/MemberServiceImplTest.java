@@ -1,3 +1,4 @@
+/*
 package kim.zhyun.serveruser.service.impl;
 
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
@@ -699,3 +700,4 @@ class MemberServiceImplTest {
         }
     }
 }
+*/

@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static kim.zhyun.serverarticle.common.model.type.RoleType.TYPE_ADMIN;
-import static kim.zhyun.serverarticle.common.model.type.RoleType.TYPE_MEMBER;
+import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_ADMIN;
+import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j

@@ -1,7 +1,7 @@
 package kim.zhyun.serveruser.config;
 
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
-import kim.zhyun.serveruser.advice.MemberException;
+import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.serveruser.config.model.UserDto;
 import kim.zhyun.serveruser.domain.member.converter.UserConverter;
 import kim.zhyun.serveruser.domain.member.service.MemberService;
@@ -35,11 +35,11 @@ public class SecurityAuthenticationManager implements AuthenticationManager {
         UserDto userDto = userConverter.toDto(userService.findByEmailWithThrow(email));
         
         if (!passwordEncoder.matches(password, userDto.getPassword()))
-            throw new MemberException(EXCEPTION_SIGNIN_FAIL);
+            throw new ApiException(EXCEPTION_SIGNIN_FAIL);
         
         if (userDto.isWithdrawal()) {
             DateTimeUtil.DateTimePeriodDto dateTimePeriodDto = dateTimeCalculate(userDto.getModifiedAt());
-            throw new MemberException(String.format(
+            throw new ApiException(String.format(
                     EXCEPTION_WITHDRAWAL,
                     dateTimePeriodDto.days(),
                     dateTimePeriodDto.hours(),

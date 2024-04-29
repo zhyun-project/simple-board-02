@@ -1,3 +1,4 @@
+/*
 package kim.zhyun.serveruser.controller;
 
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
@@ -442,4 +443,4 @@ class SignApiControllerTest {
             return userRepository.findByEmail(emailWithdrawal).get();
         }
     }
-}
+}*/

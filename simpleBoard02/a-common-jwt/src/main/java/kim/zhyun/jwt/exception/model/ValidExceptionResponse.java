@@ -1,4 +1,4 @@
-package kim.zhyun.serverarticle.common.model;
+package kim.zhyun.jwt.exception.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

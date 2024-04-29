@@ -1,8 +1,8 @@
-package kim.zhyun.serveruser.utils;
+package kim.zhyun.jwt.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
-import kim.zhyun.serveruser.common.model.ApiResponse;
+import kim.zhyun.jwt.common.model.ApiResponse;
 
 import java.io.IOException;
 

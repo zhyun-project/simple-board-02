@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static kim.zhyun.serveruser.common.model.type.RoleType.TYPE_ADMIN;
-import static kim.zhyun.serveruser.common.model.type.RoleType.TYPE_MEMBER;
+import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_ADMIN;
+import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_MEMBER;
 
 
 @RequiredArgsConstructor

@@ -5,7 +5,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import kim.zhyun.jwt.constants.JwtConstants;
+import kim.zhyun.jwt.common.constants.JwtConstants;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
@@ -25,9 +25,9 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static kim.zhyun.jwt.constants.JwtConstants.JWT_CLAIM_KEY_USER_ID;
-import static kim.zhyun.jwt.constants.JwtExceptionMessageConstants.JWT_EXPIRED;
-import static kim.zhyun.jwt.constants.JwtExceptionMessageConstants.JWT_EXPIRED_IS_NULL;
+import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_CLAIM_KEY_USER_ID;
+import static kim.zhyun.jwt.common.constants.JwtExceptionMessageConstants.JWT_EXPIRED;
+import static kim.zhyun.jwt.common.constants.JwtExceptionMessageConstants.JWT_EXPIRED_IS_NULL;
 import static kim.zhyun.jwt.util.TimeUnitUtil.timeUnitFrom;
 
 @Slf4j

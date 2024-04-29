@@ -6,9 +6,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import kim.zhyun.jwt.constants.JwtConstants;
-import kim.zhyun.jwt.provider.JwtProvider;
+import kim.zhyun.jwt.common.constants.JwtConstants;
 import kim.zhyun.jwt.domain.service.JwtLogoutService;
+import kim.zhyun.jwt.provider.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.util.Strings;
@@ -19,8 +19,8 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
 
-import static kim.zhyun.jwt.constants.JwtConstants.JWT_PREFIX;
-import static kim.zhyun.jwt.constants.JwtExceptionMessageConstants.JWT_EXPIRED;
+import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_PREFIX;
+import static kim.zhyun.jwt.common.constants.JwtExceptionMessageConstants.JWT_EXPIRED;
 
 @Slf4j
 @RequiredArgsConstructor

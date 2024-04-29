@@ -3,7 +3,7 @@ package kim.zhyun.serveruser.domain.signup.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import kim.zhyun.serveruser.advice.MailAuthException;
+import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.serveruser.domain.member.service.SessionUserService;
 import kim.zhyun.serveruser.domain.signup.business.model.SessionUserEmailUpdateDto;
 import kim.zhyun.serveruser.domain.signup.controller.model.dto.EmailAuthDto;
@@ -49,7 +49,7 @@ public class EmailService {
             saveEmailAuthCode(emailAuthConverter.toDto(userEmail, authCode));
             
         } catch (Exception e) {
-            throw new MailAuthException(EXCEPTION_MAIL_SEND_FAIL);
+            throw new ApiException(EXCEPTION_MAIL_SEND_FAIL);
         }
     }
     

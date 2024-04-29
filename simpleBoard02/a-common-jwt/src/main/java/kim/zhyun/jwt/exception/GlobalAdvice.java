@@ -1,9 +1,9 @@
-package kim.zhyun.serveruser.advice;
+package kim.zhyun.jwt.exception;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
-import kim.zhyun.serveruser.common.model.ApiResponse;
-import kim.zhyun.serveruser.common.model.ValidExceptionResponse;
+import kim.zhyun.jwt.common.model.ApiResponse;
+import kim.zhyun.jwt.exception.model.ValidExceptionResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +21,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
-import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_VALID_FORMAT;
+import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
+import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_VALID_FORMAT;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = {
+        "kim.zhyun.jwt",
+        "kim.zhyun.serveruser",
+        "kim.zhyun.serverarticle"
+})
 public class GlobalAdvice extends ResponseEntityExceptionHandler {
     
     /**
@@ -32,10 +36,7 @@ public class GlobalAdvice extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler({
             ApiException.class,
-            MemberException.class,
-            MailAuthException.class,
-            UsernameNotFoundException.class,
-            SignUpException.class})
+            UsernameNotFoundException.class})
     public ResponseEntity<Object> mailException(RuntimeException e) {
         return ResponseEntity
                 .badRequest().body(ApiResponse.<List<ValidExceptionResponse>>builder()
@@ -95,6 +96,7 @@ public class GlobalAdvice extends ResponseEntityExceptionHandler {
                 });
         
         Collections.sort(list);
+        
         
         return ResponseEntity
                 .badRequest().body(ApiResponse.<List<ValidExceptionResponse>>builder()

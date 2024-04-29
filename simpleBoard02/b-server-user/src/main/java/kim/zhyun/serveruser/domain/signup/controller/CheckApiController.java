@@ -8,7 +8,7 @@ import kim.zhyun.serveruser.common.annotation.Email;
 import kim.zhyun.serveruser.common.annotation.Nickname;
 import kim.zhyun.serveruser.common.annotation.VerifyCode;
 import kim.zhyun.serveruser.domain.signup.controller.model.EmailAuthCodeRequest;
-import kim.zhyun.serveruser.common.model.ApiResponse;
+import kim.zhyun.jwt.common.model.ApiResponse;
 import kim.zhyun.serveruser.domain.signup.business.SignUpBusiness;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

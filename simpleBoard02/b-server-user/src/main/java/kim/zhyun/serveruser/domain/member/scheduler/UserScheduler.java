@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static kim.zhyun.jwt.constants.JwtConstants.JWT_USER_INFO_KEY;
+import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_USER_INFO_KEY;
 import static kim.zhyun.serveruser.utils.DateTimeUtil.beforeDateTime;
 
 @Slf4j

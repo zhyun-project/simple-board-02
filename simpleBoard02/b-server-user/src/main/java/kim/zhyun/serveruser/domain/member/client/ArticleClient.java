@@ -1,6 +1,6 @@
 package kim.zhyun.serveruser.domain.member.client;
 
-import kim.zhyun.serveruser.common.model.ApiResponse;
+import kim.zhyun.jwt.common.model.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

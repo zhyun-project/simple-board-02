@@ -1,15 +1,15 @@
 package kim.zhyun.serveruser.domain.member.service;
 
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
-import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
-import kim.zhyun.serveruser.advice.MemberException;
-import kim.zhyun.serveruser.domain.signup.repository.Role;
+import kim.zhyun.jwt.exception.ApiException;
+import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserUpdateRequest;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
 import kim.zhyun.serveruser.domain.member.repository.UserRepository;
+import kim.zhyun.serveruser.domain.signup.repository.Role;
 import kim.zhyun.serveruser.domain.signup.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +24,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_WITHDRAWAL;
 import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_ALREADY_WITHDRAWN_MEMBER;
 import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_SIGNIN_FAIL;
-import static kim.zhyun.serveruser.common.model.type.RoleType.TYPE_WITHDRAWAL;
 import static org.springframework.data.domain.Sort.Order.asc;
 
 
@@ -53,7 +53,7 @@ public class MemberService implements UserDetailsService {
         Optional<UserEntity> userContainer = userRepository.findById(userId);
         
         if (userContainer.isEmpty())
-            throw new MemberException(EXCEPTION_SIGNIN_FAIL);
+            throw new ApiException(EXCEPTION_SIGNIN_FAIL);
         
         return userContainer.get();
     }
@@ -66,7 +66,7 @@ public class MemberService implements UserDetailsService {
         Optional<UserEntity> userContainer = userRepository.findByEmail(email);
         
         if (userContainer.isEmpty())
-            throw new MemberException(EXCEPTION_SIGNIN_FAIL);
+            throw new ApiException(EXCEPTION_SIGNIN_FAIL);
         
         return userContainer.get();
     }
@@ -102,7 +102,7 @@ public class MemberService implements UserDetailsService {
         String roleType = request.getRole().toUpperCase();
         
         if (userEntity.getRole().getGrade().equals(TYPE_WITHDRAWAL) && roleType.equals(TYPE_WITHDRAWAL))
-            throw new MemberException(EXCEPTION_ALREADY_WITHDRAWN_MEMBER);
+            throw new ApiException(EXCEPTION_ALREADY_WITHDRAWN_MEMBER);
         
         userSetRole(userEntity, roleType);
         

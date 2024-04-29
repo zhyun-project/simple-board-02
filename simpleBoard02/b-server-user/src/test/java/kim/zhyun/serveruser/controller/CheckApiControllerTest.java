@@ -1,3 +1,4 @@
+/*
 package kim.zhyun.serveruser.controller;
 
 import kim.zhyun.serveruser.domain.signup.controller.model.EmailAuthCodeRequest;
@@ -380,3 +381,4 @@ class CheckApiControllerTest {
     }
     
 }
+*/

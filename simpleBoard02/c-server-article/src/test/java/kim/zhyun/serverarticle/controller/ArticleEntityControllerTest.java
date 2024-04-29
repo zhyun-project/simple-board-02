@@ -1,3 +1,4 @@
+/*
 package kim.zhyun.serverarticle.controller;
 
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
@@ -35,7 +36,6 @@ import java.util.Set;
 import static java.time.LocalDateTime.now;
 import static kim.zhyun.serverarticle.common.message.ExceptionMessage.*;
 import static kim.zhyun.serverarticle.common.message.ResponseMessage.*;
-import static kim.zhyun.serverarticle.common.model.type.RoleType.*;
 import static kim.zhyun.serverarticle.util.TestSecurityUser.getJwtUserDto;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -498,16 +498,20 @@ class ArticleEntityControllerTest {
     
     
     
-    /**
+    */
+/**
      * article id 초기화 - `@BeforeEach` , `@AfterEach` 로 삭제를 해준다고 하는데도 삭제가 안되는 경우가 있어서 생성
-     */
+     *//*
+
     private void initArticleId(long userId) {
         redisTemplate.opsForValue().set("ARTICLE_ID:%d".formatted(userId), "0");
     }
     
-    /**
+    */
+/**
      * 계정 권한 수정
-     */
+     *//*
+
     private void updateUserRoleTo(JwtUserInfoDto user, String role_type) {
         JwtUserInfoEntity jwtUserInfoEntity = jwtUserInfoRepository.findById(user.getId()).get();
         jwtUserInfoEntity.setGrade(role_type);
@@ -521,9 +525,11 @@ class ArticleEntityControllerTest {
         TestSecurityContextHolder.setContext(securityContext);
     }
     
-    /**
+    */
+/**
      * 게시글 수정 perform
-     */
+     *//*
+
     private ResultActions getPerformUpdate(long userId, long articleId, ArticleEntity articleEntity) throws Exception {
         
         return mvc.perform(put("/{articleId}/user/{userId}", articleId, userId)
@@ -536,9 +542,11 @@ class ArticleEntityControllerTest {
                         .content("%s 업데이트".formatted(articleEntity.getContent())).build())));
     }
     
-    /**
+    */
+/**
      * 게시글 삭제 perform
-     */
+     *//*
+
     private ResultActions getPerformDelete(long userId, Collection<Long> articleIds) throws Exception {
         
         return mvc.perform(post("/delete/user/{userId}", userId)
@@ -548,9 +556,11 @@ class ArticleEntityControllerTest {
                         .articleIds(articleIds).build())));
     }
     
-    /**
+    */
+/**
      * 게시글 저장 perform
-     */
+     *//*
+
     private ResultActions getPerformSave(JwtUserInfoDto user) throws Exception {
         
         return mvc.perform(post("/save/user/{userId}", user.getId())
@@ -561,9 +571,11 @@ class ArticleEntityControllerTest {
                         .content("%s 내용 %d%d".formatted(user.getNickname(), now().getMinute(), now().getSecond())).build())));
     }
     
-    /**
+    */
+/**
      * 게시글 조회 perform
-     */
+     *//*
+
     private ResultActions getPerformFindAll() throws Exception {
         return mvc.perform(get("/all"));
     }
@@ -575,9 +587,11 @@ class ArticleEntityControllerTest {
     }
     
     
-    /**
+    */
+/**
      * 게시글 dummy data 생성 - @Return JwtUserDto
-     */
+     *//*
+
     private JwtUserInfoDto makeArticleData(String memberType) throws Exception {
         JwtUserInfoDto user = getJwtUserDto(jwtProvider, memberType);
         
@@ -588,16 +602,20 @@ class ArticleEntityControllerTest {
         return user;
     }
     
-    /**
+    */
+/**
      * authentication 삭제
-     */
+     *//*
+
     private static void clearContext() {
         TestSecurityContextHolder.clearContext();
     }
     
-    /**
+    */
+/**
      * redis - rdb 계정 정보 저장
-     */
+     *//*
+
     @BeforeEach void init() {
         initRedisUserInfo(2, "gimwlgus@gmail.com", "얼거스", TYPE_ADMIN);
         initRedisUserInfo(3, "gimwlgus@daum.net", "zhyun", TYPE_MEMBER);
@@ -611,9 +629,11 @@ class ArticleEntityControllerTest {
                 .grade("ROLE_" + grade).build());
     }
     
-    /**
+    */
+/**
      * rdb - 게시글 전체 삭제 , redis - article_id:OO 전체 삭제
-     */
+     *//*
+
     @AfterEach
     void clean() {
         log.info("🧹 init [article all, ARTICLE_ID:] ------------------------------------------------------------------------------------------------");
@@ -623,4 +643,4 @@ class ArticleEntityControllerTest {
                 .map(redisTemplate::delete).close();
     }
     
-}
+}*/

@@ -1,4 +1,4 @@
-package kim.zhyun.serverarticle.filter;
+package kim.zhyun.jwt.filter;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -9,9 +9,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static kim.zhyun.serverarticle.utils.FilterApiResponseUtil.sendMessage;
+import static kim.zhyun.jwt.util.FilterApiResponseUtil.sendMessage;
 
 @Slf4j
 @Component
@@ -22,7 +23,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (RuntimeException e) {
-            e.printStackTrace();
+            log.info(e.getMessage());
             sendMessage(response, SC_BAD_REQUEST, false, e.getMessage());
         }
     }

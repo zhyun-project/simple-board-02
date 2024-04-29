@@ -1,7 +1,6 @@
 package kim.zhyun.serveruser.domain.member.service;
 
-import kim.zhyun.serveruser.advice.MailAuthException;
-import kim.zhyun.serveruser.advice.MemberException;
+import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.serveruser.domain.signup.business.model.SessionUserEmailUpdateDto;
 import kim.zhyun.serveruser.domain.signup.controller.model.dto.NicknameUpdateDto;
 import kim.zhyun.serveruser.domain.signup.repository.SessionUser;
@@ -35,7 +34,7 @@ public class SessionUserService {
         // 닉네임 중복확인 체크
         if (sessionUser.getNickname() == null
                 || !sessionUser.getNickname().equals(nickname))
-            throw new MemberException(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK);
+            throw new ApiException(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK);
         
         return true;
     }
@@ -45,7 +44,7 @@ public class SessionUserService {
         
         // email 중복확인 체크
         if (sessionUser.getEmail() == null || !sessionUser.getEmail().equals(email))
-            throw new MailAuthException(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK);
+            throw new ApiException(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK);
         
     }
     

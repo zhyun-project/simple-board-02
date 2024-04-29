@@ -2,8 +2,7 @@ package kim.zhyun.serverarticle.domain.service;
 
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
-import kim.zhyun.serverarticle.advice.ArticleException;
-import kim.zhyun.serverarticle.advice.MemberException;
+import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleUpdateRequest;
 import kim.zhyun.serverarticle.domain.controller.model.ArticlesDeleteRequest;
 import kim.zhyun.serverarticle.domain.respository.ArticleEntity;
@@ -21,8 +20,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static kim.zhyun.jwt.common.constants.type.RoleType.ROLE_WITHDRAWAL;
+import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_NOT_FOUND;
 import static kim.zhyun.serverarticle.common.message.ExceptionMessage.*;
-import static kim.zhyun.serverarticle.common.model.type.RoleType.ROLE_WITHDRAWAL;
 import static org.springframework.data.domain.Sort.Order.desc;
 
 @RequiredArgsConstructor
@@ -48,7 +48,7 @@ public class ArticleService {
         Optional<ArticleEntity> articleContainer = articleRepository.findByUserIdAndArticleId(userId, articleId);
         
         if (articleContainer.isEmpty())
-            throw new ArticleException(EXCEPTION_ARTICLE_NOT_FOUND);
+            throw new ApiException(EXCEPTION_ARTICLE_NOT_FOUND);
         
         return articleContainer.get();
     }
@@ -114,7 +114,7 @@ public class ArticleService {
         Optional<JwtUserInfoEntity> jwtUserContainer = jwtUserInfoRepository.findById(userId);
         
         if (jwtUserContainer.isEmpty())
-            throw new MemberException(EXCEPTION_NOT_FOUND);
+            throw new ApiException(EXCEPTION_NOT_FOUND);
         
         return jwtUserContainer.get();
     }

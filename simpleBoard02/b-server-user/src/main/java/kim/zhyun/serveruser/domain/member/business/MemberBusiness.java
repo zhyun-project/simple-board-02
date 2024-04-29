@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static kim.zhyun.jwt.constants.JwtConstants.JWT_PREFIX;
+import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.serveruser.common.message.ResponseMessage.*;
 
 @RequiredArgsConstructor

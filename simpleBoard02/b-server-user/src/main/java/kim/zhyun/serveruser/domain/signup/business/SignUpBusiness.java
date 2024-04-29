@@ -1,7 +1,6 @@
 package kim.zhyun.serveruser.domain.signup.business;
 
-import kim.zhyun.serveruser.advice.MailAuthException;
-import kim.zhyun.serveruser.advice.SignUpException;
+import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.serveruser.domain.member.converter.UserConverter;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
 import kim.zhyun.serveruser.domain.member.service.SessionUserService;
@@ -106,11 +105,11 @@ public class SignUpBusiness {
         
         // 코드 불일치 case 1 : 만료된 경우
         if (!emailService.existEmail(requestInfo))
-            throw new MailAuthException(EXCEPTION_VERIFY_EMAIL_AUTH_CODE_EXPIRED);
+            throw new ApiException(EXCEPTION_VERIFY_EMAIL_AUTH_CODE_EXPIRED);
         
         // 코드 불일치 case 2 : 코드 불일치
         if (!emailService.existCode(requestInfo))
-            throw new MailAuthException(EXCEPTION_VERIFY_FAIL_EMAIL_AUTH_CODE);
+            throw new ApiException(EXCEPTION_VERIFY_FAIL_EMAIL_AUTH_CODE);
         
         // 인증 성공
         emailService.deleteAndUpdateSessionUserEmail(sessionUserConverter.toEmailUpdateDto(
@@ -132,12 +131,12 @@ public class SignUpBusiness {
         if (sessionUser.getEmail() == null
                 || (!sessionUser.getEmail().equals(request.getEmail())
                 || !sessionUser.isEmailVerification()))
-            throw new SignUpException(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK);
+            throw new ApiException(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK);
         
         // 중복 확인 하지 않은 nickname
         if (sessionUser.getNickname() == null
                 || !sessionUser.getNickname().equals(request.getNickname()))
-            throw new SignUpException(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK);
+            throw new ApiException(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK);
         
         Role role = signUpService.getGrade(sessionUser.getEmail());
         

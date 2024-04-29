@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import kim.zhyun.serveruser.common.model.ApiResponse;
+import kim.zhyun.jwt.common.model.ApiResponse;
 import kim.zhyun.serveruser.domain.member.business.MemberBusiness;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserResponse;
@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static kim.zhyun.jwt.constants.JwtConstants.JWT_HEADER;
+import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_HEADER;
 import static kim.zhyun.serveruser.common.message.ResponseMessage.*;
-import static kim.zhyun.serveruser.common.model.type.RoleType.TYPE_ADMIN;
+import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_ADMIN;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 

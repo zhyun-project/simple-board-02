@@ -6,7 +6,7 @@ import org.springframework.data.redis.core.RedisHash;
 
 import java.util.Objects;
 
-import static kim.zhyun.jwt.constants.JwtConstants.JWT_USER_INFO_KEY;
+import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_USER_INFO_KEY;
 
 @AllArgsConstructor
 @NoArgsConstructor

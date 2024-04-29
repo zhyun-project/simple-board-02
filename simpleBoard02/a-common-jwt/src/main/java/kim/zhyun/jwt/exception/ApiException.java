@@ -1,4 +1,4 @@
-package kim.zhyun.serveruser.advice;
+package kim.zhyun.jwt.exception;
 
 public class ApiException extends RuntimeException {
     
