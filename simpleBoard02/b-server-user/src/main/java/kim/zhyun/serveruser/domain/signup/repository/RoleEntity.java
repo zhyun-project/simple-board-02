@@ -1,10 +1,7 @@
 package kim.zhyun.serveruser.domain.signup.repository;
 
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.util.Objects;
@@ -12,8 +9,8 @@ import java.util.Objects;
 import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
-@Entity
-public class Role {
+@Entity(name = "role")
+public class RoleEntity {
     
     @Id @GeneratedValue(strategy = IDENTITY)
     private Long id;
@@ -25,10 +22,10 @@ public class Role {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Role role)) return false;
-        return Objects.equals(getId(), role.getId())
-                && Objects.equals(getGrade(), role.getGrade())
-                && Objects.equals(getDescription(), role.getDescription());
+        if (!(o instanceof RoleEntity roleEntity)) return false;
+        return Objects.equals(getId(), roleEntity.getId())
+                && Objects.equals(getGrade(), roleEntity.getGrade())
+                && Objects.equals(getDescription(), roleEntity.getDescription());
     }
     
     @Override

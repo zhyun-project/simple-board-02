@@ -4,7 +4,7 @@ import kim.zhyun.serveruser.config.model.UserDto;
 import kim.zhyun.serveruser.domain.member.controller.model.UserResponse;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
 import kim.zhyun.serveruser.domain.signup.controller.model.SignupRequest;
-import kim.zhyun.serveruser.domain.signup.repository.Role;
+import kim.zhyun.serveruser.domain.signup.repository.RoleEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -33,12 +33,12 @@ public class UserConverter {
                 .modifiedAt(source.getModifiedAt()).build();
     }
     
-    public UserEntity toEntity(SignupRequest request, Role role) {
+    public UserEntity toEntity(SignupRequest request, RoleEntity roleEntity) {
         return UserEntity.builder()
                 .email(request.getEmail())
                 .nickname(request.getNickname())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(role)
+                .roleEntity(roleEntity)
                 .build();
     }
     

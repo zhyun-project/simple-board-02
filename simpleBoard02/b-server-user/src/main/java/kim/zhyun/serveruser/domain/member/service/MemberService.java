@@ -9,7 +9,7 @@ import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateReques
 import kim.zhyun.serveruser.domain.member.controller.model.UserUpdateRequest;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
 import kim.zhyun.serveruser.domain.member.repository.UserRepository;
-import kim.zhyun.serveruser.domain.signup.repository.Role;
+import kim.zhyun.serveruser.domain.signup.repository.RoleEntity;
 import kim.zhyun.serveruser.domain.signup.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -152,8 +152,8 @@ public class MemberService implements UserDetailsService {
      * 회원 권한 설정
      */
     private void userSetRole(UserEntity userEntity, String roleType) {
-        Role role = roleRepository.findByGrade(roleType);
-        userEntity.setRole(role);
+        RoleEntity roleEntity = roleRepository.findByGrade(roleType);
+        userEntity.setRole(roleEntity);
         userEntity.setWithdrawal(TYPE_WITHDRAWAL.equals(roleType));
     }
     

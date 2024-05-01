@@ -11,7 +11,7 @@ import kim.zhyun.serveruser.domain.signup.controller.model.dto.NicknameFindDto;
 import kim.zhyun.serveruser.domain.signup.converter.EmailAuthConverter;
 import kim.zhyun.serveruser.domain.signup.converter.NicknameReserveConverter;
 import kim.zhyun.serveruser.domain.signup.converter.SessionUserConverter;
-import kim.zhyun.serveruser.domain.signup.repository.Role;
+import kim.zhyun.serveruser.domain.signup.repository.RoleEntity;
 import kim.zhyun.serveruser.domain.signup.repository.SessionUser;
 import kim.zhyun.serveruser.domain.signup.service.EmailService;
 import kim.zhyun.serveruser.domain.signup.service.NicknameReserveService;
@@ -138,10 +138,10 @@ public class SignUpBusiness {
                 || !sessionUser.getNickname().equals(request.getNickname()))
             throw new ApiException(EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK);
         
-        Role role = signUpService.getGrade(sessionUser.getEmail());
+        RoleEntity roleEntity = signUpService.getGrade(sessionUser.getEmail());
         
         // 신규 user 등록
-        UserEntity savedUser = signUpService.saveUser(userConverter.toEntity(request, role));
+        UserEntity savedUser = signUpService.saveUser(userConverter.toEntity(request, roleEntity));
         
         // redis user info 저장소 업데이트
         signUpService.jwtUserInfoUpdate(savedUser);

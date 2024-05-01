@@ -4,10 +4,10 @@ import org.springframework.data.repository.Repository;
 
 import java.util.List;
 
-public interface RoleRepository extends Repository<Role, Long> {
+public interface RoleRepository extends Repository<RoleEntity, Long> {
     
-    List<Role> findAll();
-    Role findByGrade(String grade);
+    List<RoleEntity> findAll();
+    RoleEntity findByGrade(String grade);
     boolean existsByGrade(String grade);
     
 }

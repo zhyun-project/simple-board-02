@@ -1,7 +1,7 @@
 package kim.zhyun.serveruser.domain.member.repository;
 
 import jakarta.persistence.*;
-import kim.zhyun.serveruser.domain.signup.repository.Role;
+import kim.zhyun.serveruser.domain.signup.repository.RoleEntity;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -42,6 +42,7 @@ public class UserEntity {
     
     @ManyToOne
     private Role role;
+    private RoleEntity role;
     
     @Override
     public boolean equals(Object o) {

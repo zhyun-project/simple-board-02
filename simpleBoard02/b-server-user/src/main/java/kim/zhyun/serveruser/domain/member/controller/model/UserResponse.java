@@ -1,6 +1,6 @@
 package kim.zhyun.serveruser.domain.member.controller.model;
 
-import kim.zhyun.serveruser.domain.signup.repository.Role;
+import kim.zhyun.serveruser.domain.signup.repository.RoleEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +16,7 @@ public class UserResponse {
     private Long id;
     private String email;
     private String nickname;
-    private Role role;
+    private RoleEntity role;
     
     
     

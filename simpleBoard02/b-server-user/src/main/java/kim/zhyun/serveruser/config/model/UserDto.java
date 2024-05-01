@@ -1,6 +1,6 @@
 package kim.zhyun.serveruser.config.model;
 
-import kim.zhyun.serveruser.domain.signup.repository.Role;
+import kim.zhyun.serveruser.domain.signup.repository.RoleEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +19,7 @@ public class UserDto {
     private String nickname;
     private String password;
     private boolean withdrawal;
-    private Role role;
+    private RoleEntity role;
     private LocalDateTime modifiedAt;
     
 

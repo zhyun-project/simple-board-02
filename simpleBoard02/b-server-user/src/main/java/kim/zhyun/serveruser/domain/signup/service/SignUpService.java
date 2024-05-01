@@ -4,7 +4,7 @@ import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
 import kim.zhyun.serveruser.domain.member.repository.UserRepository;
-import kim.zhyun.serveruser.domain.signup.repository.Role;
+import kim.zhyun.serveruser.domain.signup.repository.RoleEntity;
 import kim.zhyun.serveruser.domain.signup.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
@@ -35,7 +35,7 @@ public class SignUpService {
         return userRepository.existsByNicknameIgnoreCase(nickname);
     }
     
-    public Role getGrade(String email) {
+    public RoleEntity getGrade(String email) {
         // admin 유저 구분
         String admins = Strings.join(adminEmails, ',');
         String grade  = admins == null || !admins.contains(email)
