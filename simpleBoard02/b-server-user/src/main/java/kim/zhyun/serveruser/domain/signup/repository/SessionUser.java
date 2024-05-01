@@ -3,6 +3,7 @@ package kim.zhyun.serveruser.domain.signup.repository;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.lang.NonNull;
 
 import java.util.Objects;
 
@@ -15,6 +16,7 @@ import java.util.Objects;
 public class SessionUser {
     
     @Id
+    @NonNull
     private String sessionId;
     
     private String email;
