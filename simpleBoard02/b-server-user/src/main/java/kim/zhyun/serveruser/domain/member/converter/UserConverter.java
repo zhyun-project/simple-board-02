@@ -38,7 +38,7 @@ public class UserConverter {
                 .email(request.getEmail())
                 .nickname(request.getNickname())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .roleEntity(roleEntity)
+                .role(roleEntity)
                 .build();
     }
     
