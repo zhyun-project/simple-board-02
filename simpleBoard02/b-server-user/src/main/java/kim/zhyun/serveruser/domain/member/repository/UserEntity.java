@@ -24,10 +24,13 @@ public class UserEntity {
     @Id @GeneratedValue(strategy = IDENTITY)
     private Long id;
     
-    @Column(length = 50)
+    @Column(length = 50, nullable = false)
     private String email;
+
+    @Column(nullable = false)
     private String password;
-    @Column(length = 30)
+    
+    @Column(length = 30, nullable = false)
     private String nickname;
 
     @Column(columnDefinition = "bit default 0 comment '탈퇴 여부'")
@@ -41,7 +44,7 @@ public class UserEntity {
     private LocalDateTime modifiedAt;
     
     @ManyToOne
-    private Role role;
+    @JoinColumn(nullable = false)
     private RoleEntity role;
     
     @Override
