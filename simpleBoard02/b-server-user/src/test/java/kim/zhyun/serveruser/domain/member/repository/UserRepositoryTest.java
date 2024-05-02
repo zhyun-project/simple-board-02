@@ -8,8 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +15,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -76,33 +73,24 @@ class UserRepositoryTest {
     
     @DisplayName("저장 실패")
     @ParameterizedTest(name = "null : {0}")
-    @MethodSource
+    @ValueSource(strings = {
+            "email", "nickname", "password", "role"
+    })
     void user_entity_save_fail(
-            /* ParameterizedTest name 표기용 */ String nullField, UserEntity userEntity
+            String nullField
     ) {
         // then
         assertThrows(
                 DataIntegrityViolationException.class,
-                () -> userRepository.save(userEntity)
+                () -> userRepository.save(userEntityBuilder(
+                        nullField.equals("email")    ? null : "zhyun@gmail.com",
+                        nullField.equals("nickname") ? null : "ergus",
+                        nullField.equals("password") ? null : "1234",
+                        nullField.equals("role")     ? null : roleMember,
+                        false
+                ))
         );
     }
-    static Stream<Arguments> user_entity_save_fail() {
-        return Stream.of(
-                Arguments.of(
-                        "email",
-                        userEntityBuilder(null, "ergus", "1234", roleMember, false)),
-                Arguments.of(
-                        "nickname",
-                        userEntityBuilder("zhyun@gmail.com", null, "1234", roleMember, false)),
-                Arguments.of(
-                        "password",
-                        userEntityBuilder("zhyun@gmail.com", "ergus", null, roleMember, false)),
-                Arguments.of(
-                        "role",
-                        userEntityBuilder("zhyun@gmail.com", "ergus", "1234", null, false))
-        );
-    }
-    
     
     @DisplayName("읽기 성공")
     @Test
