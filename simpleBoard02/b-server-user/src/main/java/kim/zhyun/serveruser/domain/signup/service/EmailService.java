@@ -78,7 +78,8 @@ public class EmailService {
         <hr>
         <br>
         <h1><center><span>💣 1분 안에 아래의 인증 코드를 입력해주세요 🤗</span></center></h1>
-        <h3><center><span>%s</span></center></h3>
+        <br>
+        <h1><center><span>%s</span></center></h1>
         <br>
         <hr>
         <br>
