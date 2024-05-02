@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -33,7 +34,6 @@ class UserRepositoryTest {
     private String mail = "email@email.com";
     private String nickname = "nickname";
     private String password = "password";
-    private RoleEntity role = roleMember;
     private boolean withdrawal = false;
     
     
@@ -42,7 +42,7 @@ class UserRepositoryTest {
                 mail,
                 nickname,
                 password,
-                role,
+                roleMember,
                 withdrawal
         );
         userRepository.save(newUserEntity);
@@ -61,7 +61,7 @@ class UserRepositoryTest {
                 mail,
                 nickname,
                 password,
-                role,
+                roleMember,
                 withdrawal
         );
         
@@ -76,14 +76,30 @@ class UserRepositoryTest {
     
     @DisplayName("저장 실패")
     @ParameterizedTest(name = "null : {0}")
-    @MethodSource("user_entity_save_update_fail")
+    @MethodSource
     void user_entity_save_fail(
-            /*display name 표기용*/ String nullField, UserEntity userEntity
+            /* ParameterizedTest name 표기용 */ String nullField, UserEntity userEntity
     ) {
         // then
         assertThrows(
                 DataIntegrityViolationException.class,
                 () -> userRepository.save(userEntity)
+        );
+    }
+    static Stream<Arguments> user_entity_save_fail() {
+        return Stream.of(
+                Arguments.of(
+                        "email",
+                        userEntityBuilder(null, "ergus", "1234", roleMember, false)),
+                Arguments.of(
+                        "nickname",
+                        userEntityBuilder("zhyun@gmail.com", null, "1234", roleMember, false)),
+                Arguments.of(
+                        "password",
+                        userEntityBuilder("zhyun@gmail.com", "ergus", null, roleMember, false)),
+                Arguments.of(
+                        "role",
+                        userEntityBuilder("zhyun@gmail.com", "ergus", "1234", null, false))
         );
     }
     
@@ -97,7 +113,7 @@ class UserRepositoryTest {
                 mail,
                 nickname,
                 password,
-                role,
+                roleMember,
                 withdrawal
         ));
         
@@ -108,7 +124,7 @@ class UserRepositoryTest {
         assertThat(userEntity.getEmail())     .isEqualTo(mail);
         assertThat(userEntity.getPassword())  .isEqualTo(password);
         assertThat(userEntity.getNickname())  .isEqualTo(nickname);
-        assertThat(userEntity.getRole())      .isEqualTo(role);
+        assertThat(userEntity.getRole())      .isEqualTo(roleMember);
         assertThat(userEntity.isWithdrawal()) .isEqualTo(withdrawal);
     }
 
@@ -143,8 +159,10 @@ class UserRepositoryTest {
 
     @DisplayName("수정 - 실패")
     @ParameterizedTest(name = "null : {0}")
-    @MethodSource(value = "user_entity_save_update_fail")
-    void user_entity_update_fail(String nullField, UserEntity requestUserEntity) {
+    @ValueSource(strings = {
+            "email", "password", "nickname", "role"
+    })
+    void user_entity_update_fail(String nullField) {
         UserEntity userEntity = userRepository.findAll().get(0);
 
         userEntity.setEmail(nullField.equals("email") ? null : "gimwlgus@gmail.com");
@@ -155,7 +173,7 @@ class UserRepositoryTest {
 
         assertThrows(
                 DataIntegrityViolationException.class,
-                () -> userRepository.save(requestUserEntity)
+                () -> userRepository.save(userEntity)
         );
     }
 
@@ -176,24 +194,6 @@ class UserRepositoryTest {
     }
     
 
-    
-    // 저장, 수정 실패 케이스
-    static Stream<Arguments> user_entity_save_update_fail() {
-        return Stream.of(
-                Arguments.of(
-                        "email",
-                        userEntityBuilder(null, "ergus", "1234", roleMember, false)),
-                Arguments.of(
-                        "nickname",
-                        userEntityBuilder("zhyun@gmail.com", null, "1234", roleMember, false)),
-                Arguments.of(
-                        "password",
-                        userEntityBuilder("zhyun@gmail.com", "ergus", null, roleMember, false)),
-                Arguments.of(
-                        "role",
-                        userEntityBuilder("zhyun@gmail.com", "ergus", "1234", null, false))
-        );
-    }
     
     // user entity 생성
     static UserEntity userEntityBuilder(
