@@ -3,13 +3,20 @@ package kim.zhyun.serveruser.domain.member.repository;
 import kim.zhyun.jwt.common.constants.type.RoleType;
 import kim.zhyun.serveruser.domain.signup.repository.RoleEntity;
 import kim.zhyun.serveruser.domain.signup.repository.RoleRepository;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -20,304 +27,176 @@ class UserRepositoryTest {
     @Autowired private UserRepository userRepository;
     
     // 생성자(맨 아래 위치)에서 할당
-    private final RoleEntity roleMember;
-    private final RoleEntity roleWithdrawal;
+    private static RoleEntity roleMember;
+    private static RoleEntity roleWithdrawal;
+    
+    private String mail = "email@email.com";
+    private String nickname = "nickname";
+    private String password = "password";
+    private RoleEntity role = roleMember;
+    private boolean withdrawal = false;
     
     
-    @DisplayName("users entity 저장 테스트")
-    @Nested
-    class TestSave {
+    @BeforeEach public void beforeEach() {
+        var newUserEntity = userEntityBuilder(
+                mail,
+                nickname,
+                password,
+                role,
+                withdrawal
+        );
+        userRepository.save(newUserEntity);
+    }
+    
+    @AfterEach public void afterEach() {
+        userRepository.deleteAll();
+    }
+    
+    
+    @DisplayName("저장 - 성공")
+    @Test
+    void user_entity_save_success() {
+        // given
+        UserEntity requestUserEntity = userEntityBuilder(
+                mail,
+                nickname,
+                password,
+                role,
+                withdrawal
+        );
         
-        @DisplayName("성공")
-        @Test
-        void user_entity_save_success() {
-            // given
-            UserEntity requestUserEntity = userEntityBuilder(
-                    "gimwlgus@gmail.com",
-                    "ergus",
-                    "1234",
-                    roleMember,
-                    false
-            );
-            
-            // when
-            UserEntity savedUserEntity = userRepository.save(requestUserEntity);
-            
-            // then
-            requestUserEntity.setId(savedUserEntity.getId());
-            assertThat(savedUserEntity).isEqualTo(requestUserEntity);
-        }
+        // when
+        UserEntity savedUserEntity = userRepository.save(requestUserEntity);
         
+        // then
+        requestUserEntity.setId(savedUserEntity.getId());
+        assertThat(savedUserEntity).isEqualTo(requestUserEntity);
+    }
+    
+    
+    @DisplayName("저장 실패")
+    @ParameterizedTest(name = "null : {0}")
+    @MethodSource("user_entity_save_update_fail")
+    void user_entity_save_fail(
+            /*display name 표기용*/ String nullField, UserEntity userEntity
+    ) {
+        // then
+        assertThrows(
+                DataIntegrityViolationException.class,
+                () -> userRepository.save(userEntity)
+        );
+    }
+    
+    
+    @DisplayName("읽기 성공")
+    @Test
+    void user_entity_read_success() {
+        
+        // given-when
+        UserEntity userEntity = userRepository.save(userEntityBuilder(
+                mail,
+                nickname,
+                password,
+                role,
+                withdrawal
+        ));
+        
+        // then
+        assertThat(userEntity).isNotNull();
+        assertThat(userEntity.getCreatedAt()) .isNotNull();
+        assertThat(userEntity.getModifiedAt()).isNotNull();
+        assertThat(userEntity.getEmail())     .isEqualTo(mail);
+        assertThat(userEntity.getPassword())  .isEqualTo(password);
+        assertThat(userEntity.getNickname())  .isEqualTo(nickname);
+        assertThat(userEntity.getRole())      .isEqualTo(role);
+        assertThat(userEntity.isWithdrawal()) .isEqualTo(withdrawal);
+    }
 
-        @DisplayName("실패 case 실행 메서드")
-        private void runOnFail(UserEntity requestUserEntity) {
-            // then
-            assertThrows(
-                    DataIntegrityViolationException.class,
-                    () -> userRepository.save(requestUserEntity)
-            );
-        }
+
+    @DisplayName("수정 - 성공")
+    @Test
+    void user_entity_update_success() {
+        // given
+        UserEntity requestUserEntity = userRepository.findAll().get(0);
         
-        @DisplayName("실패 case 모음")
-        @Nested
-        class FailCases {
-            @DisplayName("실패 - email null")
-            @Test
-            void user_entity_save_fail_null_in_email() {
-                UserEntity userEntity = userEntityBuilder(
-                        null,
-                        "ergus",
-                        "1234",
-                        roleMember,
-                        false
-                );
-                
-                runOnFail(userEntity);
-            }
-            
-            @DisplayName("실패 - nickname null")
-            @Test
-            void user_entity_save_fail_null_in_nickname() {
-                UserEntity userEntity = userEntityBuilder(
-                        "gimwlgus@gmail.com",
-                        null,
-                        "1234",
-                        roleMember,
-                        false
-                );
-                
-                runOnFail(userEntity);
-            }
-            
-            @DisplayName("실패 - password null")
-            @Test
-            void user_entity_save_fail_null_in_password() {
-                UserEntity userEntity = userEntityBuilder(
-                        "gimwlgus@gmail.com",
-                        "ergus",
-                        null,
-                        roleMember,
-                        false
-                );
-                
-                runOnFail(userEntity);
-            }
-            
-            @DisplayName("실패 - role null")
-            @Test
-            void user_entity_save_fail_null_in_role() {
-                UserEntity userEntity = userEntityBuilder(
-                        "gimwlgus@gmail.com",
-                        "ergus",
-                        "1234",
-                        null,
-                        false
-                );
-                
-                runOnFail(userEntity);
-            }
-        }
+        requestUserEntity.setEmail("update@update.update");
+        requestUserEntity.setPassword("udt password");
+        requestUserEntity.setNickname("udt nickname");
+        requestUserEntity.setRole(roleWithdrawal);
+        requestUserEntity.setWithdrawal(!requestUserEntity.isWithdrawal());
+        
+        // when
+        UserEntity originUserEntity = userRepository.findById(requestUserEntity.getId()).get();
+        UserEntity updatedUserEntity = userRepository.save(requestUserEntity);
+        
+        // then
+        assertThat(updatedUserEntity.getCreatedAt()) .isEqualTo(originUserEntity.getCreatedAt());
+        
+        assertThat(updatedUserEntity.getModifiedAt()).isNotEqualTo(originUserEntity.getModifiedAt());
+        assertThat(updatedUserEntity.getEmail())     .isNotEqualTo(originUserEntity.getEmail());
+        assertThat(updatedUserEntity.getPassword())  .isNotEqualTo(originUserEntity.getPassword());
+        assertThat(updatedUserEntity.getNickname())  .isNotEqualTo(originUserEntity.getNickname());
+        assertThat(updatedUserEntity.getRole())      .isNotEqualTo(originUserEntity.getRole());
+        assertThat(updatedUserEntity.isWithdrawal()) .isNotEqualTo(originUserEntity.isWithdrawal());
     }
     
+
+    @DisplayName("수정 - 실패")
+    @ParameterizedTest(name = "null : {0}")
+    @MethodSource(value = "user_entity_save_update_fail")
+    void user_entity_update_fail(String nullField, UserEntity requestUserEntity) {
+        UserEntity userEntity = userRepository.findAll().get(0);
+
+        userEntity.setEmail(nullField.equals("email") ? null : "gimwlgus@gmail.com");
+        userEntity.setPassword(nullField.equals("password") ? null : "udt password");
+        userEntity.setNickname(nullField.equals("nickname") ? null : "udt nickname");
+        userEntity.setRole(nullField.equals("role") ? null : roleWithdrawal);
+        userEntity.setWithdrawal(!userEntity.isWithdrawal());
+
+        assertThrows(
+                DataIntegrityViolationException.class,
+                () -> userRepository.save(requestUserEntity)
+        );
+    }
+
     
-    @DisplayName("users entity 읽기 테스트")
-    @Nested
-    class TestRead {
-        @AfterEach public void afterEach() {
-            userRepository.deleteAll();
-        }
+    @DisplayName("삭제 - 성공")
+    @Test
+    void user_entity_delete_success() {
+        // given
+        UserEntity requestUserEntity = userRepository.findAll().get(0);
         
-        @DisplayName("성공")
-        @Test
-        void user_entity_read_success() {
-            String mail = "email@email.com";
-            String nickname = "nickname";
-            String password = "password";
-            RoleEntity role = roleMember;
-            boolean withdrawal = false;
-            
-            // given-when
-            UserEntity userEntity = userRepository.save(userEntityBuilder(
-                    mail,
-                    nickname,
-                    password,
-                    role,
-                    withdrawal
-            ));
-            
-            // then
-            assertThat(userEntity).isNotNull();
-            assertThat(userEntity.getCreatedAt()) .isNotNull();
-            assertThat(userEntity.getModifiedAt()).isNotNull();
-            assertThat(userEntity.getEmail())     .isEqualTo(mail);
-            assertThat(userEntity.getPassword())  .isEqualTo(password);
-            assertThat(userEntity.getNickname())  .isEqualTo(nickname);
-            assertThat(userEntity.getRole())      .isEqualTo(role);
-            assertThat(userEntity.isWithdrawal()) .isEqualTo(withdrawal);
-        }
+        // when
+        userRepository.delete(requestUserEntity);
+        
+        // then
+        Optional<UserEntity> optionalUserEntity = userRepository.findById(requestUserEntity.getId());
+        
+        assertThat(optionalUserEntity).isEmpty();
     }
     
+
     
-    @DisplayName("users entity 수정 테스트")
-    @Nested
-    class TestUpdate {
-        
-        @BeforeEach public void beforeEach() {
-            var newUserEntity = userEntityBuilder(
-                    "email@email.com",
-                    "nickname",
-                    "password",
-                    roleMember,
-                    false
-            );
-            userRepository.save(newUserEntity);
-        }
-        @AfterEach public void afterEach() {
-            userRepository.deleteAll();
-        }
-        
-        
-        
-        @DisplayName("성공")
-        @Test
-        void user_entity_update_success() {
-            // given
-            UserEntity requestUserEntity = userRepository.findAll().get(0);
-            
-            requestUserEntity.setEmail("update@update.update");
-            requestUserEntity.setPassword("udt password");
-            requestUserEntity.setNickname("udt nickname");
-            requestUserEntity.setRole(roleWithdrawal);
-            requestUserEntity.setWithdrawal(true);
-            
-            // when
-            UserEntity originUserEntity = userRepository.findById(requestUserEntity.getId()).get();
-            UserEntity updatedUserEntity = userRepository.save(requestUserEntity);
-            
-            // then
-            assertThat(updatedUserEntity.getCreatedAt()) .isEqualTo(originUserEntity.getCreatedAt());
-            
-            assertThat(updatedUserEntity.getModifiedAt()).isNotEqualTo(originUserEntity.getModifiedAt());
-            assertThat(updatedUserEntity.getEmail())     .isNotEqualTo(originUserEntity.getEmail());
-            assertThat(updatedUserEntity.getPassword())  .isNotEqualTo(originUserEntity.getPassword());
-            assertThat(updatedUserEntity.getNickname())  .isNotEqualTo(originUserEntity.getNickname());
-            assertThat(updatedUserEntity.getRole())      .isNotEqualTo(originUserEntity.getRole());
-            assertThat(updatedUserEntity.isWithdrawal()) .isNotEqualTo(originUserEntity.isWithdrawal());
-        }
-        
-        
-        // 실패 케이스 실행
-        @DisplayName("실패 case 실행 메서드")
-        private void runOnFail(UserEntity requestUserEntity) {
-            assertThrows(
-                    DataIntegrityViolationException.class,
-                    () -> userRepository.save(requestUserEntity)
-            );
-        }
-        
-        @DisplayName("실패 case 모음")
-        @Nested
-        class FailNested {
-            
-            @DisplayName("실패 - email null")
-            @Test
-            void user_entity_update_fail_null_in_email() {
-                UserEntity userEntity = userRepository.findAll().get(0);
-                
-                userEntity.setEmail(null);
-                userEntity.setPassword("udt password");
-                userEntity.setNickname("udt nickname");
-                userEntity.setRole(roleWithdrawal);
-                userEntity.setWithdrawal(true);
-                
-                runOnFail(userEntity);
-            }
-            
-            @DisplayName("실패 - nickname null")
-            @Test
-            void user_entity_update_fail_null_in_nickname() {
-                UserEntity userEntity = userRepository.findAll().get(0);
-                
-                userEntity.setEmail("update@update.update");
-                userEntity.setPassword("udt password");
-                userEntity.setNickname(null);
-                userEntity.setRole(roleWithdrawal);
-                userEntity.setWithdrawal(true);
-                
-                runOnFail(userEntity);
-            }
-            
-            @DisplayName("실패 - password null")
-            @Test
-            void user_entity_update_fail_null_in_password() {
-                UserEntity userEntity = userRepository.findAll().get(0);
-                
-                userEntity.setEmail("update@update.update");
-                userEntity.setPassword(null);
-                userEntity.setNickname("udt nickname");
-                userEntity.setRole(roleWithdrawal);
-                userEntity.setWithdrawal(true);
-                
-                runOnFail(userEntity);
-            }
-            
-            @DisplayName("실패 - role null")
-            @Test
-            void user_entity_update_fail_null_in_role() {
-                UserEntity userEntity = userRepository.findAll().get(0);
-                
-                userEntity.setEmail("update@update.update");
-                userEntity.setPassword("udt password");
-                userEntity.setNickname("udt nickname");
-                userEntity.setRole(null);
-                userEntity.setWithdrawal(true);
-                
-                runOnFail(userEntity);
-            }
-        }
+    // 저장, 수정 실패 케이스
+    static Stream<Arguments> user_entity_save_update_fail() {
+        return Stream.of(
+                Arguments.of(
+                        "email",
+                        userEntityBuilder(null, "ergus", "1234", roleMember, false)),
+                Arguments.of(
+                        "nickname",
+                        userEntityBuilder("zhyun@gmail.com", null, "1234", roleMember, false)),
+                Arguments.of(
+                        "password",
+                        userEntityBuilder("zhyun@gmail.com", "ergus", null, roleMember, false)),
+                Arguments.of(
+                        "role",
+                        userEntityBuilder("zhyun@gmail.com", "ergus", "1234", null, false))
+        );
     }
     
-    
-    @DisplayName("users entity 삭제 테스트")
-    @Nested
-    class TestDelete {
-        
-        @BeforeEach public void beforeEach() {
-            var newUserEntity = userEntityBuilder(
-                    "email@email.com",
-                    "nickname",
-                    "password",
-                    roleMember,
-                    false
-            );
-            userRepository.save(newUserEntity);
-        }
-        @AfterEach public void afterEach() {
-            userRepository.deleteAll();
-        }
-        
-        
-        @DisplayName("성공")
-        @Test
-        void user_entity_update_success() {
-            // given
-            UserEntity requestUserEntity = userRepository.findAll().get(0);
-            
-            // when
-            userRepository.delete(requestUserEntity);
-            
-            // then
-            Optional<UserEntity> optionalUserEntity = userRepository.findById(requestUserEntity.getId());
-            
-            assertThat(optionalUserEntity).isEmpty();
-        }
-    }
-    
-    
-    
-    
-    
-    private UserEntity userEntityBuilder(
+    // user entity 생성
+    static UserEntity userEntityBuilder(
             String email, String nickname, String password, RoleEntity role, boolean isWithdrawal
     ) {
         return UserEntity.builder()
@@ -332,10 +211,11 @@ class UserRepositoryTest {
                 .build();
     }
     
-    public UserRepositoryTest(
+    UserRepositoryTest(
             @Autowired RoleRepository roleRepository
     ) {
         roleMember = roleRepository.findByGrade(RoleType.TYPE_MEMBER);
         roleWithdrawal = roleRepository.findByGrade(RoleType.TYPE_WITHDRAWAL);
     }
 }
+

@@ -3,7 +3,6 @@ package kim.zhyun.serveruser.domain.signup.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import kim.zhyun.serveruser.config.MailConfig;
 import kim.zhyun.serveruser.container.RedisTestContainer;
 import kim.zhyun.serveruser.domain.signup.controller.model.dto.EmailAuthDto;
 import org.junit.jupiter.api.DisplayName;
@@ -15,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 
@@ -73,7 +71,6 @@ class EmailServiceTest {
     
     
     @DisplayName("이메일로 인증코드 전송")
-    @Import(MailConfig.class)
     @ExtendWith(RedisTestContainer.class)
     @SpringBootTest
     @Nested
@@ -96,15 +93,15 @@ class EmailServiceTest {
             // 메일 발송
             mailSender.send(mimeMessage);
             
-            // redis에 email과 인증코드 저장 (유효시간 60초)
+            // redis에 email과 인증코드 저장 (유효시간 10초)
             redisTemplate.opsForSet().add(emailAuthDto.getEmail(), emailAuthDto.getCode());
-            redisTemplate.expire(emailAuthDto.getEmail(), 60, SECONDS);
+            redisTemplate.expire(emailAuthDto.getEmail(), 10, SECONDS);
             
             // then
             assertThat(redisTemplate.opsForSet().isMember(emailAuthDto.getEmail(), emailAuthDto.getCode()))
                     .isTrue();
             
-            Thread.sleep(60 * 1000); // 인증코드 만료 시간 기다림
+            Thread.sleep(10 * 1000); // 인증코드 만료 시간 기다림
             
             assertThat(redisTemplate.opsForSet().isMember(emailAuthDto.getEmail(), emailAuthDto.getCode()))
                     .isFalse();
@@ -132,7 +129,7 @@ class EmailServiceTest {
         <h1><center><span>TESTtestTESTtestTESTtestTESTtestTESTtestTEST</span></center></h1>
         <h1><center><span>💣 1분 안에 아래의 인증 코드를 입력해주세요 🤗</span></center></h1>
         <br>
-        <h3><center><span>%s</span></center></h3>
+        <h1><center><span>%s</span></center></h3>
         <br>
         <h1><center><span>TESTtestTESTtestTESTtestTESTtestTESTtestTEST</span></center></h1>
         <hr>
