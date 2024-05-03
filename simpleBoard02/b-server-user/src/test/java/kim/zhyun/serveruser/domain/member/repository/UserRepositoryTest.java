@@ -25,13 +25,13 @@ class UserRepositoryTest {
     @Autowired private UserRepository userRepository;
     
     // 생성자(맨 아래 위치)에서 할당
-    private static RoleEntity roleMember;
-    private static RoleEntity roleWithdrawal;
-    
-    private String mail = "email@email.com";
-    private String nickname = "nickname";
-    private String password = "password";
-    private boolean withdrawal = false;
+    private final RoleEntity roleMember;
+    private final RoleEntity roleWithdrawal;
+
+    private final String mail = "email@email.com";
+    private final String nickname = "nickname";
+    private final String password = "password";
+    private final boolean withdrawal = false;
     
     
     @BeforeEach public void beforeEach() {
@@ -184,7 +184,7 @@ class UserRepositoryTest {
 
     
     // user entity 생성
-    static UserEntity userEntityBuilder(
+    UserEntity userEntityBuilder(
             String email, String nickname, String password, RoleEntity role, boolean isWithdrawal
     ) {
         return UserEntity.builder()

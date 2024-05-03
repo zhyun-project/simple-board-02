@@ -93,15 +93,16 @@ class EmailServiceTest {
             // 메일 발송
             mailSender.send(mimeMessage);
             
-            // redis에 email과 인증코드 저장 (유효시간 10초)
+            // redis에 email과 인증코드 저장 (유효시간 3초)
+            int expireTime = 3;
             redisTemplate.opsForSet().add(emailAuthDto.getEmail(), emailAuthDto.getCode());
-            redisTemplate.expire(emailAuthDto.getEmail(), 10, SECONDS);
+            redisTemplate.expire(emailAuthDto.getEmail(), expireTime, SECONDS);
             
             // then
             assertThat(redisTemplate.opsForSet().isMember(emailAuthDto.getEmail(), emailAuthDto.getCode()))
                     .isTrue();
             
-            Thread.sleep(10 * 1000); // 인증코드 만료 시간 기다림
+            Thread.sleep(expireTime * 1000); // 인증코드 만료 시간 기다림
             
             assertThat(redisTemplate.opsForSet().isMember(emailAuthDto.getEmail(), emailAuthDto.getCode()))
                     .isFalse();
