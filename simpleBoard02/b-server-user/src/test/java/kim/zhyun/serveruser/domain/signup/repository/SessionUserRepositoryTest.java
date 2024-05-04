@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("session user crud test")
 @ExtendWith(RedisTestContainer.class)
@@ -81,10 +81,12 @@ class SessionUserRepositoryTest {
         SessionUser sessionUser = sessionUserRepository.findById(sessionId).get();
         
         // then
-        assertThat(sessionUser.getSessionId())         .isEqualTo(sessionId);
-        assertThat(sessionUser.getEmail())             .isEqualTo(email);
-        assertThat(sessionUser.isEmailVerification())  .isEqualTo(isEmailVerify);
-        assertThat(sessionUser.getNickname())          .isEqualTo(nickname);
+        assertAll(
+                () -> assertEquals(sessionUser.getSessionId(), sessionId),
+                () -> assertEquals(sessionUser.getEmail(), email),
+                () -> assertEquals(sessionUser.getNickname(), nickname),
+                () -> assertEquals(sessionUser.isEmailVerification(), isEmailVerify)
+        );
     }
     
 
@@ -103,10 +105,14 @@ class SessionUserRepositoryTest {
         SessionUser after = sessionUserRepository.save(request);
         
         // then
-        assertThat(after.getSessionId())         .isEqualTo(before.getSessionId());
-        assertThat(after.getEmail())             .isNotEqualTo(before.getEmail());
-        assertThat(after.isEmailVerification())  .isNotEqualTo(before.isEmailVerification());
-        assertThat(after.getNickname())          .isNotEqualTo(before.getNickname());
+        assertAll(
+                () -> assertEquals(after.getSessionId(), before.getSessionId()),
+                
+                () -> assertNotEquals(after.getEmail(),             before.getEmail()),
+                () -> assertNotEquals(after.getNickname(),          before.getNickname()),
+                () -> assertNotEquals(after.isEmailVerification(),  before.isEmailVerification())
+        );
+        
     }
     
     

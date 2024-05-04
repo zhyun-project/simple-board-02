@@ -3,10 +3,7 @@ package kim.zhyun.serveruser.domain.member.repository;
 import kim.zhyun.jwt.common.constants.type.RoleType;
 import kim.zhyun.serveruser.domain.signup.repository.RoleEntity;
 import kim.zhyun.serveruser.domain.signup.repository.RoleRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("users entity CRUD 테스트")
 @SpringBootTest
@@ -53,11 +50,13 @@ class UserRepositoryTest {
     @DisplayName("저장 - 성공")
     @Test
     void user_entity_save_success() {
+        String saveTest = "saveTest_%s";
+        
         // given
         UserEntity requestUserEntity = userEntityBuilder(
-                mail,
-                nickname,
-                password,
+                saveTest.formatted(mail),
+                saveTest.formatted(nickname),
+                saveTest.formatted(password),
                 roleMember,
                 withdrawal
         );
@@ -79,13 +78,15 @@ class UserRepositoryTest {
     void user_entity_save_fail(
             String nullField
     ) {
+        String saveTest = "saveTest_%s";
+        
         // then
         assertThrows(
                 DataIntegrityViolationException.class,
                 () -> userRepository.save(userEntityBuilder(
-                        nullField.equals("email")    ? null : "zhyun@gmail.com",
-                        nullField.equals("nickname") ? null : "ergus",
-                        nullField.equals("password") ? null : "1234",
+                        nullField.equals("email")    ? null : saveTest.formatted(mail),
+                        nullField.equals("nickname") ? null : saveTest.formatted(nickname),
+                        nullField.equals("password") ? null : saveTest.formatted(password),
                         nullField.equals("role")     ? null : roleMember,
                         false
                 ))
@@ -107,13 +108,15 @@ class UserRepositoryTest {
         
         // then
         assertThat(userEntity).isNotNull();
-        assertThat(userEntity.getCreatedAt()) .isNotNull();
-        assertThat(userEntity.getModifiedAt()).isNotNull();
-        assertThat(userEntity.getEmail())     .isEqualTo(mail);
-        assertThat(userEntity.getPassword())  .isEqualTo(password);
-        assertThat(userEntity.getNickname())  .isEqualTo(nickname);
-        assertThat(userEntity.getRole())      .isEqualTo(roleMember);
-        assertThat(userEntity.isWithdrawal()) .isEqualTo(withdrawal);
+        assertAll(
+                () -> assertNotNull(userEntity.getCreatedAt()),
+                () -> assertNotNull(userEntity.getModifiedAt()),
+                () -> assertEquals(userEntity.getEmail(), mail),
+                () -> assertEquals(userEntity.getPassword(), password),
+                () -> assertEquals(userEntity.getNickname(), nickname),
+                () -> assertEquals(userEntity.getRole(), roleMember),
+                () -> assertEquals(userEntity.isWithdrawal(), withdrawal)
+        );
     }
 
 
@@ -134,14 +137,16 @@ class UserRepositoryTest {
         UserEntity updatedUserEntity = userRepository.save(requestUserEntity);
         
         // then
-        assertThat(updatedUserEntity.getCreatedAt()) .isEqualTo(originUserEntity.getCreatedAt());
-        
-        assertThat(updatedUserEntity.getModifiedAt()).isNotEqualTo(originUserEntity.getModifiedAt());
-        assertThat(updatedUserEntity.getEmail())     .isNotEqualTo(originUserEntity.getEmail());
-        assertThat(updatedUserEntity.getPassword())  .isNotEqualTo(originUserEntity.getPassword());
-        assertThat(updatedUserEntity.getNickname())  .isNotEqualTo(originUserEntity.getNickname());
-        assertThat(updatedUserEntity.getRole())      .isNotEqualTo(originUserEntity.getRole());
-        assertThat(updatedUserEntity.isWithdrawal()) .isNotEqualTo(originUserEntity.isWithdrawal());
+        assertAll(
+                () -> assertEquals(updatedUserEntity.getCreatedAt(), originUserEntity.getCreatedAt()),
+                
+                () -> assertNotEquals(updatedUserEntity.getModifiedAt(),originUserEntity.getModifiedAt()),
+                () -> assertNotEquals(updatedUserEntity.getEmail(),     originUserEntity.getEmail()),
+                () -> assertNotEquals(updatedUserEntity.getPassword(),  originUserEntity.getPassword()),
+                () -> assertNotEquals(updatedUserEntity.getNickname(),  originUserEntity.getNickname()),
+                () -> assertNotEquals(updatedUserEntity.getRole(),      originUserEntity.getRole()),
+                () -> assertNotEquals(updatedUserEntity.isWithdrawal(), originUserEntity.isWithdrawal())
+        );
     }
     
 
