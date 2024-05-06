@@ -35,10 +35,17 @@ public class EmailService {
     
     @Value("${sign-up.email.expire}")   private long expireTime;
     
+    /**
+     * (redis) email auth
+     * - email 존재 여부 반환 (이메일 인증을 마친 상태인지 확인 )
+     */
     public boolean existEmail(EmailAuthDto dto) {
         return template.hasKey(dto.getEmail());
     }
     
+    /**
+     * 메일 전송
+     */
     public void sendEmailAuthCode(String userEmail) {
         try {
             String authCode = getCode();
@@ -53,20 +60,38 @@ public class EmailService {
         }
     }
     
+    /**
+     * (redis) email auth
+     * - email에 할당된 인증코드인지 여부 반환
+     */
     public boolean existCode(EmailAuthDto dto) {
         return template.opsForSet().isMember(dto.getEmail(), dto.getCode());
     }
     
-    public void saveEmailAuthCode(EmailAuthDto dto) {
-        template.opsForSet().add(dto.getEmail(), dto.getCode());
-        template.expire(dto.getEmail(), expireTime, SECONDS);
-    }
     
+    /**
+     * 1. (redis) email auth
+     * - email 삭제
+     * 2. (redis) session user
+     * - email 할당
+     */
     public void deleteAndUpdateSessionUserEmail(SessionUserEmailUpdateDto dto) {
         template.delete(dto.getEmail());
         sessionUserService.updateEmail(dto);
     }
     
+    /**
+     * (redis) email auth
+     * - email과 인증 코드 신규 저장
+     */
+    private void saveEmailAuthCode(EmailAuthDto dto) {
+        template.opsForSet().add(dto.getEmail(), dto.getCode());
+        template.expire(dto.getEmail(), expireTime, SECONDS);
+    }
+    
+    /**
+     * mail 내용 작성
+     */
     private MimeMessage createMessage(String to, String code) throws MessagingException, UnsupportedEncodingException {
         MimeMessage  message = mailSender.createMimeMessage();
         
@@ -90,6 +115,9 @@ public class EmailService {
         return message;
     }
     
+    /**
+     * 인증 코드 생성
+     */
     private String getCode() {
         return UUID.randomUUID().toString().replace("-", "").substring(1, 7);
     }
