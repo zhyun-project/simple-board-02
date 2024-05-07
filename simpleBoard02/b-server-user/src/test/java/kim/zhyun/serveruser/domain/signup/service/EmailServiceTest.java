@@ -1,12 +1,8 @@
 package kim.zhyun.serveruser.domain.signup.service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
 import kim.zhyun.serveruser.domain.member.service.SessionUserService;
 import kim.zhyun.serveruser.domain.signup.business.model.SessionUserEmailUpdateDto;
 import kim.zhyun.serveruser.domain.signup.controller.model.dto.EmailAuthDto;
-import kim.zhyun.serveruser.domain.signup.converter.EmailAuthConverter;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,9 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
-import org.springframework.mail.javamail.JavaMailSender;
 
-import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -38,8 +32,6 @@ class EmailServiceTest {
     
     @InjectMocks EmailService emailService;
     @Mock RedisTemplate<String, String> redisTemplate;
-    @Mock JavaMailSender javaMailSender;
-    @Mock EmailAuthConverter emailAuthConverter;
     @Mock SessionUserService sessionUserService;
     
     
@@ -95,49 +87,32 @@ class EmailServiceTest {
         then(redisTemplate).should(times(1)).hasKey(any());
     }
     
-    @DisplayName("이메일 전송 과정 검증")
+    @DisplayName("이메일 인증 정보 redis 저장")
     @Test
-    void send_email() throws MessagingException, UnsupportedEncodingException {
+    void save_email_auth() {
         // given
-        // -- 메일 내용 작성
-        MimeMessage mimeMessage = mock(MimeMessage.class);
-        
-        given(javaMailSender.createMimeMessage()).willReturn(mimeMessage);
-        
-        mimeMessage.addRecipients(MimeMessage.RecipientType.TO, TO_ADDRESS);
-        mimeMessage.setSubject(eq("이메일 제목 작성 [인증코드 {}]"), anyString());
-        mimeMessage.setText(eq("이메일 내용 작성 : 인증코드 입니다. {}"), anyString());
-        mimeMessage.setFrom(new InternetAddress("발송자@이메일.주소", "발송자 이름"));
-        
-        // -- 메일 발송
-        willDoNothing().given(javaMailSender).send(mimeMessage);
-        
-        // -- redis 에 정보 저장
         EmailAuthDto emailAuthDto = EmailAuthDto.builder()
+                .code(EMAIL_AUTH_CODE)
                 .email(TO_ADDRESS)
-                .code(anyString())
                 .build();
         
-        given(emailAuthConverter.toDto(TO_ADDRESS, anyString())).willReturn(emailAuthDto);
-        given(redisTemplate.opsForSet()).willReturn(mock(SetOperations.class));
+        SetOperations setOperations = mock(SetOperations.class);
+        given(redisTemplate.opsForSet()).willAnswer(invocation  -> setOperations);
+        
         given(redisTemplate.opsForSet().add(emailAuthDto.getEmail(), emailAuthDto.getCode())).willReturn(1L);
         given(redisTemplate.expire(eq(emailAuthDto.getEmail()), anyLong(), eq(TimeUnit.SECONDS))).willReturn(true);
         
         
         // when
-        emailService.sendEmailAuthCode(TO_ADDRESS);
+        emailService.saveEmailAuthInfo(emailAuthDto);
         
         
         // then
-        InOrder order = inOrder(javaMailSender, redisTemplate);
-        order.verify(javaMailSender).createMimeMessage();
-        order.verify(javaMailSender).send(mimeMessage);
-        order.verify(redisTemplate).opsForSet();
-        order.verify(redisTemplate).expire(anyString(), anyLong(), any(TimeUnit.class));
+        InOrder order = inOrder(redisTemplate, setOperations);
+        order.verify(setOperations).add(emailAuthDto.getEmail(), emailAuthDto.getCode());
+        order.verify(redisTemplate).expire(eq(emailAuthDto.getEmail()), anyLong(), any(TimeUnit.class));
         
-        then(javaMailSender).should(times(1)).createMimeMessage();
-        then(javaMailSender).should(times(1)).send(mimeMessage);
-        then(redisTemplate.opsForSet()).should(times(1)).add(emailAuthDto.getEmail(), emailAuthDto.getCode());
+        then(setOperations).should(times(1)).add(emailAuthDto.getEmail(), emailAuthDto.getCode());
         then(redisTemplate).should(times(1)).expire(eq(emailAuthDto.getEmail()), anyLong(), eq(TimeUnit.SECONDS));
     }
     
