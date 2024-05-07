@@ -1,5 +1,7 @@
 package kim.zhyun.serveruser.domain.signup.business;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.serveruser.domain.member.converter.UserConverter;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
@@ -16,8 +18,11 @@ import kim.zhyun.serveruser.domain.signup.repository.SessionUser;
 import kim.zhyun.serveruser.domain.signup.service.EmailService;
 import kim.zhyun.serveruser.domain.signup.service.NicknameReserveService;
 import kim.zhyun.serveruser.domain.signup.service.SignUpService;
+import kim.zhyun.serveruser.utils.EmailUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.io.UnsupportedEncodingException;
 
 import static kim.zhyun.serveruser.common.message.ExceptionMessage.*;
 import static kim.zhyun.serveruser.common.message.ResponseMessage.*;
@@ -35,6 +40,10 @@ public class SignUpBusiness {
     private final NicknameReserveConverter nicknameReserveConverter;
     private final EmailAuthConverter emailAuthConverter;
     private final UserConverter userConverter;
+    
+    private final EmailUtil emailUtil;
+    
+    
     
     /**
     이메일 중복확인
@@ -91,7 +100,23 @@ public class SignUpBusiness {
         sessionUserService.emailDuplicateCheckWithThrow(sessionId, request.getEmail());
         
         // 2. 메일 발송
-        emailService.sendEmailAuthCode(request.getEmail());
+        String authCode = emailUtil.getAuthCode();
+        String mailTitle = emailUtil.EMAIL_AUTH_TITLE_FORM_NEED_AUTH_CODE.formatted(authCode);
+        String body = emailUtil.EMAIL_AUTH_BODY_FORM_NEED_AUTH_CODE.formatted(authCode);
+        String fromEmail = "no-reply@simpleboard.02";
+        String fromName = "SB02-ADMIN";
+        
+        try {
+            MimeMessage message = emailUtil.createMessage(request.getEmail(), mailTitle, body, fromEmail, fromName);
+            emailUtil.sendMail(message);
+            
+        } catch (MessagingException | UnsupportedEncodingException e) {
+            throw new RuntimeException(EXCEPTION_MAIL_SEND_FAIL.formatted(e.getMessage()), e);
+        }
+        
+        // 3. 메일 인증 정보 저장
+        EmailAuthDto emailAuthDto = emailAuthConverter.toDto(request, authCode);
+        emailService.saveEmailAuthInfo(emailAuthDto);
         
         return RESPONSE_SEND_EMAIL_AUTH_CODE;
     }
