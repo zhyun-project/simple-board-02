@@ -3,6 +3,7 @@ package kim.zhyun.serveruser.utils;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.platform.commons.util.StringUtils;
@@ -27,7 +28,10 @@ class EmailUtilTest {
         String authCode = emailUtil.getAuthCode();
         
         // then
-        assertTrue(StringUtils.isNotBlank(authCode));
+        assertAll(
+                () -> assertNotNull(authCode),
+                () -> assertTrue(Strings.isNotBlank(authCode))
+        );
         
         log.info("auth code : {}", authCode);
     }
