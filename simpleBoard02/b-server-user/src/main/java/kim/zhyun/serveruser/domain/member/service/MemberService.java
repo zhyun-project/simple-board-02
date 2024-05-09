@@ -3,6 +3,7 @@ package kim.zhyun.serveruser.domain.member.service;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
+import kim.zhyun.jwt.domain.service.JwtLogoutService;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
@@ -14,7 +15,6 @@ import kim.zhyun.serveruser.domain.signup.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -34,12 +34,17 @@ import static org.springframework.data.domain.Sort.Order.asc;
 @Service
 public class MemberService implements UserDetailsService {
     private final UserRepository userRepository;
-    private final RedisTemplate<String, String> redisTemplate;
+    
     private final JwtProvider jwtProvider;
+    private final JwtLogoutService jwtLogoutService;
     private final PasswordEncoder passwordEncoder;
+    
     private final JwtUserInfoRepository jwtUserInfoRepository;
     private final RoleRepository roleRepository;
     
+    /**
+     * 회원 정보 id 오름차순 조회
+     */
     public List<UserEntity> findAll() {
         return userRepository.findAll(Sort.by(asc("id")));
     }
@@ -112,8 +117,7 @@ public class MemberService implements UserDetailsService {
      * - `redis`에 로그아웃 한 `jwt`를 저장하여 재사용 하지 못하도록 기능
      */
     public void logout(String jwt, JwtUserInfoDto jwtUserInfoDto) {
-        redisTemplate.opsForSet().add(jwt, jwtUserInfoDto.getEmail());
-        redisTemplate.expire(jwt, jwtProvider.expiredTime, jwtProvider.expiredTimeUnit);
+        jwtLogoutService.setLogoutToken(jwt, jwtUserInfoDto);
     }
     
     /**
