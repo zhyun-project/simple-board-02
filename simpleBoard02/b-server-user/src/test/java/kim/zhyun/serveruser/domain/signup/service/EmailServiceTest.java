@@ -97,7 +97,7 @@ class EmailServiceTest {
                 .build();
         
         SetOperations setOperations = mock(SetOperations.class);
-        given(redisTemplate.opsForSet()).willAnswer(invocation  -> setOperations);
+        given(redisTemplate.opsForSet()).willReturn(setOperations);
         
         given(redisTemplate.opsForSet().add(emailAuthDto.getEmail(), emailAuthDto.getCode())).willReturn(1L);
         given(redisTemplate.expire(eq(emailAuthDto.getEmail()), anyLong(), eq(TimeUnit.SECONDS))).willReturn(true);
@@ -109,11 +109,8 @@ class EmailServiceTest {
         
         // then
         InOrder order = inOrder(redisTemplate, setOperations);
-        order.verify(setOperations).add(emailAuthDto.getEmail(), emailAuthDto.getCode());
-        order.verify(redisTemplate).expire(eq(emailAuthDto.getEmail()), anyLong(), any(TimeUnit.class));
-        
-        then(setOperations).should(times(1)).add(emailAuthDto.getEmail(), emailAuthDto.getCode());
-        then(redisTemplate).should(times(1)).expire(eq(emailAuthDto.getEmail()), anyLong(), eq(TimeUnit.SECONDS));
+        order.verify(setOperations, times(1)).add(emailAuthDto.getEmail(), emailAuthDto.getCode());
+        order.verify(redisTemplate, times(1)).expire(eq(emailAuthDto.getEmail()), anyLong(), any(TimeUnit.class));
     }
     
     @DisplayName("이메일 인증 후 redis 유저 정보에 email 저장")
@@ -133,10 +130,7 @@ class EmailServiceTest {
         
         // then
         InOrder order = inOrder(redisTemplate, sessionUserService);
-        order.verify(redisTemplate).delete(sessionUserEmailUpdateDto.getEmail());
-        order.verify(sessionUserService).updateEmail(sessionUserEmailUpdateDto);
-        
-        then(redisTemplate).should(times(1)).delete(sessionUserEmailUpdateDto.getEmail());
-        then(sessionUserService).should(times(1)).updateEmail(sessionUserEmailUpdateDto);
+        order.verify(redisTemplate, times(1)).delete(sessionUserEmailUpdateDto.getEmail());
+        order.verify(sessionUserService, times(1)).updateEmail(sessionUserEmailUpdateDto);
     }
 }
