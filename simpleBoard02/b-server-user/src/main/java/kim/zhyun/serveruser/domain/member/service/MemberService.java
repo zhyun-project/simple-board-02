@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_WITHDRAWAL;
-import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_ALREADY_WITHDRAWN_MEMBER;
 import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_SIGNIN_FAIL;
 import static org.springframework.data.domain.Sort.Order.asc;
 
@@ -100,9 +99,6 @@ public class MemberService implements UserDetailsService {
         UserEntity userEntity = findByIdWithThrow(request.getId());
         
         String roleType = request.getRole().toUpperCase();
-        
-        if (userEntity.getRole().getGrade().equals(TYPE_WITHDRAWAL) && roleType.equals(TYPE_WITHDRAWAL))
-            throw new ApiException(EXCEPTION_ALREADY_WITHDRAWN_MEMBER);
         
         userSetRole(userEntity, roleType);
         
