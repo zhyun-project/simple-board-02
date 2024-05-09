@@ -1,6 +1,7 @@
 package kim.zhyun.serveruser.domain.member.service;
 
 import kim.zhyun.jwt.exception.ApiException;
+import kim.zhyun.serveruser.common.value.SessionUserValue;
 import kim.zhyun.serveruser.domain.signup.business.model.SessionUserEmailUpdateDto;
 import kim.zhyun.serveruser.domain.signup.controller.model.dto.NicknameUpdateDto;
 import kim.zhyun.serveruser.domain.signup.repository.SessionUser;
@@ -23,10 +24,8 @@ public class SessionUserService {
     private final SessionUserRepository sessionUserRepository;
     private final RedisTemplate<String, String> redisTemplate;
     
-    @Value("${sign-up.key.session}")   private String KEY_SESSION_USER;
-    @Value("${sign-up.key.email}")      private String KEY_EMAIL;
-    @Value("${sign-up.key.nickname}")   private String KEY_NICKNAME;
-    @Value("${sign-up.session.expire}") private long SESSION_EXPIRE_TIME;
+    private final SessionUserValue value;
+    
     
     public boolean existNicknameDuplicateCheckWithThrow(String id, String nickname) {
         SessionUser sessionUser = findById(id);
@@ -63,14 +62,14 @@ public class SessionUserService {
     
     public void updateEmail(SessionUserEmailUpdateDto update) {
         SessionUser source = findById(update.getId());
-        source.setEmail(update.getEmail().replace(KEY_EMAIL, ""));
+        source.setEmail(update.getEmail().replace(value.KEY_EMAIL, ""));
         source.setEmailVerification(update.isEmailVerification());
         save(source);
     }
     
     public void updateNickname(NicknameUpdateDto update) {
         SessionUser source = findById(update.getId());
-        source.setNickname(update.getNickname().replace(KEY_NICKNAME, ""));
+        source.setNickname(update.getNickname().replace(value.KEY_NICKNAME, ""));
         save(source);
     }
     
@@ -79,7 +78,7 @@ public class SessionUserService {
         
         String nickname = sessionUser.getNickname();
         if (nickname != null) {
-            redisTemplate.delete(KEY_NICKNAME + nickname);
+            redisTemplate.delete(value.KEY_NICKNAME + nickname);
         }
         
         sessionUserRepository.deleteById(id);
@@ -90,10 +89,10 @@ public class SessionUserService {
         
         String nickname = sessionUser.getNickname();
         if (nickname != null) {
-            redisTemplate.expire(KEY_NICKNAME + nickname, SESSION_EXPIRE_TIME, TimeUnit.MINUTES);
+            redisTemplate.expire(value.KEY_NICKNAME + nickname, value.SESSION_EXPIRE_TIME, TimeUnit.MINUTES);
         }
         
-        redisTemplate.expire(KEY_SESSION_USER + id, SESSION_EXPIRE_TIME, TimeUnit.MINUTES);
+        redisTemplate.expire(value.KEY_SESSION_USER + id, value.SESSION_EXPIRE_TIME, TimeUnit.MINUTES);
     }
     
     
