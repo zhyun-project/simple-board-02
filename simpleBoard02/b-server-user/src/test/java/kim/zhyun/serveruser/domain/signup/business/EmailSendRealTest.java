@@ -7,6 +7,7 @@ import kim.zhyun.serveruser.domain.signup.controller.model.dto.EmailAuthDto;
 import kim.zhyun.serveruser.domain.signup.service.EmailService;
 import kim.zhyun.serveruser.utils.EmailUtil;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
+@Order(0)
 @DisplayName("이메일로 인증코드 실제 전송 테스트")
 @ExtendWith(RedisTestContainer.class)
 @SpringBootTest
