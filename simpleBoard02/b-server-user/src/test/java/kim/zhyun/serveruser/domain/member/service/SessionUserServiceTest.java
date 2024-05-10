@@ -3,28 +3,28 @@ package kim.zhyun.serveruser.domain.member.service;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.serveruser.common.value.SessionUserValue;
 import kim.zhyun.serveruser.domain.signup.business.model.SessionUserEmailUpdateDto;
+import kim.zhyun.serveruser.domain.signup.controller.model.dto.NicknameUpdateDto;
 import kim.zhyun.serveruser.domain.signup.repository.SessionUser;
 import kim.zhyun.serveruser.domain.signup.repository.SessionUserRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK;
 import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.*;
 
 @DisplayName("session user service")
 @ExtendWith(MockitoExtension.class)
@@ -34,6 +34,8 @@ class SessionUserServiceTest {
     
     @Mock SessionUserRepository sessionUserRepository;
     @Mock RedisTemplate<String, String> redisTemplate;
+    
+    int sessionExpireTime = 30;
     
 
     @BeforeEach
@@ -46,7 +48,7 @@ class SessionUserServiceTest {
                         "SESSION_ID:",
                         "EMAIL:",
                         "NICKNAME:",
-                        30
+                        sessionExpireTime
                 )
         );
     }
@@ -274,15 +276,99 @@ class SessionUserServiceTest {
     
     @Test
     void updateNickname() {
-    
+        NicknameUpdateDto nicknameUpdateDto = NicknameUpdateDto.builder()
+                .id("session-id")
+                .nickname("update-nickname")
+                .build();
+        
+        // -- find session user by id
+        SessionUser sessionUser = SessionUser.builder()
+                .sessionId(nicknameUpdateDto.getId())
+                .build();
+        given(sessionUserRepository.findById(nicknameUpdateDto.getId())).willReturn(Optional.of(sessionUser));
+        
+        // -- session user update - nickname 수정
+        sessionUser.setNickname(nicknameUpdateDto.getNickname().replace("NICKNAME:", ""));
+        
+        given(sessionUserRepository.save(sessionUser)).willReturn(sessionUser);
+        
+        
+        // when
+        sessionUserService.updateNickname(nicknameUpdateDto);
+        
+        
+        // then
+        then(sessionUserRepository).should(times(1)).findById(nicknameUpdateDto.getId());
+        then(sessionUserRepository).should(times(1)).save(sessionUser);
+        
     }
     
+    @DisplayName("session user 삭제")
     @Test
     void deleteById() {
+        String id = "session-id";
+        willDoNothing().given(sessionUserRepository).deleteById(id);
+        
+        // when
+        sessionUserService.deleteById(id);
+        
+        // then
+        then(sessionUserRepository).should(times(1)).deleteById(id);
     }
     
+    @DisplayName("session user expire time 초기화 - nickname 중복확인 한 경우")
     @Test
     void initSessionUserExpireTime() {
+        String id = "session-id";
+        
+        // -- find session user by id
+        SessionUser sessionUser = SessionUser.builder()
+                .sessionId(id)
+                .nickname("nickname")
+                .email("gimwlgus@email.mail")
+                .emailVerification(true)
+                .build();
+        given(sessionUserRepository.findById(id)).willReturn(Optional.of(sessionUser));
+        
+        given(redisTemplate.expire("NICKNAME:" + sessionUser.getNickname(), sessionExpireTime, TimeUnit.MINUTES)).willReturn(true);
+        given(redisTemplate.expire("SESSION_ID:" + sessionUser.getSessionId(), sessionExpireTime, TimeUnit.MINUTES)).willReturn(true);
+        
+        
+        // when
+        sessionUserService.initSessionUserExpireTime(id);
+        
+        
+        // then
+        then(sessionUserRepository).should().findById(id);
+        then(redisTemplate).should().expire("NICKNAME:" + sessionUser.getNickname(), sessionExpireTime, TimeUnit.MINUTES);
+        then(redisTemplate).should().expire("SESSION_ID:" + sessionUser.getSessionId(), sessionExpireTime, TimeUnit.MINUTES);
+    }
+    
+    
+    @DisplayName("session user expire time 초기화 - nickname 중복확인 하지 않은 경우")
+    @Test
+    void initSessionUserExpireTime_not_duplicate_nickname() {
+        String id = "session-id";
+        
+        // -- find session user by id
+        SessionUser sessionUser = SessionUser.builder()
+                .sessionId(id)
+                .nickname(null)
+                .email("gimwlgus@email.mail")
+                .emailVerification(true)
+                .build();
+        given(sessionUserRepository.findById(id)).willReturn(Optional.of(sessionUser));
+        
+        given(redisTemplate.expire("SESSION_ID:" + sessionUser.getSessionId(), sessionExpireTime, TimeUnit.MINUTES)).willReturn(true);
+        
+        
+        // when
+        sessionUserService.initSessionUserExpireTime(id);
+        
+        
+        // then
+        then(sessionUserRepository).should().findById(id);
+        then(redisTemplate).should().expire("SESSION_ID:" + sessionUser.getSessionId(), sessionExpireTime, TimeUnit.MINUTES);
     }
     
 }
