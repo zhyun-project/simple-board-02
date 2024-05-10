@@ -74,13 +74,6 @@ public class SessionUserService {
     }
     
     public void deleteById(String id) {
-        SessionUser sessionUser = findById(id);
-        
-        String nickname = sessionUser.getNickname();
-        if (nickname != null) {
-            redisTemplate.delete(value.KEY_NICKNAME + nickname);
-        }
-        
         sessionUserRepository.deleteById(id);
     }
     
