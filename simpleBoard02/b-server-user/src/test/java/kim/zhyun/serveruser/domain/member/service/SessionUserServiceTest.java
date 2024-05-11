@@ -274,6 +274,7 @@ class SessionUserServiceTest {
         then(sessionUserRepository).should(times(1)).save(sessionUser);
     }
     
+    @DisplayName("session user - nickname 갱신")
     @Test
     void updateNickname() {
         NicknameUpdateDto nicknameUpdateDto = NicknameUpdateDto.builder()
@@ -339,9 +340,9 @@ class SessionUserServiceTest {
         
         
         // then
-        then(sessionUserRepository).should().findById(id);
-        then(redisTemplate).should().expire("NICKNAME:" + sessionUser.getNickname(), sessionExpireTime, TimeUnit.MINUTES);
-        then(redisTemplate).should().expire("SESSION_ID:" + sessionUser.getSessionId(), sessionExpireTime, TimeUnit.MINUTES);
+        then(sessionUserRepository).should(times(1)).findById(id);
+        then(redisTemplate).should(times(1)).expire("NICKNAME:" + sessionUser.getNickname(), sessionExpireTime, TimeUnit.MINUTES);
+        then(redisTemplate).should(times(1)).expire("SESSION_ID:" + sessionUser.getSessionId(), sessionExpireTime, TimeUnit.MINUTES);
     }
     
     
@@ -367,8 +368,9 @@ class SessionUserServiceTest {
         
         
         // then
-        then(sessionUserRepository).should().findById(id);
-        then(redisTemplate).should().expire("SESSION_ID:" + sessionUser.getSessionId(), sessionExpireTime, TimeUnit.MINUTES);
+        then(sessionUserRepository).should(times(1)).findById(id);
+        then(redisTemplate).should(never()).expire("NICKNAME:" + sessionUser.getNickname(), sessionExpireTime, TimeUnit.MINUTES);
+        then(redisTemplate).should(times(1)).expire("SESSION_ID:" + sessionUser.getSessionId(), sessionExpireTime, TimeUnit.MINUTES);
     }
     
 }
