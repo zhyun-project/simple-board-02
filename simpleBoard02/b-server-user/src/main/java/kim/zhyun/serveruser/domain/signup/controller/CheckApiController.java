@@ -4,18 +4,18 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import kim.zhyun.jwt.common.model.ApiResponse;
 import kim.zhyun.serveruser.common.annotation.Email;
 import kim.zhyun.serveruser.common.annotation.Nickname;
 import kim.zhyun.serveruser.common.annotation.VerifyCode;
-import kim.zhyun.serveruser.domain.signup.controller.model.EmailAuthCodeRequest;
-import kim.zhyun.jwt.common.model.ApiResponse;
 import kim.zhyun.serveruser.domain.signup.business.SignUpBusiness;
+import kim.zhyun.serveruser.domain.signup.controller.model.EmailAuthCodeRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static kim.zhyun.serveruser.common.message.ResponseMessage.RESPONSE_SIGN_UP_CHECK_VALUE_IS_EMPTY;
+import static kim.zhyun.serveruser.common.message.ResponseMessage.*;
 
 
 @Tag(name = "이메일 인증, 이메일 중복 확인, 닉네임 중복 확인 API")
@@ -45,11 +45,13 @@ public class CheckApiController {
         // email 중복확인
         if (email != null) {
             message = signUpBusiness.emailDuplicateCheck(email, sessionId);
+            result = message.contains(RESPONSE_SIGN_UP_AVAILABLE_EMAIL);
         }
         
         // 닉네임 중복확인
         if (nickname != null) {
             message = signUpBusiness.nicknameDuplicateCheck(nickname, sessionId);
+            result = message.contains(RESPONSE_SIGN_UP_AVAILABLE_NICKNAME);
         }
         
         return ResponseEntity.ok(ApiResponse.<Void>builder()
