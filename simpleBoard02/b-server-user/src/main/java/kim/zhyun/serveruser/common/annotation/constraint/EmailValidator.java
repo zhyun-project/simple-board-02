@@ -13,7 +13,7 @@ public class EmailValidator implements ConstraintValidator<Email, String> {
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
         
         if (value != null) {
-            String regex = "^[_a-z0-9-]+(.[_a-z0-9-]+)*@(?:\\w+\\.)+\\w+$";
+            String regex = "^[a-zA-Z0-9][-_.+a-zA-Z0-9]*@[a-zA-Z0-9](?:[-_.a-zA-Z0-9]*\\.[a-zA-Z0-9]+)+$";
             Matcher patternMatcher = Pattern.compile(regex).matcher(value);
             
             return patternMatcher.matches();
