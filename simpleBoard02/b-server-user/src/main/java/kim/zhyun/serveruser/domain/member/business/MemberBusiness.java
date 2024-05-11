@@ -45,7 +45,7 @@ public class MemberBusiness {
      */
     public UserResponse updateUserInfo(String sessionId, UserUpdateRequest request) {
 
-        // 업데이트 요청 검증
+        // 닉네임 변경 요청인지 확인
         boolean nicknameIsNotBlank = Strings.isNotBlank(request.getNickname());
         
         // 닉네임이 예전에 사용하던것과 같은지 확인
