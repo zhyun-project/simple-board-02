@@ -3,6 +3,10 @@ package kim.zhyun.serveruser.common.annotation.constraint;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import kim.zhyun.serveruser.common.annotation.Nickname;
+import org.apache.logging.log4j.util.Strings;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NicknameValidator implements ConstraintValidator<Nickname, String> {
     
@@ -10,9 +14,10 @@ public class NicknameValidator implements ConstraintValidator<Nickname, String> 
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
         
         if (value != null) {
-            int length = value.length();
-
-            return length >= 1 && length <= 6;
+            String regex = "^(?! )(?=\\S)(.{1,6})(?<=\\S)(?<! )$";
+            Matcher patternMatcher = Pattern.compile(regex).matcher(value);
+            
+            return patternMatcher.matches();
         }
         
         return true;
