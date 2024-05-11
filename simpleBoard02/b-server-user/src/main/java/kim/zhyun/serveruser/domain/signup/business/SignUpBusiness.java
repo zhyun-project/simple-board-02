@@ -154,8 +154,8 @@ public class SignUpBusiness {
         
         // 중복 확인 하지 않은 email
         if (sessionUser.getEmail() == null
-                || (!sessionUser.getEmail().equals(request.getEmail())
-                || !sessionUser.isEmailVerification()))
+                || !sessionUser.isEmailVerification()
+                || !sessionUser.getEmail().equals(request.getEmail()))
             throw new ApiException(EXCEPTION_REQUIRE_MAIL_DUPLICATE_CHECK);
         
         // 중복 확인 하지 않은 nickname
