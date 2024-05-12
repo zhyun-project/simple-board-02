@@ -2,6 +2,8 @@ package kim.zhyun.serveruser.domain.signup.controller.model;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import kim.zhyun.serveruser.common.annotation.Email;
+import kim.zhyun.serveruser.common.annotation.Nickname;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +17,8 @@ import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_VAL
 @NoArgsConstructor
 public class SignupRequest {
     
-    @NotNull private String email;
-    @NotNull private String nickname;
+    @Email private String email;
+    @Nickname private String nickname;
     
     @NotNull @Size(min = 4, message = EXCEPTION_VALID_PASSWORD_FORMAT)
     private String password;
