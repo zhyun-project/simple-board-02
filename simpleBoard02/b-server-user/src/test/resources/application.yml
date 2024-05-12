@@ -65,7 +65,7 @@ sign-up:
     email: "EMAIL:"        # EmailAuthDto.getEmail()
     nickname: "NICKNAME:"  # NicknameDto.getNickname()
   email:
-    expire: 3 # TimeUnit: Second
+    expire: 300 # TimeUnit: Second
   session:
     expire: 5 # TimeUnit: Minute
   admin:
