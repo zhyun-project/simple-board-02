@@ -67,14 +67,12 @@ public class MemberApiController {
             HttpServletRequest http,
             @Valid @RequestBody UserUpdateRequest request
     ) {
-        UserResponse savedUser = memberBusiness.updateUserInfo(http.getSession().getId(), request);
+        String responseMessage = memberBusiness.updateUserInfo(http.getSession().getId(), request);
         
         return ResponseEntity.created(fromCurrentRequestUri().build().toUri())
                 .body(ApiResponse.<Void>builder()
                         .status(true)
-                        .message(String.format(
-                                RESPONSE_USER_INFO_UPDATE,
-                                savedUser.getNickname()))
+                        .message(responseMessage)
                         .build());
     }
     

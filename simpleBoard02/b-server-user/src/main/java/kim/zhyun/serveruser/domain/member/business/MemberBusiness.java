@@ -43,7 +43,7 @@ public class MemberBusiness {
     /**
      * 유저 정보 수정
      */
-    public UserResponse updateUserInfo(String sessionId, UserUpdateRequest request) {
+    public String updateUserInfo(String sessionId, UserUpdateRequest request) {
 
         // 닉네임 변경 요청인지 확인
         boolean nicknameIsNotBlank = Strings.isNotBlank(request.getNickname());
@@ -65,7 +65,9 @@ public class MemberBusiness {
         // 임시 저장정보(session) 삭제
         sessionUserService.deleteById(sessionId);
 
-        return userConverter.toResponse(updatedUserEntity);
+        return String.format(
+                RESPONSE_USER_INFO_UPDATE,
+                updatedUserEntity.getNickname());
     }
     
     /**

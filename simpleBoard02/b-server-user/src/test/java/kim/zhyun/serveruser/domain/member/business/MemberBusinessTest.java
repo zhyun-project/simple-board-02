@@ -13,15 +13,12 @@ import kim.zhyun.serveruser.domain.member.service.MemberService;
 import kim.zhyun.serveruser.domain.member.service.SessionUserService;
 import kim.zhyun.serveruser.domain.signup.repository.RoleEntity;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -36,11 +33,9 @@ import java.util.stream.Stream;
 import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_REQUIRE_NICKNAME_DUPLICATE_CHECK;
 import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_SIGNIN_FAIL;
 import static kim.zhyun.serveruser.common.message.ResponseMessage.*;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
 @Slf4j
@@ -170,12 +165,11 @@ class MemberBusinessTest {
         
         
         // when
-        UserResponse returnUserResponse = memberBusiness.updateUserInfo(requestSessionId, userUpdateRequest);
+        String responseMessage = memberBusiness.updateUserInfo(requestSessionId, userUpdateRequest);
         
         
         // then
-        assertEquals(userUpdateRequest.getNickname(), returnUserResponse.getNickname());
-        assertNotEquals(originUserEntity.getNickname(), returnUserResponse.getNickname());
+        assertEquals(RESPONSE_USER_INFO_UPDATE.formatted(userUpdateRequest.getNickname()), responseMessage);
     }
     
     @DisplayName("유저 정보 수정 - 실패: 닉네임중복확인 안함")
