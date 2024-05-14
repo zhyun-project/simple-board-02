@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collection;
 import java.util.List;
 
-import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_NOT_FOUND;
+import static kim.zhyun.jwt.exception.message.CommonExceptionMessage.EXCEPTION_NOT_FOUND;
 
 @RequiredArgsConstructor
 @Service

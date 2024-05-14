@@ -21,8 +21,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.StreamSupport;
 
-import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
-import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_VALID_FORMAT;
+import static kim.zhyun.jwt.exception.message.CommonExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
+import static kim.zhyun.jwt.exception.message.CommonExceptionMessage.EXCEPTION_VALID_FORMAT;
 
 @RestControllerAdvice(basePackages = {
         "kim.zhyun.jwt",
@@ -36,6 +36,7 @@ public class GlobalAdvice extends ResponseEntityExceptionHandler {
      */
     @ExceptionHandler({
             ApiException.class,
+            MailSenderException.class,
             UsernameNotFoundException.class})
     public ResponseEntity<Object> mailException(RuntimeException e) {
         return ResponseEntity

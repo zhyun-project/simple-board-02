@@ -3,7 +3,7 @@ package kim.zhyun.serveruser.domain.member.controller.model;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
-import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_VALID_FORMAT;
+import static kim.zhyun.jwt.exception.message.CommonExceptionMessage.EXCEPTION_VALID_FORMAT;
 
 
 @AllArgsConstructor

@@ -1,6 +1,6 @@
 package kim.zhyun.jwt.exception.message;
 
-public class ExceptionMessage {
+public class CommonExceptionMessage {
     
     // 공통
     public static final String EXCEPTION_PERMISSION = "권한이 없습니다.";

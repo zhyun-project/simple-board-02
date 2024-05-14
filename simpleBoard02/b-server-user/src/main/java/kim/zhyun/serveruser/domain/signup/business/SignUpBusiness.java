@@ -3,6 +3,7 @@ package kim.zhyun.serveruser.domain.signup.business;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import kim.zhyun.jwt.exception.ApiException;
+import kim.zhyun.jwt.exception.MailSenderException;
 import kim.zhyun.serveruser.domain.member.converter.UserConverter;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
 import kim.zhyun.serveruser.domain.member.service.SessionUserService;
@@ -23,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Optional;
 
 import static kim.zhyun.serveruser.common.message.ExceptionMessage.*;
 import static kim.zhyun.serveruser.common.message.ResponseMessage.*;
@@ -111,7 +113,7 @@ public class SignUpBusiness {
             emailUtil.sendMail(message);
             
         } catch (MessagingException | UnsupportedEncodingException e) {
-            throw new RuntimeException(EXCEPTION_MAIL_SEND_FAIL.formatted(e.getMessage()), e);
+            throw new MailSenderException(EXCEPTION_MAIL_SEND_FAIL.formatted(Optional.of(e.getMessage()).orElseGet(() -> "")));
         }
         
         // 3. 메일 인증 정보 저장

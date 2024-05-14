@@ -16,8 +16,8 @@ import org.springframework.security.web.context.SecurityContextHolderFilter;
 
 import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_ADMIN;
 import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_MEMBER;
-import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_AUTHENTICATION;
-import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_PERMISSION;
+import static kim.zhyun.jwt.exception.message.CommonExceptionMessage.EXCEPTION_AUTHENTICATION;
+import static kim.zhyun.jwt.exception.message.CommonExceptionMessage.EXCEPTION_PERMISSION;
 import static org.springframework.http.HttpMethod.GET;
 
 @RequiredArgsConstructor

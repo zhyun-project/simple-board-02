@@ -21,7 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static kim.zhyun.jwt.common.constants.type.RoleType.ROLE_WITHDRAWAL;
-import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_NOT_FOUND;
+import static kim.zhyun.jwt.exception.message.CommonExceptionMessage.EXCEPTION_NOT_FOUND;
 import static kim.zhyun.serverarticle.common.message.ExceptionMessage.*;
 import static org.springframework.data.domain.Sort.Order.desc;
 

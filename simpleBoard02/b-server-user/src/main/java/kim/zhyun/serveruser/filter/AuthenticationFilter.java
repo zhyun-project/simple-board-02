@@ -22,7 +22,7 @@ import java.io.IOException;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_HEADER;
-import static kim.zhyun.jwt.exception.message.ExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
+import static kim.zhyun.jwt.exception.message.CommonExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
 import static kim.zhyun.jwt.util.FilterApiResponseUtil.sendMessage;
 import static kim.zhyun.serveruser.common.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_IN;
 
