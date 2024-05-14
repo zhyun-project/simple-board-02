@@ -50,10 +50,6 @@ public class SecurityConfig {
                         "/login/**"
                 ).permitAll()
                 
-                .requestMatchers(
-                        "/withdrawal/**"
-                ).authenticated()
-                
                 .anyRequest().hasAnyRole(TYPE_ADMIN, TYPE_MEMBER));
         
         http.exceptionHandling(config -> config
