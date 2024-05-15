@@ -18,6 +18,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -224,6 +226,94 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.result.articleId").value(doArticleResponse.getArticleId()))
                 .andExpect(jsonPath("$.result.user.id").value(doArticleResponse.getUser().getId()))
                 .andExpect(jsonPath("$.result.title").value(doArticleResponse.getTitle()))
+                .andDo(print());
+    }
+    @DisplayName("게시글 등록 - 실패- 제목 입력 형식 오류")
+    @ParameterizedTest
+    @CsvSource({
+            "'ROLE_MEMBER', '일이삼사오육칠팔구십 일이삼사오육칠팔구십일이삼사오육칠팔구십'", // 31자
+            "'ROLE_MEMBER', '일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십a'", // 31자
+            "'ROLE_MEMBER', '                              '", // 30자
+            "'ROLE_MEMBER', '                               '", // 31자
+            "'ROLE_MEMBER', ''",
+            "'ROLE_MEMBER', ' '",
+    })
+    void save_success_false(String roleType, String title) throws Exception {
+        // given
+        long loginUserId = 1L;
+        
+        setSecurityContext(loginUserId, roleType);
+        
+        ArticleSaveRequest articleSaveRequest = ArticleSaveRequest.builder()
+                .userId(loginUserId)
+                .title(title)
+                .content("내용")
+                .build();
+        
+        ArticleResponse doArticleResponse = getArticleResponse(
+                234L, 53L, articleSaveRequest.getUserId(),
+                articleSaveRequest.getTitle(), articleSaveRequest.getContent()
+        );
+        given(articleBusiness.save(articleSaveRequest)).willReturn(doArticleResponse);
+        
+        String responseMessage = CommonExceptionMessage.EXCEPTION_VALID_FORMAT;
+        String responseDetailMessage = ExceptionMessage.EXCEPTION_TITLE_FORMAT;
+        
+        
+        // when - then
+        mvc.perform(
+                        post("/save")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(articleSaveRequest))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(false))
+                .andExpect(jsonPath("$.message").value(responseMessage))
+                .andExpect(jsonPath("$.result[0].field").value("title"))
+                .andExpect(jsonPath("$.result[0].message").value(responseDetailMessage))
+                .andDo(print());
+    }
+    @DisplayName("게시글 등록 - 실패- 내용 입력 형식 오류")
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "",
+            "  ",
+            "                                                                                ",
+    })
+    @NullAndEmptySource
+    void save_success_false_with_content(String content) throws Exception {
+        // given
+        long loginUserId = 1L;
+        
+        setSecurityContext(loginUserId, RoleType.ROLE_MEMBER);
+        
+        ArticleSaveRequest articleSaveRequest = ArticleSaveRequest.builder()
+                .userId(loginUserId)
+                .title("제목")
+                .content(content)
+                .build();
+        
+        ArticleResponse doArticleResponse = getArticleResponse(
+                234L, 53L, articleSaveRequest.getUserId(),
+                articleSaveRequest.getTitle(), articleSaveRequest.getContent()
+        );
+        given(articleBusiness.save(articleSaveRequest)).willReturn(doArticleResponse);
+        
+        String responseMessage = CommonExceptionMessage.EXCEPTION_VALID_FORMAT;
+        String responseDetailMessage = ExceptionMessage.EXCEPTION_CONTENT_IS_NULL;
+        
+        
+        // when - then
+        mvc.perform(
+                        post("/save")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsBytes(articleSaveRequest))
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(false))
+                .andExpect(jsonPath("$.message").value(responseMessage))
+                .andExpect(jsonPath("$.result[0].field").value("content"))
+                .andExpect(jsonPath("$.result[0].message").value(responseDetailMessage))
                 .andDo(print());
     }
     @DisplayName("게시글 등록 - 실패: 남의 계정")
