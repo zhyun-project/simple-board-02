@@ -57,7 +57,7 @@ public class ArticleBusiness {
         
         ArticleEntity articleEntity = articleService.findByUserIdAndArticleId(request.getUserId(), request.getArticleId());
         
-        if (articleEntity.getArticleId() != request.getArticleId() || articleEntity.getUserId() != request.getUserId())
+        if (articleEntity == null)
             throw new ApiException(EXCEPTION_NOT_FOUND);
         
         ArticleEntity updatedEntity = articleService.update(articleEntity, request);
