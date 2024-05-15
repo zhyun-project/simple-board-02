@@ -3,16 +3,15 @@ package kim.zhyun.serverarticle.domain.service;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
 import kim.zhyun.jwt.exception.ApiException;
+import kim.zhyun.serverarticle.common.value.ArticleValue;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleUpdateRequest;
 import kim.zhyun.serverarticle.domain.controller.model.ArticlesDeleteRequest;
 import kim.zhyun.serverarticle.domain.respository.ArticleEntity;
 import kim.zhyun.serverarticle.domain.respository.ArticleRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,9 +30,7 @@ public class ArticleService {
     private final JwtUserInfoRepository jwtUserInfoRepository;
     private final ArticleRepository articleRepository;
     private final RedisTemplate<String, String> redisTemplate;
-    
-    @Value("${key.redis.articleId}")
-    private String REDIS_ARTICLE_ID_KEY;
+    private final ArticleValue articleValue;
     
     
     public List<ArticleEntity> findAllOrderByCreatedAtDesc() {
@@ -61,11 +58,11 @@ public class ArticleService {
         return articleRepository.save(newArticleEntity);
     }
     
-    @Transactional
     public ArticleEntity update(ArticleEntity articleEntity, ArticleUpdateRequest request) {
         articleEntity.setTitle(request.getTitle());
         articleEntity.setContent(request.getContent());
-        return articleEntity;
+        
+        return articleRepository.save(articleEntity);
     }
     
     public void delete(ArticlesDeleteRequest request) {
@@ -85,7 +82,7 @@ public class ArticleService {
                     if (container.isPresent() && container.get().getGrade().equals(ROLE_WITHDRAWAL)) {
                         List<ArticleEntity> list = articleRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
                         articleRepository.deleteAllInBatch(list);
-                        redisTemplate.delete(REDIS_ARTICLE_ID_KEY + userId);
+                        redisTemplate.delete(articleValue.REDIS_ARTICLE_ID_KEY + userId);
                         return false;
                     }
                     
@@ -124,15 +121,9 @@ public class ArticleService {
      * `user`의 `article id` 계산 후 반환
      */
     private long getNewArticleId(long userId) {
-        String redisArticleCountKey = REDIS_ARTICLE_ID_KEY + userId;
+        String redisArticleCountKey = articleValue.REDIS_ARTICLE_ID_KEY + userId;
         
-        if (!redisTemplate.hasKey(redisArticleCountKey)) {
-            redisTemplate.opsForValue().set(redisArticleCountKey, "0");
-        }
-        
-        redisTemplate.opsForValue().increment(redisArticleCountKey);
-        
-        return Long.parseLong(redisTemplate.opsForValue().get(redisArticleCountKey));
+        return redisTemplate.opsForValue().increment(redisArticleCountKey);
     }
     
 }
