@@ -1,13 +1,10 @@
 package kim.zhyun.serverarticle.domain.controller.model;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import kim.zhyun.serverarticle.common.annotation.Content;
+import kim.zhyun.serverarticle.common.annotation.Title;
 import lombok.*;
 
 import java.util.Objects;
-
-import static kim.zhyun.serverarticle.common.message.ExceptionMessage.EXCEPTION_CONTENT_IS_NULL;
-import static kim.zhyun.serverarticle.common.message.ExceptionMessage.EXCEPTION_TITLE_FORMAT;
 
 @ToString
 @AllArgsConstructor
@@ -17,12 +14,15 @@ public class ArticleSaveRequest {
     
     private long userId;
     
-    @Size(min = 1, max = 30, message = EXCEPTION_TITLE_FORMAT)
+    @Title
     private String title;
     
-    @NotNull(message = EXCEPTION_CONTENT_IS_NULL)
+    @Content
     private String content;
-
+    
+    public void setTitle(String title) {
+        this.title = title.trim();
+    }
     
     @Override public boolean equals(Object o) {
         if (this == o) return true;

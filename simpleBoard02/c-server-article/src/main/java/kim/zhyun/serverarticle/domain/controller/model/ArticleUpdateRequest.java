@@ -1,12 +1,10 @@
 package kim.zhyun.serverarticle.domain.controller.model;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import kim.zhyun.serverarticle.common.annotation.Content;
+import kim.zhyun.serverarticle.common.annotation.Title;
 import lombok.*;
 
 import java.util.Objects;
-
-import static kim.zhyun.serverarticle.common.message.ExceptionMessage.*;
 
 @ToString
 @AllArgsConstructor
@@ -18,11 +16,10 @@ public class ArticleUpdateRequest {
     private long articleId;
     private long userId;
     
-    @NotNull(message = EXCEPTION_TITLE_IS_NULL)
-    @Size(min = 1, max = 30, message = EXCEPTION_TITLE_FORMAT)
+    @Title
     private String title;
     
-    @NotNull(message = EXCEPTION_CONTENT_IS_NULL)
+    @Content
     private String content;
 
     
