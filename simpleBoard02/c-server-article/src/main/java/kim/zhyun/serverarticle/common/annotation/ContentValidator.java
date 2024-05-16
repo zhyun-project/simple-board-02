@@ -11,14 +11,7 @@ public class ContentValidator implements ConstraintValidator<Content, String> {
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
         
-        if (value == null)
-            return false;
-
-//        String regex = "\\S+"; // 공백이 아닌 문자가 1개 이상 있어야 됨
-//        Matcher patternMatcher = Pattern.compile(regex).matcher(value);
-//
-//        return patternMatcher.matches();
-        return true;
+        return value != null && !value.trim().isEmpty(); // 공백이 아닌 문자가 1개 이상 있어야 됨
     }
     
 }
