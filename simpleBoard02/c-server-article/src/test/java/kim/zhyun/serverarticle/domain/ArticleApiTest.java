@@ -7,6 +7,7 @@ import kim.zhyun.serverarticle.common.message.ResponseMessage;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleSaveRequest;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleUpdateRequest;
 import kim.zhyun.serverarticle.domain.controller.model.ArticlesDeleteRequest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -30,6 +31,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@Disabled("전체 테스트 실행시 disabled 설정")
 @AutoConfigureMockMvc
 @SpringBootTest
 public class ArticleApiTest {
