@@ -86,7 +86,8 @@ public class ArticleController {
             @RequestBody @Valid ArticleUpdateRequest request
     ) {
         articlebusiness.update(request);
-        return ResponseEntity.created(ServletUriComponentsBuilder.fromCurrentRequest().build().toUri())
+        return ResponseEntity.created(ServletUriComponentsBuilder.fromPath("/{articleId}/user/{id}")
+                        .build(request.getArticleId(), request.getUserId()))
                 .body(ApiResponse.builder()
                 .status(true)
                 .message(RESPONSE_ARTICLE_UPDATE).build());
