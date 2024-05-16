@@ -14,10 +14,11 @@ public class ContentValidator implements ConstraintValidator<Content, String> {
         if (value == null)
             return false;
 
-        String regex = "^(?! )(?=\\S)(.{1,})(?<=\\S)(?<! )$";
-        Matcher patternMatcher = Pattern.compile(regex).matcher(value);
-        
-        return patternMatcher.matches();
+//        String regex = "\\S+"; // 공백이 아닌 문자가 1개 이상 있어야 됨
+//        Matcher patternMatcher = Pattern.compile(regex).matcher(value);
+//
+//        return patternMatcher.matches();
+        return true;
     }
     
 }

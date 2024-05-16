@@ -30,7 +30,8 @@ public class ArticleEntity {
     
     @Column(nullable = false, columnDefinition = "varchar(60)")
     private String title;
-    @Column(nullable = false, columnDefinition = "text")
+    @Column(nullable = false)
+    @Lob
     private String content;
     @Column(nullable = false)
     private long userId;
