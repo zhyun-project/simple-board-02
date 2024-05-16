@@ -160,9 +160,6 @@ class MemberBusinessTest {
         // -- 임시 저장정보(session) 삭제
         willDoNothing().given(sessionUserService).deleteById(requestSessionId);
         
-        // -- 반환 값
-        given(userConverter.toResponse(updatedUserEntity)).willReturn(getUserResponse(updatedUserEntity));
-        
         
         // when
         String responseMessage = memberBusiness.updateUserInfo(requestSessionId, userUpdateRequest);
