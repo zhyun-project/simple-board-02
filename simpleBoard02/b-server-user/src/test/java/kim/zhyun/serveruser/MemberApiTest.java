@@ -162,16 +162,16 @@ public class MemberApiTest {
     @DisplayName("계정 권한 수정 - 성공: admin 권한자")
     @ParameterizedTest
     @ValueSource(strings = {
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MSwiZXhwIjoxNzE4MTAwNzA4fQ.vyJMTJ1N3-vLjMC3GO93McMZ-e2gGqgXDmheUgK8o8D9lmv-wkCgyUQMcgRpoD-2YdzP_B-qHg0ZCmORjofPNQ",
+            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6NCwiZXhwIjoxNzE4NDUzNjUwfQ.KlTonkMaLz-Ot2G5Xv0nDxA8pd8QGWD6yymVZw4QIYpyHNo7CbkPw7as75vCviX1cBGhgc2PJU-1sTveOJ7m4g",
 //            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BkYXVtLm5ldCIsImlkIjoyLCJleHAiOjE3MTgxMDA3MDl9.YrX_ZPRcQTFTPEZq7pUujvn_PahT-Dki8Qv-SYuohGlqHw8Y5XqenCSSsKQ7tHTAYcYucWYt1gG8m0-1KXuiZg"
     })
     void updateByIdAndRole(String headerJwt) throws Exception {
         // given
-        long requestUserId = 2L;
+        long requestUserId = 5L;
         
         UserGradeUpdateRequest userGradeUpdateRequest = UserGradeUpdateRequest.builder()
                 .id(requestUserId)
-                .role(RoleType.TYPE_WITHDRAWAL)
+                .role(RoleType.TYPE_MEMBER)
                 .build();
         
         
@@ -240,8 +240,8 @@ public class MemberApiTest {
     @DisplayName("회원 탈퇴 - 토큰에서 회원 권한 읽은 후 로직 진행")
     @ParameterizedTest
     @ValueSource(strings = {
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MSwiZXhwIjoxNzE4MTAwNzA4fQ.vyJMTJ1N3-vLjMC3GO93McMZ-e2gGqgXDmheUgK8o8D9lmv-wkCgyUQMcgRpoD-2YdzP_B-qHg0ZCmORjofPNQ",
-//            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BkYXVtLm5ldCIsImlkIjoyLCJleHAiOjE3MTgxMDA3MDl9.YrX_ZPRcQTFTPEZq7pUujvn_PahT-Dki8Qv-SYuohGlqHw8Y5XqenCSSsKQ7tHTAYcYucWYt1gG8m0-1KXuiZg"
+//            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJ3aXRoZHJhd2FsQGVtYWlsLm1haWwiLCJpZCI6NywiZXhwIjoxNzE4NDUzNjUxfQ.jQJAMNB204ul2QBcii26fcVkSQmwP16-q02LZfJDnV9M7qhoZukkug4oDlg60_-jHnFCSzmjTj9Ujx1VHYieWw",
+            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJtZW1iZXIyQGVtYWlsLm1haWwiLCJpZCI6NiwiZXhwIjoxNzE4NDUzNjUwfQ.XgVUMIdJdD8nEtp5lrPwqtsCpuUQgP_4N6eGpYeLO4aaWb252_rylqf132Sp7VSpTKdY3772EGQSbtpnP_RcOA"
     })
     void withdrawal(String headerJwt) throws Exception {
         // when
