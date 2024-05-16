@@ -16,7 +16,7 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 @NoArgsConstructor
 @Getter @Setter @Builder
 @EntityListeners(AuditingEntityListener.class)
-@Entity
+@Entity(name = "articles")
 @Table(indexes = {
         @Index(name = "idx_article_title", columnList = "title"),
         @Index(name = "idx_article_content", columnList = "content"),
