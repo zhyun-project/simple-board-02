@@ -39,7 +39,9 @@ public class SignUpApiTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "gimwlgus@gmail.com",
-            "gimwlgus@daum.net"
+            "member1@email.mail",
+            "member2@email.mail",
+            "withdrawal@email.mail",
     })
     void duplicateCheck_email_success(String email) throws Exception {
         MockHttpSession session = new MockHttpSession();
@@ -59,8 +61,10 @@ public class SignUpApiTest {
     @DisplayName("닉네임 중복 확인 성공")
     @ParameterizedTest
     @ValueSource(strings = {
-            "닉네임 🦆",
-            "닉네임 😌"
+            "어드민",
+            "멤버원",
+            "멤버투",
+            "탈퇴함"
     })
     void duplicateCheck_nickname_success(String nickname) throws Exception {
         MockHttpSession session = new MockHttpSession();
@@ -82,7 +86,9 @@ public class SignUpApiTest {
     @ParameterizedTest
     @ValueSource(strings = {
             "gimwlgus@gmail.com",
-            "gimwlgus@daum.net"
+            "member1@email.mail",
+            "member2@email.mail",
+            "withdrawal@email.mail",
     })
     void sendEmail(String email) throws Exception {
         // given
@@ -105,8 +111,10 @@ public class SignUpApiTest {
     @DisplayName("메일 인증코드 검증")
     @ParameterizedTest
     @ValueSource(strings = {
-            "de79bd",
-            "a1c3db",
+            "d48df4",
+            "9c30ce",
+            "9c808e",
+            "e0f40c",
     })
     void authEmailCode(String requestCode) throws Exception {
         // given
@@ -145,10 +153,16 @@ public class SignUpApiTest {
     static Stream<SignupRequest> signUp() {
         return Stream.of(
                 SignupRequest.of(
-                        "gimwlgus@gmail.com", "닉네임 🦆", "password"
+                        "gimwlgus@gmail.com", "어드민", "password"
                 ),
                 SignupRequest.of(
-                        "gimwlgus@daum.net", "닉네임 😌", "password"
+                        "member1@email.mail", "멤버원", "password"
+                ),
+                SignupRequest.of(
+                        "member2@email.mail", "멤버투", "password"
+                ),
+                SignupRequest.of(
+                        "withdrawal@email.mail", "탈퇴함", "password"
                 )
         );
     }

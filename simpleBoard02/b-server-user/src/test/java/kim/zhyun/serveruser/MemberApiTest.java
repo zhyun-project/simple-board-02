@@ -51,7 +51,9 @@ public class MemberApiTest {
     static Stream<Map<String, String>> login() {
         return Stream.of(
                 Map.of("email", "gimwlgus@gmail.com", "password", "password"),
-                Map.of("email", "gimwlgus@daum.net", "password", "password")
+                Map.of("email", "member1@email.mail", "password", "password"),
+                Map.of("email", "member2@email.mail", "password", "password"),
+                Map.of("email", "withdrawal@email.mail", "password", "password")
         );
     }
     
@@ -60,7 +62,7 @@ public class MemberApiTest {
     @DisplayName("모든 계정 정보 조회 성공: admin 권한")
     @ParameterizedTest
     @ValueSource(strings = {
-            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MSwiZXhwIjoxNzE4MTAwNzA4fQ.vyJMTJ1N3-vLjMC3GO93McMZ-e2gGqgXDmheUgK8o8D9lmv-wkCgyUQMcgRpoD-2YdzP_B-qHg0ZCmORjofPNQ",
+            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6NCwiZXhwIjoxNzE4NDUzNjUwfQ.KlTonkMaLz-Ot2G5Xv0nDxA8pd8QGWD6yymVZw4QIYpyHNo7CbkPw7as75vCviX1cBGhgc2PJU-1sTveOJ7m4g",
 //            "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BkYXVtLm5ldCIsImlkIjoyLCJleHAiOjE3MTgxMDA3MDl9.YrX_ZPRcQTFTPEZq7pUujvn_PahT-Dki8Qv-SYuohGlqHw8Y5XqenCSSsKQ7tHTAYcYucWYt1gG8m0-1KXuiZg"
     })
     void findAll_success(String headerJwt) throws Exception {
@@ -169,7 +171,7 @@ public class MemberApiTest {
         
         UserGradeUpdateRequest userGradeUpdateRequest = UserGradeUpdateRequest.builder()
                 .id(requestUserId)
-                .role(RoleType.TYPE_MEMBER)
+                .role(RoleType.TYPE_WITHDRAWAL)
                 .build();
         
         
