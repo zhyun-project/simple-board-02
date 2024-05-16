@@ -1,4 +1,4 @@
-package kim.zhyun.serveruser.domain.member.controller;
+package kim.zhyun.serveruser;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kim.zhyun.jwt.common.constants.JwtConstants;
