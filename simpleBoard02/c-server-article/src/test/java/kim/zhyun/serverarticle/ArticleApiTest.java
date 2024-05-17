@@ -1,4 +1,4 @@
-package kim.zhyun.serverarticle.domain;
+package kim.zhyun.serverarticle;
 
 import kim.zhyun.jwt.common.constants.JwtConstants;
 import kim.zhyun.jwt.exception.message.CommonExceptionMessage;
