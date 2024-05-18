@@ -5,8 +5,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.jwt.exception.ApiException;
+import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
 import kim.zhyun.serveruser.filter.model.SignInRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
@@ -47,9 +46,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         try {
             SignInRequest credential = new ObjectMapper().readValue(request.getInputStream(), SignInRequest.class);
             
-            if (credential == null)
-                return SecurityContextHolder.getContext().getAuthentication();
-                
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
                             credential.getEmail(),
