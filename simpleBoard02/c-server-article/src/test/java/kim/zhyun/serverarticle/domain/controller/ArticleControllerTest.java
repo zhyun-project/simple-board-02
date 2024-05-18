@@ -18,9 +18,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -40,6 +38,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.BDDMockito.given;
@@ -188,11 +187,8 @@ class ArticleControllerTest {
     
     @DisplayName("게시글 등록 - 성공")
     @ParameterizedTest
-    @ValueSource(strings = {
-            RoleType.ROLE_MEMBER,
-            RoleType.ROLE_ADMIN
-    })
-    void save_success(String roleType) throws Exception {
+    @MethodSource
+    void save_success(String roleType, String title, String content) throws Exception {
         // given
         long loginUserId = 1L;
         
@@ -200,8 +196,8 @@ class ArticleControllerTest {
         
         ArticleSaveRequest articleSaveRequest = ArticleSaveRequest.builder()
                 .userId(loginUserId)
-                .title("제목")
-                .content("내용")
+                .title(title)
+                .content(content)
                 .build();
         
         ArticleResponse doArticleResponse = getArticleResponse(
@@ -228,6 +224,27 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.result.title").value(doArticleResponse.getTitle()))
                 .andDo(print());
     }
+    static Stream<Arguments> save_success() {
+        return Stream.of(
+                Arguments.of(
+                        RoleType.ROLE_ADMIN, "제목", "내용"
+                ),
+                Arguments.of(
+                        RoleType.ROLE_ADMIN,
+                        "일이삼사오육칠팔구십일이삼사오육칠팔구십일이삼사오육칠팔구십",
+                        """
+                                
+                                
+                                내용
+                                
+                                
+                                
+                                
+                                """
+                )
+        );
+    }
+    
     @DisplayName("게시글 등록 - 실패- 제목 입력 형식 오류")
     @ParameterizedTest
     @CsvSource({
@@ -273,12 +290,19 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.result[0].message").value(responseDetailMessage))
                 .andDo(print());
     }
+    
     @DisplayName("게시글 등록 - 실패- 내용 입력 형식 오류")
     @ParameterizedTest
     @ValueSource(strings = {
             "",
             "  ",
             "                                                                                ",
+            """
+                    
+                    """,
+            """
+                    
+                    """
     })
     @NullAndEmptySource
     void save_success_false_with_content(String content) throws Exception {
@@ -316,6 +340,7 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.result[0].message").value(responseDetailMessage))
                 .andDo(print());
     }
+    
     @DisplayName("게시글 등록 - 실패: 남의 계정")
     @ParameterizedTest
     @ValueSource(strings = {
@@ -349,6 +374,7 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.message").value(responseMessage))
                 .andDo(print());
     }
+    
     @DisplayName("게시글 실패 - 권한 없음: 탈퇴자, 비회원")
     @Nested
     class SaveFailCase {
@@ -430,6 +456,7 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.message").value(responseMessage))
                 .andDo(print());
     }
+    
     @DisplayName("게시글 수정 - 실패: 남의 계정")
     @ParameterizedTest
     @ValueSource(strings = {
@@ -465,6 +492,7 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.message").value(responseMessage))
                 .andDo(print());
     }
+    
     @DisplayName("게시글 수정 - 실패: 권한 없음(탈퇴자, 비회원)")
     @Nested
     class UpdateFailCase {
@@ -539,6 +567,7 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.message").value(responseMessage))
                 .andDo(print());
     }
+    
     @DisplayName("게시글 삭제 - 실패: 남의 계정")
     @ParameterizedTest
     @ValueSource(strings = {
@@ -571,6 +600,7 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.message").value(responseMessage))
                 .andDo(print());
     }
+    
     @DisplayName("게시글 삭제 - 실패: 권한 없음(탈퇴자, 비회원)")
     @Nested
     class DeleteFailCase {
