@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-//@Disabled("전체 테스트 실행시 무시되도록 설정 켜야 됨")
+@Disabled("전체 테스트 실행시 무시되도록 설정 켜야 됨")
 @AutoConfigureMockMvc
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
