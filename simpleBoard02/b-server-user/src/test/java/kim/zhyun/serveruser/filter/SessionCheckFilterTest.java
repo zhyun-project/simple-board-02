@@ -48,11 +48,11 @@ class SessionCheckFilterTest {
     
     
     
-    @DisplayName("회원가입, 유저 정보 수정, 닉네임 중복확인, 이메일 중복확인 api 접근")
+    @DisplayName("connectProcess() - 회원가입, 유저 정보 수정, 닉네임 중복확인, 이메일 중복확인 api 접근")
     @ParameterizedTest(name = "{0}, exist session id = {2}")
     @MethodSource
     @WithMockUser(roles = RoleType.TYPE_ADMIN)
-    void doFilterInternal(String apiName, MockHttpServletRequestBuilder method, boolean existSessionId) throws Exception {
+    void connectProcess(String apiName, MockHttpServletRequestBuilder method, boolean existSessionId) throws Exception {
         // given
         MockHttpSession session = new MockHttpSession();
         
@@ -80,7 +80,7 @@ class SessionCheckFilterTest {
                 .deleteById(eq(session.getId()));
         
     }
-    static Stream<Arguments> doFilterInternal() {
+    static Stream<Arguments> connectProcess() {
         return Stream.of(
                 Arguments.of("get /check", get("/check"), true),
                 Arguments.of("get /check", get("/check"), false),
@@ -104,7 +104,7 @@ class SessionCheckFilterTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource
     @WithMockUser(roles = RoleType.TYPE_ADMIN)
-    void disconnectProcess_others(String apiName, MockHttpServletRequestBuilder method) throws Exception {
+    void disconnectProcess(String apiName, MockHttpServletRequestBuilder method) throws Exception {
         // given
         MockHttpSession session = new MockHttpSession();
         
@@ -128,7 +128,7 @@ class SessionCheckFilterTest {
         then(sessionUserService).should(times(0))
                 .initSessionUserExpireTime(eq(session.getId()));
     }
-    static Stream<Arguments> disconnectProcess_others() {
+    static Stream<Arguments> disconnectProcess() {
         return Stream.of(
                 Arguments.of("get /all", get("/all")),
                 Arguments.of("get /all", get("/all")),
