@@ -31,15 +31,7 @@ spring:
         - id: article-server
           uri: lb://article-server
           predicates:
-            - Path=/api/article/save/user/{userId}, /api/article/delete/user/{userId}
-          filters:
-            - JwtVerifyFilter
-
-        - id: article-server
-          uri: lb://article-server
-          predicates:
-            - Path=/api/article/{articleId}/user/{userId}
-            - Method=PUT
+            - Path=/api/article/save, /api/article/delete, /api/article/update
           filters:
             - JwtVerifyFilter
 

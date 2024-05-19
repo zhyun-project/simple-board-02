@@ -6,21 +6,17 @@ spring:
   config:
     import: classpath:password.yml
 
-  h2:
-    console:
-      enabled: true
-
   datasource:
     url: jdbc:h2:./h2/member-test;AUTO_SERVER=true;mode=MYSQL;
     username: sa
 
   sql:
     init:
-      mode: always
+      mode: never
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     defer-datasource-initialization: true
     properties:
       hibernate:
@@ -28,10 +24,16 @@ spring:
         format_sql: true
         highlight_sql: true
 
+  # 통합 테스트(main/java/config/SecurityConfig 사용)를 위한 h2-console 설정
+  h2:
+    console:
+      enabled: true
+      
   data:
     redis:
       host: localhost
       port: 6379
+      database: 10
 
   mail:
     protocol: smtp
@@ -64,7 +66,7 @@ sign-up:
     email: "EMAIL:"        # EmailAuthDto.getEmail()
     nickname: "NICKNAME:"  # NicknameDto.getNickname()
   email:
-    expire: 30 # TimeUnit: Second
+    expire: 300 # TimeUnit: Second
   session:
     expire: 5 # TimeUnit: Minute
   admin:
@@ -78,5 +80,5 @@ withdrawal:
 
 token:
   expiration-time: 30
-  expiration-time-unit: s # d: Day , h: Hour, m: Minute, s: Second
+  expiration-time-unit: d # d: Day , h: Hour, m: Minute, s: Second
   secret: VGhpc2lzSnd0U2VjcmV0S2V5Rm9yU2ltcGxlQm9hcmQwMlByb2plY3RNYWRlQnlaaHl1bktpbU9yV2xndXNLaW0=

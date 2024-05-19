@@ -9,7 +9,7 @@ GET http://localhost:8080/api/article/2/user/1
 Content-Type: application/json
 
 ### 게시글 등록
-POST http://localhost:8080/api/article/save/user/1
+POST http://localhost:8080/api/article/save
 Content-Type: application/json
 X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg5MzA0fQ.T1QIxZPw3MUuxEIohGaBIlyVxLpDycQsgVC__Kdr5Jz-A8KQ32hnltx-OgSKnYBSIq_ZnCxZjhal_WISL0FJjQ
 
@@ -21,7 +21,7 @@ X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI
 
 
 ### 게시글 수정
-PUT http://localhost:8080/api/article/2/user/1
+PUT http://localhost:8080/api/article/update
 Content-Type: application/json
 X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg5MzA0fQ.T1QIxZPw3MUuxEIohGaBIlyVxLpDycQsgVC__Kdr5Jz-A8KQ32hnltx-OgSKnYBSIq_ZnCxZjhal_WISL0FJjQ
 
@@ -35,7 +35,7 @@ X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI
 
 
 ### 게시글 삭제
-POST http://localhost:8080/api/article/delete/user/1
+POST http://localhost:8080/api/article/delete
 Content-Type: application/json
 X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg5MzA0fQ.T1QIxZPw3MUuxEIohGaBIlyVxLpDycQsgVC__Kdr5Jz-A8KQ32hnltx-OgSKnYBSIq_ZnCxZjhal_WISL0FJjQ
 

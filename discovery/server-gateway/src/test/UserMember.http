@@ -7,9 +7,10 @@ Content-Type: application/json
   "password": "1234"
 }
 
+
 ### 유저 조회
-GET http://localhost:8080/api/user/5
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NSwiZXhwIjoxNzE2NzUyMjIyfQ.dtEDYyGBT7V93GHUe2AbexsmVPcdQwFGKFI55OF0vZg8ou9ZoXyphRPsh3ZLnw9VWv0M7IiC59jYhZ3tFE5gAA
+GET http://localhost:8080/api/user/6
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NiwiZXhwIjoxNzE2OTE3MjMxfQ.04hCA5K2mh6ihE-RhAJtaJCcaF1j6_n0RwfRQiY1171q8OFeUZ2wOHiyH0TCW-Fd-ApgpZeS1oNpX51J1N-GCA
 
 
 ### 유저 정보 수정

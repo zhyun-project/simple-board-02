@@ -1,22 +1,16 @@
 spring:
 
-  # 시큐리티 설정 때문에 있어야됨
-  h2:
-    console:
-      path: /h2-console
-      enabled: true
-
   datasource:
     url: jdbc:h2:./h2/article-test;AUTO_SERVER=true;mode=MYSQL;
     username: sa
 
   sql:
     init:
-      mode: always
+      mode: never
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
     defer-datasource-initialization: true
     properties:
       hibernate:
@@ -24,10 +18,16 @@ spring:
         format_sql: true
         highlight_sql: true
 
+  # 통합 테스트(main/java/config/SecurityConfig 사용)를 위한 h2-console 설정
+  h2:
+    console:
+      enabled: true
+
   data:
     redis:
       host: localhost
       port: 6379
+      database: 10
 
 logging:
   level:

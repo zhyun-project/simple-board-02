@@ -5,25 +5,25 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
-import kim.zhyun.serveruser.data.SignInRequest;
+import kim.zhyun.serveruser.filter.model.SignInRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_OK;
-import static kim.zhyun.jwt.data.JwtConstants.JWT_HEADER;
-import static kim.zhyun.serveruser.data.message.ExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
-import static kim.zhyun.serveruser.data.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_IN;
-import static kim.zhyun.serveruser.utils.FilterApiResponseUtil.sendMessage;
+import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_HEADER;
+import static kim.zhyun.jwt.exception.message.CommonExceptionMessage.EXCEPTION_REQUIRED_REQUEST_BODY;
+import static kim.zhyun.jwt.util.FilterApiResponseUtil.sendMessage;
+import static kim.zhyun.serveruser.common.message.ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_IN;
 
 @Slf4j
 @Component
@@ -46,9 +46,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         try {
             SignInRequest credential = new ObjectMapper().readValue(request.getInputStream(), SignInRequest.class);
             
-            if (credential == null)
-                return SecurityContextHolder.getContext().getAuthentication();
-                
             return getAuthenticationManager().authenticate(
                     new UsernamePasswordAuthenticationToken(
                             credential.getEmail(),
@@ -56,7 +53,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                             null));
         
         } catch (IOException e) {
-            throw new RuntimeException(EXCEPTION_REQUIRED_REQUEST_BODY);
+            throw new ApiException(EXCEPTION_REQUIRED_REQUEST_BODY);
         }
     }
     

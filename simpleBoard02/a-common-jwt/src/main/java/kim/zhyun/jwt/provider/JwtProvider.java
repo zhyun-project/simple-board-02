@@ -5,10 +5,10 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import kim.zhyun.jwt.data.JwtConstants;
-import kim.zhyun.jwt.data.JwtUserDto;
-import kim.zhyun.jwt.data.JwtUserInfo;
-import kim.zhyun.jwt.repository.JwtUserInfoRepository;
+import kim.zhyun.jwt.common.constants.JwtConstants;
+import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
+import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
+import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -25,9 +25,9 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static kim.zhyun.jwt.data.JwtConstants.JWT_CLAIM_KEY_USER_ID;
-import static kim.zhyun.jwt.data.JwtResponseMessage.JWT_EXPIRED;
-import static kim.zhyun.jwt.data.JwtResponseMessage.JWT_EXPIRED_IS_NULL;
+import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_CLAIM_KEY_USER_ID;
+import static kim.zhyun.jwt.common.constants.JwtExceptionMessageConstants.JWT_EXPIRED;
+import static kim.zhyun.jwt.common.constants.JwtExceptionMessageConstants.JWT_EXPIRED_IS_NULL;
 import static kim.zhyun.jwt.util.TimeUnitUtil.timeUnitFrom;
 
 @Slf4j
@@ -35,7 +35,7 @@ import static kim.zhyun.jwt.util.TimeUnitUtil.timeUnitFrom;
 @Component
 public class JwtProvider implements InitializingBean {
     
-    private final JwtUserInfoRepository userInfoStorage;
+    private final JwtUserInfoRepository jwtUserInfoRepository;
     private final JwtConstants jwtItems;
     private SecretKey key;
     
@@ -79,17 +79,17 @@ public class JwtProvider implements InitializingBean {
         Long id = claims.get(JWT_CLAIM_KEY_USER_ID, Long.class);
         String email = claims.getSubject();
         
-        Optional<JwtUserInfo> userInfoContainer = userInfoStorage.findById(id);
+        Optional<JwtUserInfoEntity> userInfoContainer = jwtUserInfoRepository.findById(id);
         
         if (userInfoContainer.isEmpty())
             throw new JwtException(JWT_EXPIRED);
         
-        JwtUserInfo userInfo = userInfoContainer.get();
+        JwtUserInfoEntity userInfo = userInfoContainer.get();
         String nickname = userInfo.getNickname();
         String grade = userInfo.getGrade();
         
         return new UsernamePasswordAuthenticationToken(
-                JwtUserDto.builder()
+                JwtUserInfoDto.builder()
                         .id(id)
                         .email(email)
                         .nickname(nickname).build(),
@@ -137,21 +137,21 @@ public class JwtProvider implements InitializingBean {
      * authentication -> email 추출
      */
     public String emailFrom(Authentication authentication) {
-        return ((JwtUserDto) authentication.getPrincipal()).getEmail();
+        return ((JwtUserInfoDto) authentication.getPrincipal()).getEmail();
     }
     
     /**
      * authentication -> nickname 추출
      */
     public String nicknameFrom(Authentication authentication) {
-        return ((JwtUserDto) authentication.getPrincipal()).getNickname();
+        return ((JwtUserInfoDto) authentication.getPrincipal()).getNickname();
     }
     
     /**
      * authentication -> id 추출
      */
     private Long idFrom(Authentication authentication) {
-        return ((JwtUserDto) authentication.getPrincipal()).getId();
+        return ((JwtUserInfoDto) authentication.getPrincipal()).getId();
     }
     
     /**

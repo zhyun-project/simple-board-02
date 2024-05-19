@@ -2,45 +2,45 @@
 GET http://localhost:8080/api/article/all
 
 ### 특정 유저 조회
-GET http://localhost:8080/api/article/all/user/1
+GET http://localhost:8080/api/article/all/user/6
 
 ### 특정 유저 상세 조회
-GET http://localhost:8080/api/article/3/user/1
+GET http://localhost:8080/api/article/3/user/6
 Content-Type: application/json
 
 ### 게시글 등록
-POST http://localhost:8080/api/article/save/user/1
+POST http://localhost:8080/api/article/save
 Content-Type: application/json
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NiwiZXhwIjoxNzE2OTE3MjMxfQ.04hCA5K2mh6ihE-RhAJtaJCcaF1j6_n0RwfRQiY1171q8OFeUZ2wOHiyH0TCW-Fd-ApgpZeS1oNpX51J1N-GCA
 
 {
-  "userId": 1,
+  "userId": 6,
   "title": "제목 ",
   "content": "내용 "
 }
 
 
 ### 게시글 수정
-PUT http://localhost:8080/api/article/3/user/1
+PUT http://localhost:8080/api/article/update
 Content-Type: application/json
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NiwiZXhwIjoxNzE2OTE3MjMxfQ.04hCA5K2mh6ihE-RhAJtaJCcaF1j6_n0RwfRQiY1171q8OFeUZ2wOHiyH0TCW-Fd-ApgpZeS1oNpX51J1N-GCA
 
 {
   "id": 1,
-  "userId": 1,
+  "userId": 6,
   "articleId": 3,
-  "title": "유저id 1 3번 글 수정",
-  "content": "유저id 1 3번 내용 수정"
+  "title": "유저id 6 3번 글 수정",
+  "content": "유저id 6 3번 내용 수정"
 }
 
 
 ### 게시글 삭제
-POST http://localhost:8080/api/article/delete/user/1
+POST http://localhost:8080/api/article/delete
 Content-Type: application/json
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6NiwiZXhwIjoxNzE2OTE3MjMxfQ.04hCA5K2mh6ihE-RhAJtaJCcaF1j6_n0RwfRQiY1171q8OFeUZ2wOHiyH0TCW-Fd-ApgpZeS1oNpX51J1N-GCA
 
 {
-  "userId": 1,
+  "userId": 6,
   "articleIds": [1,3]
 }
 
@@ -49,4 +49,4 @@ X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI
 POST http://localhost:8080/api/article/delete/withdrawal
 Content-Type: application/json
 
-[1]
+[6]
