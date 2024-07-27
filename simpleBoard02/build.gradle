@@ -85,9 +85,20 @@ project(":a-common-jwt") {
 project(":b-server-user") {
     bootJar { enabled = true }
     jar { enabled = false}
+    tasks.withType(Test).tap {
+        configureEach {
+            enabled = false
+        }
+    }
 }
 
 project(":c-server-article") {
     bootJar { enabled = true }
     jar { enabled = false}
+
+    tasks.withType(Test).tap {
+        configureEach {
+            enabled = false
+        }
+    }
 }

@@ -19,7 +19,7 @@ spring:
 
   h2:
     console:
-      path: /h2-console
+      path: /h2/user
       enabled: true
       settings:
         web-allow-others: true
@@ -30,13 +30,12 @@ spring:
 
   sql:
     init:
-#      mode: always
-      mode: never
+      mode: always
 
   jpa:
     hibernate:
 #      ddl-auto: create
-      ddl-auto: update
+      ddl-auto: none
     defer-datasource-initialization: true
     properties:
       hibernate:

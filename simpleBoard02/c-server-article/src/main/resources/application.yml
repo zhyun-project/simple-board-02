@@ -18,24 +18,23 @@ spring:
 
   h2:
     console:
-      path: /h2-console
+      path: /h2/article
       enabled: true
       settings:
         web-allow-others: true
 
   datasource:
-    url: jdbc:h2:./simpleBoard02/b-server-article/h2/article;AUTO_SERVER=true;mode=MYSQL;
+    url: jdbc:h2:./simpleBoard02/c-server-article/h2/article;AUTO_SERVER=true;mode=MYSQL;
     username: sa
 
   sql:
     init:
       mode: always
-#      mode: never
 
   jpa:
     hibernate:
 #      ddl-auto: create
-      ddl-auto: update
+      ddl-auto: none
     defer-datasource-initialization: true
     properties:
       hibernate:

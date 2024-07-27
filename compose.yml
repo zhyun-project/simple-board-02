@@ -1,0 +1,36 @@
+services:
+  redis:
+    extends:
+      file: ./simpleBoard02/compose.yml
+      service: redis
+
+  discovery-server:
+    extends:
+      file: ./discovery/compose.yml
+      service: discovery-server
+
+  gateway-server:
+    extends:
+      file: ./discovery/compose.yml
+      service: gateway-server
+
+  user-server:
+    extends:
+      file: ./simpleBoard02/compose.yml
+      service: user-server
+    depends_on:
+      gateway-server:
+        condition: service_healthy
+
+  article-server:
+    extends:
+      file: ./simpleBoard02/compose.yml
+      service: article-server
+    depends_on:
+      gateway-server:
+        condition: service_healthy
+
+
+networks:
+  simple-board-02-network:
+    external: true
