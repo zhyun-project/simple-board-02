@@ -20,6 +20,9 @@ dependencies {
 
     // eureka client
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+
+    // mariadb
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
 }
 
 dependencyManagement {

@@ -13,7 +13,7 @@ Content-Type: application/json
 }
 
 ### 이메일 인증 코드 검증
-GET http://192.168.219.105:8080/api/user/check/auth?code=101629
+GET http://192.168.219.105:8080/api/user/check/auth?code=318542
 
 ### 회원가입
 POST http://192.168.219.105:8080/api/user/sign-up

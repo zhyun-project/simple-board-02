@@ -4,7 +4,6 @@ import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.jwt.filter.ExceptionHandlerFilter;
 import kim.zhyun.jwt.filter.JwtFilter;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -32,8 +31,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         
         http.authorizeHttpRequests(config -> config
-                .requestMatchers(PathRequest.toH2Console()).permitAll()
                 .requestMatchers(
+                        "/h2/**",
+                        "/h2-console/**",
+
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
                         

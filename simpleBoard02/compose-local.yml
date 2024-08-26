@@ -1,0 +1,49 @@
+services:
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    user: 1000:1000
+    ports:
+      - 6379:6379
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    networks:
+      - simple-board-02-network
+
+  user-server:
+    build: ./b-server-user
+    container_name: user-server
+    hostname: user-server
+    environment:
+      spring.profile.active: local
+      eureka.client.service-url.defaultZone: http://discovery-server:8761/eureka
+      spring.data.redis.host: redis
+      spring.data.redis.port: 6379
+    networks:
+      simple-board-02-network:
+        ipv4_address: 172.19.0.200
+    depends_on:
+      redis:
+        condition: service_started
+
+  article-server:
+    build: ./c-server-article
+    container_name: article-server
+    hostname: article-server
+    environment:
+      spring.profile.active: local
+      eureka.client.service-url.defaultZone: http://discovery-server:8761/eureka
+      spring.data.redis.host: redis
+      spring.data.redis.port: 6379
+    networks:
+      simple-board-02-network:
+        ipv4_address: 172.19.0.201
+    depends_on:
+      redis:
+        condition: service_started
+
+
+networks:
+  simple-board-02-network:
+    external: true

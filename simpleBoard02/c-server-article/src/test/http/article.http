@@ -11,24 +11,24 @@ Content-Type: application/json
 ### 게시글 등록
 POST http://localhost:8080/api/article/save
 Content-Type: application/json
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg5MzA0fQ.T1QIxZPw3MUuxEIohGaBIlyVxLpDycQsgVC__Kdr5Jz-A8KQ32hnltx-OgSKnYBSIq_ZnCxZjhal_WISL0FJjQ
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzI3MjgxMjM4fQ.FAYi7nb_S8yOrxDAiowDRf6gcT6af1ZoXP8EsEfnxb8suRIfgapoW2F6MUulBDJNav-idtYHybB_FfEIYwU5Eg
 
 {
   "userId": 1,
-  "title": "제목 ",
-  "content": "내용 "
+  "title": "제목 2",
+  "content": "내용 2"
 }
 
 
 ### 게시글 수정
 PUT http://localhost:8080/api/article/update
 Content-Type: application/json
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg5MzA0fQ.T1QIxZPw3MUuxEIohGaBIlyVxLpDycQsgVC__Kdr5Jz-A8KQ32hnltx-OgSKnYBSIq_ZnCxZjhal_WISL0FJjQ
+X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzI3MjgxMjM4fQ.FAYi7nb_S8yOrxDAiowDRf6gcT6af1ZoXP8EsEfnxb8suRIfgapoW2F6MUulBDJNav-idtYHybB_FfEIYwU5Eg
 
 {
   "id": 1,
   "userId": 1,
-  "articleId": 2,
+  "articleId": 1,
   "title": "유저id 1 2번 글 수정",
   "content": "유저id 1 2번 내용 수정"
 }
