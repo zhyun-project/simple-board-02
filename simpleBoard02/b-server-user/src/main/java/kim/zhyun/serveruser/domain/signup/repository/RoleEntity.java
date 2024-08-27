@@ -1,18 +1,18 @@
 package kim.zhyun.serveruser.domain.signup.repository;
 
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.Getter;
 
 import java.util.Objects;
-
-import static jakarta.persistence.GenerationType.IDENTITY;
 
 @Getter
 @Entity(name = "role")
 public class RoleEntity {
     
-    @Id @GeneratedValue(strategy = IDENTITY)
+    @Id
     private Long id;
     
     @Column(nullable = false, unique = true, updatable = false)

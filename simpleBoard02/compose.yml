@@ -9,39 +9,72 @@ services:
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
     volumes:
-      - ./redis-persistence:/data
+      - /usr/local/src/redis/simple-board02:/data
     networks:
       - simple-board-02-network
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping"]
+      interval: 20s
+      timeout: 5s
+      retries: 3
+
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb
+    hostname: mariadb
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - TZ="Asia/Seoul"
+    env_file: .mariadb_env
+    volumes:
+      - /usr/local/src/mariadb/data/simple-board02:/var/lib/mysql:Z
+    networks:
+      - simple-board-02-network
+    healthcheck:
+      test: ["CMD-SHELL", "/usr/local/bin/healthcheck.sh --connect --innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   user-server:
     build: ./b-server-user
     container_name: user-server
     hostname: user-server
     environment:
+      spring.profiles.active: prod
       eureka.client.service-url.defaultZone: http://discovery-server:8761/eureka
+      spring.datasource.url: jdbc:mariadb://mariadb:3306/simple-board02
       spring.data.redis.host: redis
       spring.data.redis.port: 6379
     networks:
       simple-board-02-network:
         ipv4_address: 172.19.0.200
     depends_on:
+      mariadb:
+        condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
 
   article-server:
     build: ./c-server-article
     container_name: article-server
     hostname: article-server
     environment:
+      spring.profiles.active: prod
       eureka.client.service-url.defaultZone: http://discovery-server:8761/eureka
+      spring.datasource.url: jdbc:mariadb://mariadb:3306/simple-board02
       spring.data.redis.host: redis
       spring.data.redis.port: 6379
     networks:
       simple-board-02-network:
         ipv4_address: 172.19.0.201
     depends_on:
+      mariadb:
+        condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
 
 
 networks:

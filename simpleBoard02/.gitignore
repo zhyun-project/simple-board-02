@@ -4,6 +4,9 @@
 .idea
 **/password.yml
 **/h2
+**/.mariadb_env
+**/.mariadb_local_env
+**/db-data
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:

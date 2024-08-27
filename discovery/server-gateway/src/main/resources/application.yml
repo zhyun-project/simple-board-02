@@ -4,6 +4,20 @@ server:
 spring:
   application:
     name: gateway-server
+  profiles:
+    active: local
+    group:
+      local:
+        - common
+      prod:
+        - common
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
 
   cloud:
     gateway:
@@ -47,6 +61,47 @@ spring:
           predicates:
             - Path=/api/article/**
 
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  cloud:
+    gateway:
+      routes:
+        - id: user-server
+          uri: lb://user-server
+          predicates:
+            - Path=/api/user/sign-up, /api/user/login, /api/user/check/**
+
+        - id: user-server
+          uri: lb://user-server
+          predicates:
+            - Path=/api/user/**
+          filters:
+            - JwtVerifyFilter
+
+
+        - id: article-server
+          uri: lb://article-server
+          predicates:
+            - Path=/api/article/save, /api/article/delete, /api/article/update
+          filters:
+            - JwtVerifyFilter
+
+        - id: article-server
+          uri: lb://article-server
+          predicates:
+            - Path=/api/article/**
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: common
 
 eureka:
   instance:
