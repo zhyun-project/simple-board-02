@@ -8,8 +8,8 @@ services:
       - 6379:6379
     environment:
       - ALLOW_EMPTY_PASSWORD=yes
-#    volumes:
-#      - /usr/local/src/redis/simple-board02:/data
+    volumes:
+      - /usr/local/src/redis/simple-board02:/data
     networks:
       - simple-board-02-network
     healthcheck:
@@ -28,8 +28,8 @@ services:
     environment:
       - TZ="Asia/Seoul"
     env_file: .mariadb_env
-#    volumes:
-#      - /usr/local/src/mariadb/data/simple-board02:/var/lib/mysql:Z
+    volumes:
+      - /usr/local/src/mariadb/data/simple-board02:/var/lib/mysql:Z
     networks:
       - simple-board-02-network
     healthcheck:
@@ -62,7 +62,7 @@ services:
     container_name: article-server
     hostname: article-server
     environment:
-      spring.profile.active: prod
+      spring.profiles.active: prod
       eureka.client.service-url.defaultZone: http://discovery-server:8761/eureka
       spring.datasource.url: jdbc:mariadb://mariadb:3306/simple-board02
       spring.data.redis.host: redis

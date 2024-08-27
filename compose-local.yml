@@ -1,9 +1,4 @@
 services:
-  redis:
-    extends:
-      file: ./simpleBoard02/compose-local.yml
-      service: redis
-
   discovery-server:
     extends:
       file: ./discovery/compose.yml
@@ -16,25 +11,30 @@ services:
     environment:
       spring.profiles.active: local
 
+  redis:
+    extends:
+      file: ./simpleBoard02/compose.yml
+      service: redis
+    volumes:
+      - ./db-data/redis:/data
+
+  mariadb:
+    extends:
+      file: ./simpleBoard02/compose.yml
+      service: mariadb
+    env_file: ./simpleBoard02/.mariadb_local_env
+    volumes:
+      - ./db-data/mariadb:/var/lib/mysql:Z
+
   user-server:
     extends:
-      file: ./simpleBoard02/compose-local.yml
+      file: ./simpleBoard02/compose.yml
       service: user-server
-    environment:
-      spring.profiles.active: local
-    depends_on:
-      gateway-server:
-        condition: service_healthy
 
   article-server:
     extends:
-      file: ./simpleBoard02/compose-local.yml
+      file: ./simpleBoard02/compose.yml
       service: article-server
-    environment:
-      spring.profiles.active: local
-    depends_on:
-      gateway-server:
-        condition: service_healthy
 
 
 networks:

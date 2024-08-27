@@ -18,29 +18,17 @@ services:
     extends:
       file: ./discovery/compose.yml
       service: gateway-server
-    environment:
-      spring.profiles.active: prod
 
 
   user-server:
     extends:
       file: ./simpleBoard02/compose.yml
       service: user-server
-    environment:
-      spring.profiles.active: prod
-    depends_on:
-      gateway-server:
-        condition: service_healthy
 
   article-server:
     extends:
       file: ./simpleBoard02/compose.yml
       service: article-server
-    environment:
-      spring.profiles.active: prod
-    depends_on:
-      gateway-server:
-        condition: service_healthy
 
 
 networks:
