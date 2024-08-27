@@ -1,4 +1,4 @@
-create table `simple-board02`.`articles` (
+create table if not exists `simple-board02`.`articles` (
     article_id bigint not null,
     created_at datetime(6),
     id bigint not null auto_increment,
