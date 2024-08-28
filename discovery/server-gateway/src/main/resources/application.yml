@@ -36,6 +36,16 @@ spring:
           filters:
             - RewritePath=/(?<segment>.*), /api/user/$\{segment}
 
+        - id: swagger-article
+          uri: lb://article-server
+          predicates:
+            - Path=/api/article/swagger-ui/**, /api/article/v3/api-docs/**
+
+        - id: swagger-user
+          uri: lb://user-server
+          predicates:
+            - Path=/api/user/swagger-ui/**, /api/user/v3/api-docs/**
+
         - id: user-server
           uri: lb://user-server
           predicates:
