@@ -24,7 +24,7 @@ services:
     hostname: mariadb
     restart: always
     ports:
-      - 3306:3306
+      - 3316:3306
     environment:
       - TZ="Asia/Seoul"
     env_file: .mariadb_env
