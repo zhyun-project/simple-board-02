@@ -1,7 +1,7 @@
 services:
   redis:
     image: redis
-    container_name: redis
+    container_name: simple-board-02-redis
     hostname: redis
     user: 1000:1000
     ports:
@@ -20,7 +20,7 @@ services:
 
   mariadb:
     image: mariadb:latest
-    container_name: mariadb
+    container_name: simple-board-02-mariadb
     hostname: mariadb
     restart: always
     ports:
@@ -39,7 +39,7 @@ services:
       retries: 3
 
   user-server:
-    container_name: user-server
+    container_name: simple-board-02-user-server
     hostname: user-server
     environment:
       spring.profiles.active: prod
@@ -57,7 +57,7 @@ services:
         condition: service_healthy
 
   article-server:
-    container_name: article-server
+    container_name: simple-board-02-article-server
     hostname: article-server
     environment:
       spring.profiles.active: prod

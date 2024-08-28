@@ -1,6 +1,6 @@
 services:
   discovery-server:
-    container_name: discovery-server
+    container_name: simple-board-02-discovery-server
     hostname: discovery-server
     ports:
       - 8761:8761
@@ -11,7 +11,7 @@ services:
       test: [ "CMD-SHELL", "curl -f http://localhost:8761 || exit 1" ]
 
   gateway-server:
-    container_name: gateway-server
+    container_name: simple-board-02-gateway-server
     hostname: gateway-server
     ports:
       - 8080:8080
