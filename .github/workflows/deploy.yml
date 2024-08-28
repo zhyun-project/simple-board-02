@@ -27,7 +27,6 @@ jobs:
         run: |
           echo "${{ secrets.PASSWORD_YML }}" > simpleBoard02/b-server-user/src/main/resources/password.yml
           echo "${{ secrets.PASSWORD_YML }}" > simpleBoard02/c-server-article/src/main/resources/password.yml
-          echo "${{ secrets.MARIADB_ENV }}" > simpleBoard02/.mariadb_env
 
       - name: gradle build - discovery
         run: |
@@ -56,6 +55,10 @@ jobs:
     steps:
       - name: get Github Repository files
         uses: actions/checkout@v4
+
+      - name: docker mariadb 설정 파일 추가
+        run: |
+          echo "${{ secrets.MARIADB_ENV }}" > simpleBoard02/.mariadb_env
 
       - name: docker compose 파일 압축
         run: |
