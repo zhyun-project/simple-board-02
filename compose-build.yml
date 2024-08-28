@@ -12,6 +12,6 @@ services:
     image: registry.zhyun.kim/simple-board-02-user:latest
 
   article-service:
-    build: simpleBoard02/b-server-article/.
+    build: simpleBoard02/c-server-article/.
     image: registry.zhyun.kim/simple-board-02-article:latest
 
