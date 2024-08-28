@@ -12,6 +12,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_ADMIN;
 import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_MEMBER;
@@ -55,7 +59,28 @@ public class SecurityConfig {
                     // 유효한 자격증명을 제공하지 않고 접근하려 할때
                     throw new ApiException(EXCEPTION_AUTHENTICATION);
                 }));
-        
+
+
+        http.cors(config -> {
+            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+            CorsConfiguration setting = new CorsConfiguration();
+            setting.setAllowedOrigins(List.of(
+                    "http://172.19.0.0/16",
+                    "http://172.20.0.0/16",
+                    "http://localhost:8080",
+                    "http://zhyun.kim", "https://zhyun.kim",
+                    "http://www.zhyun.kim", "https://www.zhyun.kim"));
+            setting.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
+            setting.addAllowedMethod("*");
+            setting.addAllowedHeader("*");
+            setting.setAllowCredentials(true);
+
+            source.registerCorsConfiguration("/**", setting);
+
+            config.configurationSource(source);
+        });
+
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
         http.headers(AbstractHttpConfigurer::disable);
