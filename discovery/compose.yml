@@ -1,6 +1,5 @@
 services:
   discovery-server:
-    build: ./server-eureka
     container_name: discovery-server
     hostname: discovery-server
     ports:
@@ -12,7 +11,6 @@ services:
       test: [ "CMD-SHELL", "curl -f http://localhost:8761 || exit 1" ]
 
   gateway-server:
-    build: ./server-gateway
     container_name: gateway-server
     hostname: gateway-server
     ports:

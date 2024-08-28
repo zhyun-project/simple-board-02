@@ -39,7 +39,6 @@ services:
       retries: 3
 
   user-server:
-    build: ./b-server-user
     container_name: user-server
     hostname: user-server
     environment:
@@ -58,7 +57,6 @@ services:
         condition: service_healthy
 
   article-server:
-    build: ./c-server-article
     container_name: article-server
     hostname: article-server
     environment:

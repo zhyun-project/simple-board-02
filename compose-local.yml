@@ -1,10 +1,12 @@
 services:
   discovery-server:
+    build: ./discovery/server-eureka
     extends:
       file: ./discovery/compose.yml
       service: discovery-server
 
   gateway-server:
+    build: ./discovery/server-gateway
     extends:
       file: ./discovery/compose.yml
       service: gateway-server
@@ -27,11 +29,13 @@ services:
       - ./db-data/mariadb:/var/lib/mysql:Z
 
   user-server:
+    build: ./simpleBoard02/b-server-user
     extends:
       file: ./simpleBoard02/compose.yml
       service: user-server
 
   article-server:
+    build: ./simpleBoard02/c-server-article
     extends:
       file: ./simpleBoard02/compose.yml
       service: article-server

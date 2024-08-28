@@ -1,0 +1,17 @@
+services:
+  eureka:
+    build: discovery/server-eureka/.
+    image: registry.zhyun.kim/simple-board-02-eureka:latest
+
+  config:
+    build: discovery/server-gateway/.
+    image: registry.zhyun.kim/simple-board-02-gateway:latest
+
+  user-service:
+    build: simpleBoard02/b-server-user/.
+    image: registry.zhyun.kim/simple-board-02-user:latest
+
+  article-service:
+    build: simpleBoard02/b-server-article/.
+    image: registry.zhyun.kim/simple-board-02-article:latest
+

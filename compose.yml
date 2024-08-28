@@ -9,23 +9,28 @@ services:
       file: ./simpleBoard02/compose.yml
       service: mariadb
 
+
   discovery-server:
+    image: registry.zhyun.kim/simple-board-02-eureka
     extends:
       file: ./discovery/compose.yml
       service: discovery-server
 
   gateway-server:
+    image: registry.zhyun.kim/simple-board-02-gateway
     extends:
       file: ./discovery/compose.yml
       service: gateway-server
 
 
   user-server:
+    image: registry.zhyun.kim/simple-board-02-user
     extends:
       file: ./simpleBoard02/compose.yml
       service: user-server
 
   article-server:
+    image: registry.zhyun.kim/simple-board-02-article
     extends:
       file: ./simpleBoard02/compose.yml
       service: article-server
