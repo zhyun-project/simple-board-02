@@ -5,8 +5,7 @@ services:
     ports:
       - 8761:8761
     networks:
-      simple-board-02-network:
-        ipv4_address: 172.19.0.100
+      - simple-board-02-network
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:8761 || exit 1" ]
 
@@ -19,8 +18,7 @@ services:
       spring.profiles.active: prod
       eureka.client.service-url.defaultZone: http://discovery-server:8761/eureka
     networks:
-      simple-board-02-network:
-        ipv4_address: 172.19.0.101
+      - simple-board-02-network
     depends_on:
       discovery-server:
         condition: service_healthy

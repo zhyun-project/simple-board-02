@@ -48,8 +48,7 @@ services:
       spring.data.redis.host: redis
       spring.data.redis.port: 6379
     networks:
-      simple-board-02-network:
-        ipv4_address: 172.19.0.200
+      - simple-board-02-network
     depends_on:
       mariadb:
         condition: service_healthy
@@ -66,8 +65,7 @@ services:
       spring.data.redis.host: redis
       spring.data.redis.port: 6379
     networks:
-      simple-board-02-network:
-        ipv4_address: 172.19.0.201
+      - simple-board-02-network
     depends_on:
       mariadb:
         condition: service_healthy
