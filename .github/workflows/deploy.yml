@@ -54,23 +54,26 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-    - name: docker compose 파일 압축
-      run: |
-        tar -czvf compose.tar.gz \
-          compose.yml \
-          discovery/compose.yml \
-          simpleBoard02/compose.yml
+      - name: get Github Repository files
+        uses: actions/checkout@v4
 
-    - name: docker compose 파일 전송
-      uses: appleboy/scp-action@v0.1.7
-      with:
-        port: ${{ secrets.ZHYUN_PORT }}
-        host: ${{ secrets.ZHYUN_HOST }}
-        username: ${{ secrets.ZHYUN_USERNAME }}
-        key: ${{ secrets.ZHYUN_SSH_KEY }}
-        passphrase: ${{ secrets.ZHYUN_SSH_KEY_PASSPHRASE }}
-        source: compose.tar.gz
-        target: /usr/local/src/docker/simple-board-02
+      - name: docker compose 파일 압축
+        run: |
+          tar -czvf compose.tar.gz \
+            compose.yml \
+            discovery/compose.yml \
+            simpleBoard02/compose.yml
+
+      - name: docker compose 파일 전송
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          port: ${{ secrets.ZHYUN_PORT }}
+          host: ${{ secrets.ZHYUN_HOST }}
+          username: ${{ secrets.ZHYUN_USERNAME }}
+          key: ${{ secrets.ZHYUN_SSH_KEY }}
+          passphrase: ${{ secrets.ZHYUN_SSH_KEY_PASSPHRASE }}
+          source: compose.tar.gz
+          target: /usr/local/src/docker/simple-board-02
 
   play:
     needs: deploy
