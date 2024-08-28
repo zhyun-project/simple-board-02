@@ -62,7 +62,8 @@ jobs:
           tar -czvf compose.tar.gz \
             compose.yml \
             discovery/compose.yml \
-            simpleBoard02/compose.yml
+            simpleBoard02/compose.yml \
+            simpleBoard02/.mariadb_env
 
       - name: docker compose 파일 전송
         uses: appleboy/scp-action@v0.1.7
