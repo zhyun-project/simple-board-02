@@ -71,6 +71,10 @@ spring:
   security:
     debug: false
 
+springdoc:
+  show-login-endpoint: true
+
+
 ---
 
 spring:
@@ -133,6 +137,9 @@ spring:
 
   security:
     debug: true
+
+springdoc:
+  show-login-endpoint: false
 
 logging:
   level:
