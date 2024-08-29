@@ -13,6 +13,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
@@ -30,7 +31,25 @@ import static org.springframework.http.HttpMethod.GET;
 public class SecurityConfig {
     private final ExceptionHandlerFilter exceptionHandlerFilter;
     private final JwtFilter jwtFilter;
-    
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(
+                "http://127.0.0.1:8080",
+                "http://localhost:8080",
+                "http://zhyun.kim:8080"));
+        config.addAllowedMethod("*");
+        config.addAllowedHeader("*");
+        config.setAllowCredentials(true);
+
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         
@@ -60,26 +79,6 @@ public class SecurityConfig {
                     throw new ApiException(EXCEPTION_AUTHENTICATION);
                 }));
 
-
-        http.cors(config -> {
-            UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-            CorsConfiguration setting = new CorsConfiguration();
-            setting.setAllowedOrigins(List.of(
-                    "http://172.19.0.0/16",
-                    "http://172.20.0.0/16",
-                    "http://localhost:8080",
-                    "http://zhyun.kim", "https://zhyun.kim",
-                    "http://www.zhyun.kim", "https://www.zhyun.kim"));
-            setting.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
-            setting.addAllowedMethod("*");
-            setting.addAllowedHeader("*");
-            setting.setAllowCredentials(true);
-
-            source.registerCorsConfiguration("/**", setting);
-
-            config.configurationSource(source);
-        });
 
         http.httpBasic(AbstractHttpConfigurer::disable);
         http.csrf(AbstractHttpConfigurer::disable);
