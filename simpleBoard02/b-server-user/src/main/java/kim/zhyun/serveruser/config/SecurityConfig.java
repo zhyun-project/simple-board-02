@@ -28,7 +28,6 @@ import static kim.zhyun.jwt.exception.message.CommonExceptionMessage.EXCEPTION_P
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @RequiredArgsConstructor
-@EnableWebSecurity(debug = true)
 @EnableMethodSecurity(prePostEnabled = true)
 @Configuration
 public class SecurityConfig {
