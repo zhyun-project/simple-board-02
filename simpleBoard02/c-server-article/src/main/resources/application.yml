@@ -101,6 +101,9 @@ spring:
     activate:
       on-profile: common
 
+swagger:
+  server: http://localhost:8080
+
 key:
   redis:
     articleId: "ARTICLE_ID:"

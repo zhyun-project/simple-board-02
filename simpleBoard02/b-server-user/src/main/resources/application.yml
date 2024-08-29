@@ -134,13 +134,15 @@ logging:
     org.hibernate.type: trace
 
 
-
 ---
 
 spring:
   config:
     activate:
       on-profile: common
+
+swagger:
+  server: http://localhost:8080
 
 sign-up:
   key:
