@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 
-@Tag(name = "회원가입, 회원탈퇴 API")
+@Tag(name = "회원가입 API")
 @RequiredArgsConstructor
 @RestController
 public class SignApiController {
