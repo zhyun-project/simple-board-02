@@ -109,6 +109,6 @@ jobs:
             tar -xzvf compose.tar.gz
             rm -rf compose.tar.gz
             
-            docker compose down --rmi local
+            docker compose down --rmi all
             docker compose up -d 
 
