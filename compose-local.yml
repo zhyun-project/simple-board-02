@@ -33,12 +33,16 @@ services:
     extends:
       file: ./simpleBoard02/compose.yml
       service: user-server
+    environment:
+      swagger.server: http://localhost:8080
 
   article-server:
     build: ./simpleBoard02/c-server-article
     extends:
       file: ./simpleBoard02/compose.yml
       service: article-server
+    environment:
+      swagger.server: http://localhost:8080
 
 
 networks:

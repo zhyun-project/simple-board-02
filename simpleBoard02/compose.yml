@@ -47,6 +47,7 @@ services:
       spring.datasource.url: jdbc:mariadb://mariadb:3306/simple-board02
       spring.data.redis.host: redis
       spring.data.redis.port: 6379
+      swagger.server: http://zhyun.kim:8080
     networks:
       - simple-board-02-network
     depends_on:
@@ -64,6 +65,7 @@ services:
       spring.datasource.url: jdbc:mariadb://mariadb:3306/simple-board02
       spring.data.redis.host: redis
       spring.data.redis.port: 6379
+      swagger.server: http://zhyun.kim:8080
     networks:
       - simple-board-02-network
     depends_on:
