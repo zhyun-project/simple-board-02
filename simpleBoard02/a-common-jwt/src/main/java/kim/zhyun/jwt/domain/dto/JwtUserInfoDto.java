@@ -1,5 +1,6 @@
 package kim.zhyun.jwt.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import lombok.*;
 
@@ -13,8 +14,12 @@ import java.util.Objects;
 public class JwtUserInfoDto {
 
     private Long id;
+
+    @JsonIgnore
     private String email;
+
     private String nickname;
+
 
     /**  @apiNote ⚠️ `Authentication.principal` 객체에만 사용  */
     public static JwtUserInfoDto from(Object principal) {
