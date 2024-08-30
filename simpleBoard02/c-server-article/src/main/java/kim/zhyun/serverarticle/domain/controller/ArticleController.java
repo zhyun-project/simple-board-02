@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kim.zhyun.jwt.common.model.ApiResponse;
+import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.serverarticle.domain.business.ArticleBusiness;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleResponse;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleSaveRequest;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -50,7 +52,7 @@ public class ArticleController {
                 .result(response)
                 .build());
     }
-    
+
     @Operation(summary = "유저 게시글 상세 조회")
     @GetMapping("/{articleId}/user/{userId}")
     public ResponseEntity<Object> findByArticleId(
@@ -58,25 +60,29 @@ public class ArticleController {
             @PathVariable long articleId
     ) {
         ArticleResponse response = articlebusiness.findByArticleId(userId, articleId);
-        
+
         return ResponseEntity.ok(ApiResponse.builder()
                 .status(true)
                 .message(RESPONSE_ARTICLE_FIND_ONE_BY_USER.formatted(userId, articleId))
                 .result(response)
                 .build());
     }
-    
+
     @Operation(summary = "게시글 등록")
-    @PreAuthorize("(#request.getUserId() == T(kim.zhyun.jwt.domain.dto.JwtUserInfoDto).from(principal).id)")
     @PostMapping("/save")
     public ResponseEntity<ApiResponse<ArticleResponse>> save(
-            @RequestBody @Valid ArticleSaveRequest request
+            @RequestBody @Valid ArticleSaveRequest request,
+            Authentication authentication
     ) {
-        return ResponseEntity.created(ServletUriComponentsBuilder.fromPath("/all/user/{id}").build(request.getUserId()))
+        JwtUserInfoDto userInfo = JwtUserInfoDto.from(authentication.getPrincipal());
+        ArticleResponse response = articlebusiness.save(request, userInfo.getId());
+
+        return ResponseEntity.created(ServletUriComponentsBuilder.fromPath("/all/user/{id}").build(userInfo.getId()))
                 .body(ApiResponse.<ArticleResponse>builder()
                         .status(true)
                         .message(RESPONSE_ARTICLE_INSERT)
-                        .result(articlebusiness.save(request)).build());
+                        .result(response)
+                        .build());
     }
     
     @Operation(summary = "게시글 수정")

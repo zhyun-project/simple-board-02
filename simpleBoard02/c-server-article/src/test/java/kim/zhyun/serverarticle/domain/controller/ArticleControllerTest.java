@@ -195,16 +195,15 @@ class ArticleControllerTest {
         setSecurityContext(loginUserId, roleType);
         
         ArticleSaveRequest articleSaveRequest = ArticleSaveRequest.builder()
-                .userId(loginUserId)
                 .title(title)
                 .content(content)
                 .build();
         
         ArticleResponse doArticleResponse = getArticleResponse(
-                234L, 53L, articleSaveRequest.getUserId(),
+                234L, 53L, loginUserId,
                 articleSaveRequest.getTitle(), articleSaveRequest.getContent()
         );
-        given(articleBusiness.save(articleSaveRequest)).willReturn(doArticleResponse);
+        given(articleBusiness.save(articleSaveRequest, loginUserId)).willReturn(doArticleResponse);
         
         String responseMessage = ResponseMessage.RESPONSE_ARTICLE_INSERT;
         
@@ -262,16 +261,15 @@ class ArticleControllerTest {
         setSecurityContext(loginUserId, roleType);
         
         ArticleSaveRequest articleSaveRequest = ArticleSaveRequest.builder()
-                .userId(loginUserId)
                 .title(title)
                 .content("내용")
                 .build();
         
         ArticleResponse doArticleResponse = getArticleResponse(
-                234L, 53L, articleSaveRequest.getUserId(),
+                234L, 53L, loginUserId,
                 articleSaveRequest.getTitle(), articleSaveRequest.getContent()
         );
-        given(articleBusiness.save(articleSaveRequest)).willReturn(doArticleResponse);
+        given(articleBusiness.save(articleSaveRequest, loginUserId)).willReturn(doArticleResponse);
         
         String responseMessage = CommonExceptionMessage.EXCEPTION_VALID_FORMAT;
         String responseDetailMessage = ExceptionMessage.EXCEPTION_TITLE_FORMAT;
@@ -312,16 +310,15 @@ class ArticleControllerTest {
         setSecurityContext(loginUserId, RoleType.ROLE_MEMBER);
         
         ArticleSaveRequest articleSaveRequest = ArticleSaveRequest.builder()
-                .userId(loginUserId)
                 .title("제목")
                 .content(content)
                 .build();
         
         ArticleResponse doArticleResponse = getArticleResponse(
-                234L, 53L, articleSaveRequest.getUserId(),
+                234L, 53L, loginUserId,
                 articleSaveRequest.getTitle(), articleSaveRequest.getContent()
         );
-        given(articleBusiness.save(articleSaveRequest)).willReturn(doArticleResponse);
+        given(articleBusiness.save(articleSaveRequest, loginUserId)).willReturn(doArticleResponse);
         
         String responseMessage = CommonExceptionMessage.EXCEPTION_VALID_FORMAT;
         String responseDetailMessage = ExceptionMessage.EXCEPTION_CONTENT_IS_NULL;
@@ -338,40 +335,6 @@ class ArticleControllerTest {
                 .andExpect(jsonPath("$.message").value(responseMessage))
                 .andExpect(jsonPath("$.result[0].field").value("content"))
                 .andExpect(jsonPath("$.result[0].message").value(responseDetailMessage))
-                .andDo(print());
-    }
-    
-    @DisplayName("게시글 등록 - 실패: 남의 계정")
-    @ParameterizedTest
-    @ValueSource(strings = {
-            RoleType.ROLE_MEMBER,
-            RoleType.ROLE_ADMIN
-    })
-    void save_fail(String roleType) throws Exception {
-        // given
-        long loginUserId = 1L;
-        long targetUserId = 2L;
-        
-        setSecurityContext(loginUserId, roleType);
-        
-        ArticleSaveRequest articleSaveRequest = ArticleSaveRequest.builder()
-                .userId(targetUserId)
-                .title("제목")
-                .content("내용")
-                .build();
-        
-        String responseMessage = CommonExceptionMessage.EXCEPTION_PERMISSION;
-        
-        
-        // when - then
-        mvc.perform(
-                        post("/save")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsBytes(articleSaveRequest))
-                )
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.status").value(false))
-                .andExpect(jsonPath("$.message").value(responseMessage))
                 .andDo(print());
     }
     

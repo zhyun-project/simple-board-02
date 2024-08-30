@@ -68,10 +68,9 @@ public class ArticleApiTest {
     @DisplayName("게시글 등록")
     @ParameterizedTest
     @MethodSource
-    void save(String jwt, long loginUserId, String title, String content) throws Exception {
+    void save(String jwt, String title, String content) throws Exception {
         // given
         ArticleSaveRequest articleSaveRequest = ArticleSaveRequest.builder()
-                .userId(loginUserId)
                 .title(title)
                 .content(content)
                 .build();
@@ -93,10 +92,10 @@ public class ArticleApiTest {
     }
     static Stream<Arguments> save() {
         return Stream.of(
-                Arguments.of(JWT_ADMIN, adminId, makeTitleDataForSave(adminId), makeContentLongData(4)),
-                Arguments.of(JWT_MEMBER1, memberOneId, makeTitleDataForSave(memberOneId), makeContentLongData(5)),
-                Arguments.of(JWT_MEMBER2, memberTwoId, makeTitleDataForSave(memberTwoId), makeContentLongData(6)),
-                Arguments.of(JWT_WITHDRAWAL, withdrawalId, makeTitleDataForSave(withdrawalId), makeContentLongData(7))
+                Arguments.of(JWT_ADMIN, makeTitleDataForSave(adminId), makeContentLongData(4)),
+                Arguments.of(JWT_MEMBER1, makeTitleDataForSave(memberOneId), makeContentLongData(5)),
+                Arguments.of(JWT_MEMBER2, makeTitleDataForSave(memberTwoId), makeContentLongData(6)),
+                Arguments.of(JWT_WITHDRAWAL, makeTitleDataForSave(withdrawalId), makeContentLongData(7))
         );
     }
     

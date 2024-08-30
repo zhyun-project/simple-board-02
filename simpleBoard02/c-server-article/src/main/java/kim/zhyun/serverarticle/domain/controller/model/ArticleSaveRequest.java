@@ -12,8 +12,6 @@ import java.util.Objects;
 @Getter @Builder
 public class ArticleSaveRequest {
     
-    private long userId;
-    
     @Title
     private String title;
     
@@ -27,11 +25,10 @@ public class ArticleSaveRequest {
     @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof ArticleSaveRequest that)) return false;
-        return userId == that.userId
-                && Objects.equals(title, that.title)
+        return Objects.equals(title, that.title)
                 && Objects.equals(content, that.content);
     }
     @Override public int hashCode() {
-        return Objects.hash(userId, title, content);
+        return Objects.hash(title, content);
     }
 }

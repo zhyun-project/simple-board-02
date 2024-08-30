@@ -160,21 +160,21 @@ class ArticleBusinessTest {
     @Test
     void save() {
         // given
+        long userId = 1L;
         ArticleSaveRequest articleSaveRequest = ArticleSaveRequest.builder()
-                .userId(1L)
                 .title("새 글")
                 .content("안녕하세요 🌂")
                 .build();
         
         ArticleEntity newArticleEntity = getArticleEntity(
-                articleSaveRequest.getUserId(),
+                userId,
                 articleSaveRequest.getTitle(), articleSaveRequest.getContent(),
                 LocalDateTime.now(), LocalDateTime.now()
         );
-        given(articleConverter.toEntity(eq(articleSaveRequest))).willReturn(newArticleEntity);
+        given(articleConverter.toEntity(eq(articleSaveRequest), eq(userId))).willReturn(newArticleEntity);
         
         ArticleEntity savedArticleEntity = getArticleEntity(
-                9L, 2L, articleSaveRequest.getUserId(),
+                9L, 2L, userId,
                 articleSaveRequest.getTitle(), articleSaveRequest.getContent(),
                 LocalDateTime.now(), LocalDateTime.now()
         );
@@ -186,7 +186,7 @@ class ArticleBusinessTest {
         
         
         // when
-        ArticleResponse resultArticleResponse = articleBusiness.save(articleSaveRequest);
+        ArticleResponse resultArticleResponse = articleBusiness.save(articleSaveRequest, userId);
         
         
         // then

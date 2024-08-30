@@ -46,8 +46,8 @@ public class ArticleBusiness {
         return articleConverter.toResponse(articleEntity);
     }
     
-    public ArticleResponse save(ArticleSaveRequest request) {
-        ArticleEntity newArticleEntity = articleConverter.toEntity(request);
+    public ArticleResponse save(ArticleSaveRequest request, long userId) {
+        ArticleEntity newArticleEntity = articleConverter.toEntity(request, userId);
         ArticleEntity savedArticleEntity = articleService.save(newArticleEntity);
         
         return articleConverter.toResponse(savedArticleEntity);

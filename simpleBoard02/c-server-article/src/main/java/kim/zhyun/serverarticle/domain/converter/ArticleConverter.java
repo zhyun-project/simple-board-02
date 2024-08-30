@@ -33,9 +33,9 @@ public class ArticleConverter {
                 .modifiedAt(source.getModifiedAt()).build();
     }
     
-    public ArticleEntity toEntity(ArticleSaveRequest request) {
+    public ArticleEntity toEntity(ArticleSaveRequest request, long userId) {
         return ArticleEntity.builder()
-                .userId(request.getUserId())
+                .userId(userId)
                 .title(request.getTitle())
                 .content(request.getContent()).build();
     }
