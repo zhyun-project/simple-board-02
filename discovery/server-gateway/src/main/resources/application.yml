@@ -36,6 +36,13 @@ spring:
           filters:
             - RewritePath=/(?<segment>.*), /api/user/$\{segment}
 
+        - id: swagger-user-server
+          uri: lb://user-server
+          predicates:
+            - Path=/
+          filters:
+            - RewritePath=/, /api/user/
+
         - id: swagger-article
           uri: lb://article-server
           predicates:
@@ -45,6 +52,20 @@ spring:
           uri: lb://user-server
           predicates:
             - Path=/api/user/swagger-ui/**, /api/user/v3/api-docs/**
+
+        - id: swagger-article-server
+          uri: lb://article-server
+          predicates:
+            - Path=/api/article, /api/article/
+          filters:
+            - RewritePath=/api/article\{segment}, /api/article/
+
+        - id: swagger-user-server
+          uri: lb://user-server
+          predicates:
+            - Path=/api/user, /api/user/
+          filters:
+            - RewritePath=/api/user$\{segment}, /api/user/
 
         - id: user-server
           uri: lb://user-server
@@ -81,6 +102,13 @@ spring:
   cloud:
     gateway:
       routes:
+        - id: swagger-user-server
+          uri: lb://user-server
+          predicates:
+            - Path=/
+          filters:
+            - RewritePath=/, /api/user/
+
         - id: swagger-article
           uri: lb://article-server
           predicates:
@@ -90,6 +118,20 @@ spring:
           uri: lb://user-server
           predicates:
             - Path=/api/user/swagger-ui/**, /api/user/v3/api-docs/**
+
+        - id: swagger-article-server
+          uri: lb://article-server
+          predicates:
+            - Path=/api/article, /api/article/
+          filters:
+            - RewritePath=/api/article\{segment}, /api/article/
+
+        - id: swagger-user-server
+          uri: lb://user-server
+          predicates:
+            - Path=/api/user, /api/user/
+          filters:
+            - RewritePath=/api/user$\{segment}, /api/user/
 
         - id: user-server
           uri: lb://user-server
