@@ -26,7 +26,7 @@ import static kim.zhyun.serveruser.common.message.ResponseMessage.*;
 public class CheckApiController {
     private final SignUpBusiness signUpBusiness;
     
-    @Operation(summary = "이메일, 닉네임 중복 확인")
+    @Operation(summary = "이메일, 닉네임 중복 확인", description = "필드를 하나만 입력해서 테스트 해야 됨")
     @GetMapping
     public ResponseEntity<ApiResponse<Void>> duplicateCheck(
             HttpServletRequest request,
