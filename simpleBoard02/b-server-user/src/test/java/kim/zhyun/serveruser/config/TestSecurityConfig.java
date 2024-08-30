@@ -20,7 +20,6 @@ import static kim.zhyun.jwt.exception.message.CommonExceptionMessage.EXCEPTION_P
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @RequiredArgsConstructor
-@EnableWebSecurity(debug = true)
 @EnableMethodSecurity(prePostEnabled = true)
 @TestConfiguration
 public class TestSecurityConfig {
@@ -32,11 +31,15 @@ public class TestSecurityConfig {
         
         http.authorizeHttpRequests(config -> config
                 .requestMatchers(
+                        "/h2/**",
+                        "/h2-console/**",
+
+                        "/",
                         "/swagger-ui/**",
                         "/v3/api-docs/**",
-                        
+
                         "/error/**",
-                        
+
                         "/sign-up/**",
                         "/check/**",
                         "/login/**"
