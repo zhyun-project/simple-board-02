@@ -1,5 +1,6 @@
 package kim.zhyun.serverarticle.domain;
 
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ public class ArticleServerApiController {
     private String server;
 
 
+    @Operation(hidden = true, description = "`swagger ui`로 리다이렉트")
     @GetMapping("/")
     public ResponseEntity<Object> gotoSwaggerUI() {
         HttpHeaders header = new HttpHeaders();
