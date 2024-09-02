@@ -4,6 +4,8 @@ services:
     hostname: discovery-server
     ports:
       - 8761:8761
+    environment:
+      TZ: "Asia/Seoul"
     networks:
       - simple-board-02-network
     healthcheck:
@@ -17,6 +19,7 @@ services:
     environment:
       spring.profiles.active: prod
       eureka.client.service-url.defaultZone: http://discovery-server:8761/eureka
+      TZ: "Asia/Seoul"
     networks:
       - simple-board-02-network
     depends_on:
