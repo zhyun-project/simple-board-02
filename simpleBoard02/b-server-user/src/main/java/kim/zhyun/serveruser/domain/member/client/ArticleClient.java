@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Set;
 
-@FeignClient(name = "articleClient", url = "http://localhost:8080/api/article")
+@FeignClient(name = "articleClient", url = "${client.server}/api/article")
 public interface ArticleClient {
     
     @PostMapping("/delete/withdrawal")
