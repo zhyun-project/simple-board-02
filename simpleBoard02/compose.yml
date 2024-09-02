@@ -49,7 +49,7 @@ services:
       spring.data.redis.host: redis
       spring.data.redis.port: 6379
       swagger.server: http://zhyun.kim:8080
-      client.server: http://zhyun.kim:8080
+      client.server: http://gateway-server:8080
       TZ: "Asia/Seoul"
     networks:
       - simple-board-02-network
