@@ -34,8 +34,8 @@ services:
       file: ./simpleBoard02/compose.yml
       service: user-server
     environment:
-      swagger.server: http://192.168.219.105:8080
-      client.server: http://192.168.219.105:8080
+      swagger.server: http://localhost:8080
+      client.server: http://gateway-server:8080
 
   article-server:
     build: ./simpleBoard02/c-server-article
@@ -43,7 +43,7 @@ services:
       file: ./simpleBoard02/compose.yml
       service: article-server
     environment:
-      swagger.server: http://192.168.219.105:8080
+      swagger.server: http://localhost:8080
 
 
 networks:
