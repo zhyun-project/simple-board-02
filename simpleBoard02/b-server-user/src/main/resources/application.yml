@@ -68,13 +68,6 @@ spring:
       port: 6379
       database: 0
 
-  security:
-    debug: false
-
-springdoc:
-  show-login-endpoint: true
-
-
 ---
 
 spring:
@@ -135,12 +128,6 @@ spring:
       port: 6379
       database: 0
 
-  security:
-    debug: true
-
-springdoc:
-  show-login-endpoint: false
-
 logging:
   level:
     org.hibernate.sql: debug
@@ -153,6 +140,16 @@ spring:
   config:
     activate:
       on-profile: common
+
+  security:
+    debug: false
+
+springdoc:
+  show-login-endpoint: true
+  swagger-ui:
+    tags-sorter: alpha
+    groups-order: asc
+
 
 swagger:
   server: http://localhost:8080
