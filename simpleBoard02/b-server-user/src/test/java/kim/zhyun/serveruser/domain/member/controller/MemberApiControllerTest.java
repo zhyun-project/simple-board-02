@@ -85,7 +85,7 @@ class MemberApiControllerTest {
 
             
             // when-then
-            mvc.perform(get("/all"))
+            mvc.perform(get("/member/all"))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
                     .andExpect(jsonPath("$.message").value(responseMessage))
@@ -104,7 +104,7 @@ class MemberApiControllerTest {
             
             
             // when-then
-            mvc.perform(get("/all"))
+            mvc.perform(get("/member/all"))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
                     .andExpect(jsonPath("$.message").value(responseMessage))
@@ -120,7 +120,7 @@ class MemberApiControllerTest {
             
             
             // when-then
-            mvc.perform(get("/all"))
+            mvc.perform(get("/member/all"))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
                     .andExpect(jsonPath("$.message").value(responseMessage))
@@ -136,7 +136,7 @@ class MemberApiControllerTest {
             
             
             // when-then
-            mvc.perform(get("/all"))
+            mvc.perform(get("/member/all"))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
                     .andExpect(jsonPath("$.message").value(responseMessage))
@@ -168,7 +168,7 @@ class MemberApiControllerTest {
             
             
             // when - then
-            mvc.perform(get("/{id}", userId))
+            mvc.perform(get("/member/{id}", userId))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
                     .andExpect(jsonPath("$.message").value(successMessage))
@@ -194,7 +194,7 @@ class MemberApiControllerTest {
             
             
             // when - then
-            mvc.perform(get("/{id}", userId))
+            mvc.perform(get("/member/{id}", userId))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.status").value(true))
                     .andExpect(jsonPath("$.message").value(successMessage))
@@ -220,7 +220,7 @@ class MemberApiControllerTest {
             
             
             // when - then
-            mvc.perform(get("/{id}", userId))
+            mvc.perform(get("/member/{id}", userId))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
                     .andExpect(jsonPath("$.message").value(failMessageWithPermission))
@@ -243,7 +243,7 @@ class MemberApiControllerTest {
             
             
             // when - then
-            mvc.perform(get("/{id}", userId))
+            mvc.perform(get("/member/{id}", userId))
                     .andExpect(status().isBadRequest())
                     .andExpect(jsonPath("$.status").value(false))
                     .andExpect(jsonPath("$.message").value(failMessageWithPermission))
@@ -292,7 +292,7 @@ class MemberApiControllerTest {
             
             // when - then
             mvc.perform(
-                    put("/{id}", requestUserId)
+                    put("/member/{id}", requestUserId)
                             .session(session)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsBytes(userUpdateRequest))
@@ -333,7 +333,7 @@ class MemberApiControllerTest {
             
             // when - then
             mvc.perform(
-                            put("/{id}", requestUserId)
+                            put("/member/{id}", requestUserId)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(objectMapper.writeValueAsBytes(userUpdateRequest))
                     )
@@ -375,7 +375,7 @@ class MemberApiControllerTest {
             
             // when - then
             mvc.perform(
-                            put("/{id}", requestUserId)
+                            put("/member/{id}", requestUserId)
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(objectMapper.writeValueAsBytes(userUpdateRequest))
                     )
@@ -418,7 +418,7 @@ class MemberApiControllerTest {
             
             // when - then
             mvc.perform(
-                            put("/role")
+                            put("/member/role")
                                     .contentType(MediaType.APPLICATION_JSON)
                                     .content(objectMapper.writeValueAsBytes(userGradeUpdateRequest))
                     )
@@ -454,7 +454,7 @@ class MemberApiControllerTest {
             
             // when - then
             mvc.perform(
-                    put("/role")
+                    put("/member/role")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsBytes(userGradeUpdateRequest))
                     )
@@ -486,7 +486,7 @@ class MemberApiControllerTest {
         
         // when
         mvc.perform(
-                        post("/logout")
+                        post("/member/logout")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header(JwtConstants.JWT_HEADER, jwt)
                 )
@@ -517,7 +517,7 @@ class MemberApiControllerTest {
         
         // when
         mvc.perform(
-                        post("/logout")
+                        post("/member/logout")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header(JwtConstants.JWT_HEADER, jwt)
                 )
@@ -548,7 +548,7 @@ class MemberApiControllerTest {
         
         // when
         mvc.perform(
-                        post("/withdrawal")
+                        post("/member/withdrawal")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header(JwtConstants.JWT_HEADER, jwt)
                 )
@@ -579,7 +579,7 @@ class MemberApiControllerTest {
         
         // when
         mvc.perform(
-                        post("/withdrawal")
+                        post("/member/withdrawal")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .header(JwtConstants.JWT_HEADER, jwt)
                 )

@@ -25,27 +25,63 @@ import static org.springframework.web.servlet.support.ServletUriComponentsBuilde
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 
 
-@Tag(name = "계정 조회, 계정 정보 수정, 계정 권한 수정, 로그아웃, 탈퇴 API")
 @Validated
 @RequiredArgsConstructor
 @RestController
+@RequestMapping("/member")
 public class MemberApiController {
     private final MemberBusiness memberBusiness;
-    
-    @Operation(summary = "모든 계정 정보 조회")
+
+
+    /**
+     * 관리자 권한
+     */
+    @Operation(tags = "1. 모든 계정 정보 조회")
     @PreAuthorize("hasRole('"+TYPE_ADMIN+"')")
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<UserResponse>>> findAll() {
         List<UserResponse> response = memberBusiness.findAll();
-        
+
         return ResponseEntity.ok(ApiResponse.<List<UserResponse>>builder()
                 .status(true)
                 .message(RESPONSE_USER_REFERENCE_ALL)
                 .result(response)
                 .build());
     }
-    
-    @Operation(summary = "본인 계정 정보 조회")
+
+    @Operation(tags = "2. 계정 권한 수정")
+    @PreAuthorize("hasRole('"+TYPE_ADMIN+"')")
+    @PutMapping("/role")
+    public ResponseEntity<ApiResponse<Void>> updateByIdAndRole(
+            @Valid @RequestBody UserGradeUpdateRequest request
+    ) {
+        String responseMessage = memberBusiness.updateUserGrade(request);
+
+        return ResponseEntity.created(fromCurrentContextPath().path("/user").build().toUri())
+                .body(ApiResponse.<Void>builder()
+                        .status(true)
+                        .message(responseMessage)
+                        .build());
+    }
+
+
+    /**
+     * 멤버 권한
+     */
+    @Operation(tags = "2. 로그아웃")
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(
+            @RequestHeader(JWT_HEADER) String jwt
+    ) {
+        String responseMessage = memberBusiness.logout(jwt);
+
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .status(true)
+                .message(responseMessage)
+                .build());
+    }
+
+    @Operation(tags = "3. 본인 계정 정보 조회")
     @PostAuthorize("returnObject.body.result.email == T(kim.zhyun.jwt.domain.dto.JwtUserInfoDto).from(principal).email")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> findById(
@@ -59,8 +95,9 @@ public class MemberApiController {
                 .result(response)
                 .build());
     }
-    
-    @Operation(summary = "본인 계정 정보 수정 (닉네임, 비밀번호만 변경)")
+
+    // tag `4.`: CheckApiController - 닉네임 중복 확인
+    @Operation(tags = "5. 본인 계정 정보 수정", description =  "닉네임, 비밀번호만 변경 - 변경할 값만 입력")
     @PreAuthorize("#request.email == T(kim.zhyun.jwt.domain.dto.JwtUserInfoDto).from(principal).email")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> updateById(
@@ -76,35 +113,7 @@ public class MemberApiController {
                         .build());
     }
     
-    @Operation(summary = "계정 권한 수정")
-    @PreAuthorize("hasRole('"+TYPE_ADMIN+"')")
-    @PutMapping("/role")
-    public ResponseEntity<ApiResponse<Void>> updateByIdAndRole(
-            @Valid @RequestBody UserGradeUpdateRequest request
-    ) {
-        String responseMessage = memberBusiness.updateUserGrade(request);
-        
-        return ResponseEntity.created(fromCurrentContextPath().path("/user").build().toUri())
-                .body(ApiResponse.<Void>builder()
-                        .status(true)
-                        .message(responseMessage)
-                        .build());
-    }
-    
-    @Operation(summary = "로그아웃")
-    @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(
-            @RequestHeader(JWT_HEADER) String jwt
-    ) {
-        String responseMessage = memberBusiness.logout(jwt);
-        
-        return ResponseEntity.ok(ApiResponse.<Void>builder()
-                .status(true)
-                .message(responseMessage)
-                .build());
-    }
-    
-    @Operation(summary = "회원탈퇴")
+    @Operation(tags = "6. 회원탈퇴")
     @PostMapping("/withdrawal")
     public ResponseEntity<Object> withdrawal(
             @RequestHeader(JWT_HEADER) String jwt
