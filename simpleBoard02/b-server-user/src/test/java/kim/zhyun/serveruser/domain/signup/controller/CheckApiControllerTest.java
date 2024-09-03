@@ -53,27 +53,43 @@ class CheckApiControllerTest {
     @Autowired MockMvc mvc;
     
     ObjectMapper objectMapper = new ObjectMapper();
-    
-    
-    @DisplayName("중복 확인 실패 - 이메일 = null, 닉네임 = null")
+
+
+    @DisplayName("이메일 중복 확인 실패 = null")
     @Test
-    void duplicateCheck_fail() throws Exception {
+    void emailDuplicateCheck_fail() throws Exception {
         // given
         MockHttpSession session = new MockHttpSession();
-        
-        
+
+
         // when - then
         mvc.perform(
-                        get("/check")
+                        get("/check/duplicate-email")
                                 .session(session)
                 )
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status").value(false))
-                .andExpect(jsonPath("$.message").value(ResponseMessage.RESPONSE_SIGN_UP_CHECK_VALUE_IS_EMPTY))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value(ExceptionMessage.EXCEPTION_EMAIL_FIELD_IS_NULL))
                 .andDo(print());
     }
-    
-    
+
+    @DisplayName("닉네임 중복 확인 실패 = null")
+    @Test
+    void nicknameDuplicateCheck_fail() throws Exception {
+        // given
+        MockHttpSession session = new MockHttpSession();
+
+
+        // when - then
+        mvc.perform(
+                        get("/check/duplicate-nickname")
+                                .session(session)
+                )
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.detail").value(ExceptionMessage.EXCEPTION_NICKNAME_FIELD_IS_NULL))
+                .andDo(print());
+    }
+
+
     @DisplayName("이메일 중복 확인 성공")
     @ParameterizedTest
     @CsvSource({
@@ -102,7 +118,7 @@ class CheckApiControllerTest {
         
         // when - then
         mvc.perform(
-                        get("/check")
+                        get("/check/duplicate-email")
                                 .session(session)
                                 .param("email", email)
                 )
@@ -148,7 +164,7 @@ class CheckApiControllerTest {
         String validExceptionMessage = ExceptionMessage.EXCEPTION_VALID_EMAIL_FORMAT;
         
         mvc.perform(
-                        get("/check")
+                        get("/check/duplicate-email")
                                 .session(session)
                                 .param("email", email)
                 )
@@ -187,7 +203,7 @@ class CheckApiControllerTest {
         
         // when - then
         mvc.perform(
-                        get("/check")
+                        get("/check/duplicate-nickname")
                                 .session(session)
                                 .param("nickname", nickname)
                 )
@@ -230,7 +246,7 @@ class CheckApiControllerTest {
         String validExceptionMessage = ExceptionMessage.EXCEPTION_VALID_NICKNAME_FORMAT;
         
         mvc.perform(
-                        get("/check")
+                        get("/check/duplicate-nickname")
                                 .session(session)
                                 .param("nickname", nickname)
                 )
@@ -257,7 +273,7 @@ class CheckApiControllerTest {
         
         // when - then
         mvc.perform(
-                        get("/check")
+                        get("/check/duplicate-nickname")
                                 .session(session)
                                 .param("nickname", nickname)
                 )

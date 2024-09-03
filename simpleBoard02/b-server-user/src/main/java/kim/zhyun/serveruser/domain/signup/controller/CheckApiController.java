@@ -1,7 +1,7 @@
 package kim.zhyun.serveruser.domain.signup.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kim.zhyun.jwt.common.model.ApiResponse;
@@ -15,52 +15,39 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import static kim.zhyun.serveruser.common.message.ResponseMessage.*;
+import static kim.zhyun.serveruser.common.message.ResponseMessage.RESPONSE_SIGN_UP_AVAILABLE_EMAIL;
+import static kim.zhyun.serveruser.common.message.ResponseMessage.RESPONSE_SIGN_UP_AVAILABLE_NICKNAME;
 
 
-@Tag(name = "이메일 인증, 이메일 중복 확인, 닉네임 중복 확인 API")
 @RequiredArgsConstructor
 @Validated
 @RequestMapping("/check")
 @RestController
 public class CheckApiController {
     private final SignUpBusiness signUpBusiness;
-    
-    @Operation(summary = "이메일, 닉네임 중복 확인", description = "필드를 하나만 입력해서 테스트 해야 됨")
-    @GetMapping
-    public ResponseEntity<ApiResponse<Void>> duplicateCheck(
+
+
+    @Operation(tags = "1. 이메일 중복 확인")
+    @GetMapping("/duplicate-email")
+    public ResponseEntity<ApiResponse<Void>> duplicateCheckEmail(
             HttpServletRequest request,
-            
-            @RequestParam(name = "email", required = false)
-            @Email String email,
-            
-            @RequestParam(name = "nickname", required = false)
-            @Nickname String nickname
+
+            @Parameter(name = "email", example = "test@gmail.com", required = true)
+            @RequestParam(name = "email")
+            @Email String email
     ) {
         String sessionId = request.getSession().getId();
-        
-        boolean result = false;
-        String message = RESPONSE_SIGN_UP_CHECK_VALUE_IS_EMPTY;
-        
-        // email 중복확인
-        if (email != null) {
-            message = signUpBusiness.emailDuplicateCheck(email, sessionId);
-            result = message.contains(RESPONSE_SIGN_UP_AVAILABLE_EMAIL);
-        }
-        
-        // 닉네임 중복확인
-        if (nickname != null) {
-            message = signUpBusiness.nicknameDuplicateCheck(nickname, sessionId);
-            result = message.contains(RESPONSE_SIGN_UP_AVAILABLE_NICKNAME);
-        }
-        
+
+        String message = signUpBusiness.emailDuplicateCheck(email, sessionId);
+        boolean result = message.contains(RESPONSE_SIGN_UP_AVAILABLE_EMAIL);
+
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .status(result)
                 .message(message)
                 .build());
     }
 
-    @Operation(summary = "이메일로 인증코드 전송")
+    @Operation(tags = "2. 이메일 인증코드 전송")
     @PostMapping("/auth")
     public ResponseEntity<ApiResponse<Void>> sendEmail(
             HttpServletRequest request,
@@ -75,8 +62,9 @@ public class CheckApiController {
                 .message(message)
                 .build());
     }
-    
-    @Operation(summary = "메일 인증코드 검증")
+
+
+    @Operation(tags = "3. 이메일 인증코드 검증")
     @GetMapping("/auth")
     public ResponseEntity<ApiResponse<Void>> authEmailCode(
             HttpServletRequest request,
@@ -91,5 +79,25 @@ public class CheckApiController {
                 .message(message)
                 .build());
     }
-    
+
+    @Operation(tags = "4. 닉네임 중복 확인")
+    @GetMapping("/duplicate-nickname")
+    public ResponseEntity<ApiResponse<Void>> duplicateCheckNickname(
+            HttpServletRequest request,
+
+            @Parameter(name = "nickname", example = "닉네임", required = true)
+            @RequestParam(name = "nickname")
+            @Nickname String nickname
+    ) {
+        String sessionId = request.getSession().getId();
+
+        String message = signUpBusiness.nicknameDuplicateCheck(nickname, sessionId);
+        boolean result = message.contains(RESPONSE_SIGN_UP_AVAILABLE_NICKNAME);
+
+        return ResponseEntity.ok(ApiResponse.<Void>builder()
+                .status(result)
+                .message(message)
+                .build());
+    }
+
 }
