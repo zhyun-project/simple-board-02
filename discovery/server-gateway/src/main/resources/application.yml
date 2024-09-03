@@ -36,6 +36,23 @@ spring:
           filters:
             - RewritePath=/(?<segment>.*), /api/user/$\{segment}
 
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: common
+
+  cloud:
+    gateway:
+      routes:
         - id: swagger-user-server
           uri: lb://user-server
           predicates:
@@ -92,79 +109,6 @@ spring:
           uri: lb://article-server
           predicates:
             - Path=/api/article/**
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: prod
-
-  cloud:
-    gateway:
-      routes:
-        - id: swagger-user-server
-          uri: lb://user-server
-          predicates:
-            - Path=/
-          filters:
-            - RewritePath=/, /api/user/
-
-        - id: swagger-article
-          uri: lb://article-server
-          predicates:
-            - Path=/api/article/swagger-ui/**, /api/article/v3/api-docs/**
-
-        - id: swagger-user
-          uri: lb://user-server
-          predicates:
-            - Path=/api/user/swagger-ui/**, /api/user/v3/api-docs/**
-
-        - id: swagger-article-server
-          uri: lb://article-server
-          predicates:
-            - Path=/api/article, /api/article/
-          filters:
-            - RewritePath=/api/article\{segment}, /api/article/
-
-        - id: swagger-user-server
-          uri: lb://user-server
-          predicates:
-            - Path=/api/user, /api/user/
-          filters:
-            - RewritePath=/api/user$\{segment}, /api/user/
-
-        - id: user-server
-          uri: lb://user-server
-          predicates:
-            - Path=/api/user/sign-up, /api/user/login, /api/user/check/**
-
-        - id: user-server
-          uri: lb://user-server
-          predicates:
-            - Path=/api/user/**
-          filters:
-            - JwtVerifyFilter
-
-
-        - id: article-server
-          uri: lb://article-server
-          predicates:
-            - Path=/api/article/save, /api/article/delete, /api/article/update
-          filters:
-            - JwtVerifyFilter
-
-        - id: article-server
-          uri: lb://article-server
-          predicates:
-            - Path=/api/article/**
-
----
-
-spring:
-  config:
-    activate:
-      on-profile: common
 
 eureka:
   instance:
