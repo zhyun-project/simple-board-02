@@ -14,13 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 
-@Tag(name = "회원가입 API")
 @RequiredArgsConstructor
 @RestController
 public class SignApiController {
     private final SignUpBusiness signUpBusiness;
     
-    @Operation(summary = "회원가입")
+    @Operation(tags = "5. 회원가입")
     @PostMapping("/sign-up")
     public ResponseEntity<ApiResponse<Void>> signUp(
             HttpServletRequest request,
