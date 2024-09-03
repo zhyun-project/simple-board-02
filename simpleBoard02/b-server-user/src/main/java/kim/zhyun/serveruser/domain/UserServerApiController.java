@@ -21,7 +21,7 @@ public class UserServerApiController {
     private String server;
 
     @Operation(hidden = true, description = "`swagger ui`로 리다이렉트")
-    @GetMapping("/")
+    @GetMapping({"/", ""})
     public ResponseEntity<Object> gotoSwaggerUI() {
         HttpHeaders header = new HttpHeaders();
         header.setLocation(URI.create(server + contextPath + "/swagger-ui/index.html"));
