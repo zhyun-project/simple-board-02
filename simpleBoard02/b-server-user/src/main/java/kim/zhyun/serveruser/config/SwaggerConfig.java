@@ -106,7 +106,7 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi signUpGroupedOpenApi() {
         return GroupedOpenApi.builder()
-                .group("1. 회원 가입")
+                .group("1. 회원 가입 API")
                 .pathsToMatch("/sign-up", "/check/**")
                 .build();
     }
@@ -114,7 +114,7 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi memberGroupedOpenApi() {
         return GroupedOpenApi.builder()
-                .group("2. 회원")
+                .group("2. 회원 API")
                 .pathsToExclude("/sign-up", "/check/auth", "/check/duplicate-email", "/member/all", "/member/role")
                 .addOpenApiCustomizer(securityLoginEndpointCustomiser())
                 .build();
@@ -123,7 +123,7 @@ public class SwaggerConfig {
     @Bean
     public GroupedOpenApi loginGroupedOpenApi() {
         return GroupedOpenApi.builder()
-                .group("3. 관리자")
+                .group("3. 관리자 API")
                 .pathsToMatch("/member/all", "/member/role")
                 .build();
     }
@@ -133,7 +133,7 @@ public class SwaggerConfig {
     public OpenAPI openAPI() {
         Info info = new Info()
                 .version("1.0")
-                .title("Simple Board 02 - User API")
+                .title("Simple Board 02 - User Service")
                 .description("""
         📢 인증키 입력시 다음 형태로 입력해야 한다.
          
