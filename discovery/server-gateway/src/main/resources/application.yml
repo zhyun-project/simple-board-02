@@ -53,32 +53,46 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: swagger-user-server
+        - id: swagger-user-0
           uri: lb://user-server
           predicates:
             - Path=/
           filters:
             - RewritePath=/, /api/user/
 
-        - id: swagger-article
+        - id: swagger-article-1
           uri: lb://article-server
           predicates:
             - Path=/api/article/swagger-ui/**, /api/article/v3/api-docs/**
 
-        - id: swagger-user
+        - id: swagger-user-1
           uri: lb://user-server
           predicates:
             - Path=/api/user/swagger-ui/**, /api/user/v3/api-docs/**
 
-        - id: swagger-article-server
+        - id: swagger-article-2
           uri: lb://article-server
           predicates:
-            - Path=/api/article, /api/article/
+            - Path=/api/article
+          filters:
+            - RewritePath=/api/article, /api/article/
 
-        - id: swagger-user-server
+        - id: swagger-user-2
           uri: lb://user-server
           predicates:
-            - Path=/api/user, /api/user/
+            - Path=/api/user
+          filters:
+            - RewritePath=/api/user, /api/user/
+
+        - id: swagger-article-3
+          uri: lb://article-server
+          predicates:
+            - Path=/api/article/
+
+        - id: swagger-user-3
+          uri: lb://user-server
+          predicates:
+            - Path=/api/user/
 
 
         - id: user-server
