@@ -101,6 +101,11 @@ spring:
     activate:
       on-profile: common
 
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    groups-order: asc
+
 swagger:
   server: http://localhost:8080
 
