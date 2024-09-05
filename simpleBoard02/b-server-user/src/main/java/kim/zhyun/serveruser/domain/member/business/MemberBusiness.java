@@ -10,6 +10,7 @@ import kim.zhyun.serveruser.domain.member.service.MemberService;
 import kim.zhyun.serveruser.domain.member.service.SessionUserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -84,12 +85,12 @@ public class MemberBusiness {
     /**
      * 로그아웃
      */
-    public String logout(String headerToken) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public String logout() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Object principal = authentication.getPrincipal();
         JwtUserInfoDto jwtUserInfoDto = JwtUserInfoDto.from(principal);
+        String jwt = (String) authentication.getCredentials();
 
-        String jwt = headerToken.split(" ")[1];
-        
         memberService.logout(jwt, jwtUserInfoDto);
         
         SecurityContextHolder.clearContext();
@@ -103,8 +104,8 @@ public class MemberBusiness {
     /**
      * 회원 탈퇴
      */
-    public String withdrawal(String headerToken) {
-        String token = headerToken.split(" ")[1];
+    public String withdrawal() {
+        String token = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
         UserEntity userEntity = memberService.withdrawal(token);
         UserResponse response = userConverter.toResponse(userEntity);
         

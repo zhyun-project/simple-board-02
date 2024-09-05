@@ -74,6 +74,7 @@ public class JwtProvider implements InitializingBean {
      * jwt -> security context
      */
     public Authentication authenticationFrom(String token) {
+        token = token.trim();
         Claims claims = claimsFrom(token);
         
         Long id = claims.get(JWT_CLAIM_KEY_USER_ID, Long.class);

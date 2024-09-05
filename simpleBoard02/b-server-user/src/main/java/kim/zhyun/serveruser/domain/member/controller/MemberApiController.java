@@ -71,11 +71,8 @@ public class MemberApiController {
      */
     @Operation(tags = "2. 로그아웃")
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(
-            @Parameter(hidden = true)
-            @RequestHeader(JWT_HEADER) String jwt
-    ) {
-        String responseMessage = memberBusiness.logout(jwt);
+    public ResponseEntity<ApiResponse<Void>> logout() {
+        String responseMessage = memberBusiness.logout();
 
         return ResponseEntity.ok(ApiResponse.<Void>builder()
                 .status(true)
@@ -117,11 +114,8 @@ public class MemberApiController {
     
     @Operation(tags = "6. 회원탈퇴")
     @PostMapping("/withdrawal")
-    public ResponseEntity<Object> withdrawal(
-            @Parameter(hidden = true)
-            @RequestHeader(JWT_HEADER) String jwt
-    ) {
-        String responseMessage = memberBusiness.withdrawal(jwt);
+    public ResponseEntity<Object> withdrawal() {
+        String responseMessage = memberBusiness.withdrawal();
         
         return ResponseEntity.ok(ApiResponse.builder()
                 .status(true)
