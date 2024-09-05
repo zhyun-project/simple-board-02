@@ -1,11 +1,11 @@
 package kim.zhyun.serveruser.domain.member.business;
 
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
-import kim.zhyun.serveruser.domain.member.repository.UserEntity;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserResponse;
 import kim.zhyun.serveruser.domain.member.controller.model.UserUpdateRequest;
 import kim.zhyun.serveruser.domain.member.converter.UserConverter;
+import kim.zhyun.serveruser.domain.member.repository.UserEntity;
 import kim.zhyun.serveruser.domain.member.service.MemberService;
 import kim.zhyun.serveruser.domain.member.service.SessionUserService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.serveruser.common.message.ResponseMessage.*;
 
 @RequiredArgsConstructor
@@ -88,8 +87,8 @@ public class MemberBusiness {
     public String logout(String headerToken) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         JwtUserInfoDto jwtUserInfoDto = JwtUserInfoDto.from(principal);
-        
-        String jwt = headerToken.substring(JWT_PREFIX.length());
+
+        String jwt = headerToken.split(" ")[1];
         
         memberService.logout(jwt, jwtUserInfoDto);
         
@@ -105,7 +104,7 @@ public class MemberBusiness {
      * 회원 탈퇴
      */
     public String withdrawal(String headerToken) {
-        String token = headerToken.substring(JWT_PREFIX.length());
+        String token = headerToken.split(" ")[1];
         UserEntity userEntity = memberService.withdrawal(token);
         UserResponse response = userConverter.toResponse(userEntity);
         

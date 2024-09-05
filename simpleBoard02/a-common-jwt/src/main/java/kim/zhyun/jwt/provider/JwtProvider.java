@@ -103,14 +103,14 @@ public class JwtProvider implements InitializingBean {
      * token -> email 추출
      */
     public String emailFrom(String token) {
-        return claimsFrom(token).getSubject();
+        return claimsFrom(token.trim()).getSubject();
     }
     
     /**
      * token -> id 추출
      */
     public Long idFrom(String token) {
-        return claimsFrom(token).get(JWT_CLAIM_KEY_USER_ID, Long.class);
+        return claimsFrom(token.trim()).get(JWT_CLAIM_KEY_USER_ID, Long.class);
     }
     
     
@@ -120,7 +120,7 @@ public class JwtProvider implements InitializingBean {
     private Claims claimsFrom(String token) {
         return Jwts.parser()
                 .verifyWith(key).build()
-                .parseSignedClaims(token)
+                .parseSignedClaims(token.trim())
                 .getPayload();
     }
     

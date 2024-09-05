@@ -133,6 +133,6 @@ eureka:
 
 token:
   header: X-TOKEN
-  prefix: "Bearer "
+  prefix: Bearer
   secret: VGhpc2lzSnd0U2VjcmV0S2V5Rm9yU2ltcGxlQm9hcmQwMlByb2plY3RNYWRlQnlaaHl1bktpbU9yV2xndXNLaW0=
 

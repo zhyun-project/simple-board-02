@@ -11,15 +11,14 @@ import kim.zhyun.jwt.domain.service.JwtLogoutService;
 import kim.zhyun.jwt.provider.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.util.Strings;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
+import java.util.Optional;
 
-import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_PREFIX;
 import static kim.zhyun.jwt.common.constants.JwtExceptionMessageConstants.JWT_EXPIRED;
 
 @Slf4j
@@ -36,17 +35,17 @@ public class JwtFilter extends GenericFilterBean {
         
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
         String requestURI = httpServletRequest.getRequestURI();
-        String jwtHeader  = httpServletRequest.getHeader(JwtConstants.JWT_HEADER);
-        
-        if (Strings.isNotBlank(jwtHeader) && jwtHeader.length() > JWT_PREFIX.length()) {
-            String jwt = jwtHeader.substring(JWT_PREFIX.length());
-            
+        Optional<String> jwtHeaderContainer  = Optional.ofNullable(httpServletRequest.getHeader(JwtConstants.JWT_HEADER));
+
+        if (jwtHeaderContainer.isPresent()) {
+            String jwt = jwtHeaderContainer.get().split(" ")[1];
+
             if (jwtLogoutService.isLogoutToken(jwt, provider.emailFrom(jwt)))
                 throw new JwtException(JWT_EXPIRED);
-            
+
             Authentication authentication = provider.authenticationFrom(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            
+
             log.info("Security Context에 {} {}({}) 인증 정보를 저장했습니다. uri: {}",
                     provider.gradeFrom(authentication),
                     provider.nicknameFrom(authentication),
@@ -54,7 +53,8 @@ public class JwtFilter extends GenericFilterBean {
                     requestURI
             );
         }
-        
+
+
         chain.doFilter(request, response);
     }
     

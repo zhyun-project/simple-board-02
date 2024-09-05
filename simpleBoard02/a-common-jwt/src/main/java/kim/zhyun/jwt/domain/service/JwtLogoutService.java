@@ -13,13 +13,12 @@ public class JwtLogoutService {
     private final JwtProvider jwtProvider;
     
     public boolean isLogoutToken(String token, String email) {
-        if (!redisTemplate.hasKey(token))
-            return false;
-        
-        return redisTemplate.opsForSet().isMember(token, email);
+        token = token.trim();
+        return redisTemplate.hasKey(token) ? redisTemplate.opsForSet().isMember(token, email) : false;
     }
     
     public void setLogoutToken(String token, JwtUserInfoDto jwtUserInfoDto) {
+        token = token.trim();
         redisTemplate.opsForSet().add(token, jwtUserInfoDto.getEmail());
         redisTemplate.expire(token, jwtProvider.expiredTime, jwtProvider.expiredTimeUnit);
     }
