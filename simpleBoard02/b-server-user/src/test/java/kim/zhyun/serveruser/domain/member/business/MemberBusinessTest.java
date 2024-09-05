@@ -245,22 +245,23 @@ class MemberBusinessTest {
                 .grade(RoleType.TYPE_MEMBER)
                 .nickname(jwtUserInfoDto.getNickname())
                 .build();
-        
+
+        // -- 로그아웃
+        String jwtHeader = "Bearer ";
+        String jwt = jwtHeader + "jwt-json-web-token";
+
         TestSecurityContextHolder.getContext()
                 .setAuthentication(UsernamePasswordAuthenticationToken
                         .authenticated(
                                 jwtUserInfoEntity,
-                                null,
+                                jwt,
                                 List.of(new SimpleGrantedAuthority(jwtUserInfoEntity.getGrade()))));
-        
-        // -- 로그아웃
-        String jwtHeader = "Bearer ";
-        String jwt = jwtHeader + "jwt-json-web-token";
+
         willDoNothing().given(memberService).logout(jwt, jwtUserInfoDto);
 
         
         // when
-        String responseMessage = memberBusiness.logout(jwtHeader + jwt);
+        String responseMessage = memberBusiness.logout();
         
         
         // then
@@ -282,10 +283,23 @@ class MemberBusinessTest {
         
         UserResponse userResponse = getUserResponse(withdrawalUserEntity);
         given(userConverter.toResponse(withdrawalUserEntity)).willReturn(userResponse);
-        
+
+        TestSecurityContextHolder.getContext().setAuthentication(
+                UsernamePasswordAuthenticationToken
+                        .authenticated(
+                                JwtUserInfoEntity.builder()
+                                        .id(withdrawalUserEntity.getId())
+                                        .email(withdrawalUserEntity.getEmail())
+                                        .nickname(withdrawalUserEntity.getNickname())
+                                        .grade(withdrawalUserEntity.getRole().getGrade())
+                                        .build(),
+                                jwt,
+                                List.of(new SimpleGrantedAuthority(RoleType.TYPE_MEMBER))
+                        )
+                );
         
         // when
-        String responseMessage = memberBusiness.withdrawal(jwtHeader + jwt);
+        String responseMessage = memberBusiness.withdrawal();
         
         
         // then

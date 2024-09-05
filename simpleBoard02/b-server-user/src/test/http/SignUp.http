@@ -1,26 +1,26 @@
 ### 닉네임 중복 확인
-GET http://192.168.219.105:8080/api/user/check?nickname=얼구스
+GET http://localhost:8080/api/user/check/duplicate-nickname?nickname=얼구스s
 
 ### 이메일 중복 확인
-GET http://192.168.219.105:8080/api/user/check?email=gimwlgus@kakao.com
+GET http://localhost:8080/api/user/check/duplicate-email?email=gimwlgus@daum.net
 
 ### 이메일 전송
-POST http://192.168.219.105:8080/api/user/check/auth
+POST http://localhost:8080/api/user/check/auth
 Content-Type: application/json
 
 {
-  "email": "gimwlgus@kakao.com"
+  "email": "gimwlgus@daum.net"
 }
 
 ### 이메일 인증 코드 검증
-GET http://192.168.219.105:8080/api/user/check/auth?code=318542
+GET http://localhost:8080/api/user/check/auth?code=fc06d3
 
 ### 회원가입
-POST http://192.168.219.105:8080/api/user/sign-up
+POST http://localhost:8080/api/user/sign-up
 Content-Type: application/json
 
 {
-  "email": "gimwlgus@kakao.com",
+  "email": "gimwlgus@daum.net",
   "nickname": "얼구스",
   "password": "1234"
 }

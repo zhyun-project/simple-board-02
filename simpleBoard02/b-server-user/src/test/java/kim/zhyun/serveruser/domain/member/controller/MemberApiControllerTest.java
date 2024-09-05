@@ -474,13 +474,13 @@ class MemberApiControllerTest {
     })
     void logout_success(String role) throws Exception {
         // given
-        String jwt = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug";
+        String jwt = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug";
         
         String responseMessage = ResponseMessage.RESPONSE_SUCCESS_FORMAT_SIGN_OUT;
-        given(memberBusiness.logout(eq(jwt))).willReturn(responseMessage);
+        given(memberBusiness.logout()).willReturn(responseMessage);
         
         setSecurityContext(
-                1L, "member@email.mail", "회원", role
+                1L, "member@email.mail", "회원", role, jwt
         );
         
         
@@ -505,13 +505,13 @@ class MemberApiControllerTest {
     })
     void logout_fail(String role) throws Exception {
         // given
-        String jwt = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug";
+        String jwt = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug";
         
         String responseMessage = CommonExceptionMessage.EXCEPTION_PERMISSION;
-        given(memberBusiness.logout(eq(jwt))).willReturn(responseMessage);
+        given(memberBusiness.logout()).willReturn(responseMessage);
         
         setSecurityContext(
-                1L, "bye@email.mail", "떠남", role
+                1L, "bye@email.mail", "떠남", role, jwt
         );
         
         
@@ -539,10 +539,10 @@ class MemberApiControllerTest {
         String jwt = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug";
         
         String responseMessage = ResponseMessage.RESPONSE_USER_WITHDRAWAL;
-        given(memberBusiness.withdrawal(eq(jwt))).willReturn(responseMessage);
+        given(memberBusiness.withdrawal()).willReturn(responseMessage);
         
         setSecurityContext(
-                1L, "member@email.mail", "회원", role
+                1L, "member@email.mail", "회원", role, jwt
         );
         
         
@@ -570,10 +570,10 @@ class MemberApiControllerTest {
         String jwt = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug";
         
         String responseMessage = CommonExceptionMessage.EXCEPTION_PERMISSION;
-        given(memberBusiness.withdrawal(eq(jwt))).willReturn(responseMessage);
+        given(memberBusiness.withdrawal()).willReturn(responseMessage);
         
         setSecurityContext(
-                1L, "bye@email.mail", "나간사람", role
+                1L, "bye@email.mail", "나간사람", role, jwt
         );
         
         
@@ -602,7 +602,7 @@ class MemberApiControllerTest {
                 .role(new RoleEntity())
                 .build();
     }
-    
+
     private void setSecurityContext(long requestUserId, String requestEmail, String requestNickname, String roleType) {
         TestSecurityContextHolder.getContext()
                 .setAuthentication(
@@ -615,6 +615,22 @@ class MemberApiControllerTest {
                                                 .grade(roleType)
                                                 .build(),
                                         null,
+                                        List.of(new SimpleGrantedAuthority(roleType))
+                                )
+                );
+    }
+    private void setSecurityContext(long requestUserId, String requestEmail, String requestNickname, String roleType, String credentials) {
+        TestSecurityContextHolder.getContext()
+                .setAuthentication(
+                        UsernamePasswordAuthenticationToken
+                                .authenticated(
+                                        JwtUserInfoEntity.builder()
+                                                .id(requestUserId)
+                                                .email(requestEmail)
+                                                .nickname(requestNickname)
+                                                .grade(roleType)
+                                                .build(),
+                                        credentials,
                                         List.of(new SimpleGrantedAuthority(roleType))
                                 )
                 );

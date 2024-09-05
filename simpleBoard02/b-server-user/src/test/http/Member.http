@@ -3,33 +3,33 @@ POST http://localhost:8080/api/user/login
 Content-Type: application/json
 
 {
-  "email": "gimwlgus@kakao.com",
+  "email": "gimwlgus@daum.net",
   "password": "1234"
 }
 
 ### 유저 조회
-GET http://localhost:8080/api/user/1
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzI3Mjg0MDgyfQ.Lc460-Nw830P1UptAqCVvDvUoBRH2iiudGWgjEybWDOxqYVtEL6qd2SssZ2ifGLRCLwiaujrj41zu4SK3eHGYw
+GET http://localhost:8080/api/user/member/2
+x-token: bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzI4MTM4MzMyfQ.xUhLh8J_ZiJ7hB9bIZefHg7v3VgyKnjpQjKXtnhduAFJosVZ4j01V-gwJMi5C0G8TkvuBGzOgRzMSb5FAQ9lJA
 
 
 ### 유저 정보 수정
-PUT http://localhost:8080/api/user/1
-X-TOKEN: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BrYWthby5jb20iLCJpZCI6MSwiZXhwIjoxNzE2NTg1MjE4fQ.ktATFWxAjEtaRZXnrWzrmqxUOGNtSGJSekpxJsdae3XeLG3yWpu3ZTiAN600mfSaAP54nv9q2H2v5Y5qkV9qsQ
+PUT http://localhost:8080/api/user/member/2
+x-token: bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzI4MTM4MzMyfQ.xUhLh8J_ZiJ7hB9bIZefHg7v3VgyKnjpQjKXtnhduAFJosVZ4j01V-gwJMi5C0G8TkvuBGzOgRzMSb5FAQ9lJA
 Content-Type: application/json
 
 {
-  "id": 1,
-  "email": "gimwlgus@kakao.com",
-  "nickname": "얼구스",
+  "id": 3,
+  "email": "gimwlgus@daum.net",
+  "nickname": "얼구스s",
   "password": "1234"
 }
 
 ### 로그아웃
-POST http://localhost:8080/api/user/logout
-X-TOKEN: Bearer
+POST http://localhost:8080/api/user/member/logout
+X-TOKEN: bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzI4MTM4MzMyfQ.xUhLh8J_ZiJ7hB9bIZefHg7v3VgyKnjpQjKXtnhduAFJosVZ4j01V-gwJMi5C0G8TkvuBGzOgRzMSb5FAQ9lJA
 
 ### 탈퇴
-POST http://localhost:8080/api/user/withdrawal
-X-TOKEN: Bearer
+POST http://localhost:8080/api/user/member/withdrawal
+X-TOKEN: bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzI4MTM4MzMyfQ.xUhLh8J_ZiJ7hB9bIZefHg7v3VgyKnjpQjKXtnhduAFJosVZ4j01V-gwJMi5C0G8TkvuBGzOgRzMSb5FAQ9lJA
 
 
