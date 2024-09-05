@@ -1,6 +1,7 @@
 package kim.zhyun.serveruser.domain.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -71,6 +72,7 @@ public class MemberApiController {
     @Operation(tags = "2. 로그아웃")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(
+            @Parameter(hidden = true)
             @RequestHeader(JWT_HEADER) String jwt
     ) {
         String responseMessage = memberBusiness.logout(jwt);
@@ -116,6 +118,7 @@ public class MemberApiController {
     @Operation(tags = "6. 회원탈퇴")
     @PostMapping("/withdrawal")
     public ResponseEntity<Object> withdrawal(
+            @Parameter(hidden = true)
             @RequestHeader(JWT_HEADER) String jwt
     ) {
         String responseMessage = memberBusiness.withdrawal(jwt);
