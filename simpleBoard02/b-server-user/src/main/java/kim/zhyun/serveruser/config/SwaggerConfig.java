@@ -30,8 +30,10 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.lang.reflect.Field;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
+
+import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_HEADER;
+import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_PREFIX;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -144,13 +146,13 @@ public class SwaggerConfig {
         server.setUrl("%s%s".formatted(serverUrl, contextPath));
 
         // jwt
-        String jwtKey = "X-TOKEN";
+        String jwtKey = JWT_HEADER;
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtKey);
         Components components = new Components()
                 .addSecuritySchemes(jwtKey, new SecurityScheme()
                         .name(jwtKey)
                         .type(SecurityScheme.Type.APIKEY)
-                        .scheme("Bearer")
+                        .scheme(JWT_PREFIX)
                         .bearerFormat("JWT") // JWT, OAuth 등
                         .in(SecurityScheme.In.HEADER));
 

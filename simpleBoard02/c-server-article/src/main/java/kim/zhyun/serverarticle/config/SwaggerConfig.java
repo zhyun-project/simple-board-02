@@ -13,6 +13,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
+import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_HEADER;
+import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_PREFIX;
+
 @Configuration
 public class SwaggerConfig {
     @Value("${swagger.server}")
@@ -62,13 +65,13 @@ public class SwaggerConfig {
         server.setUrl("%s%s".formatted(serverUrl, contextPath));
 
         // jwt
-        String jwtKey = "X-TOKEN";
+        String jwtKey = JWT_HEADER;
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(jwtKey);
         Components components = new Components()
                 .addSecuritySchemes(jwtKey, new SecurityScheme()
                         .name(jwtKey)
                         .type(SecurityScheme.Type.APIKEY)
-                        .scheme("Bearer")
+                        .scheme(JWT_PREFIX)
                         .bearerFormat("JWT") // JWT, OAuth 등
                         .in(SecurityScheme.In.HEADER));
 
