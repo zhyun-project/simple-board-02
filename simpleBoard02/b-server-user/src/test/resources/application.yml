@@ -12,11 +12,14 @@ spring:
 
   sql:
     init:
-      mode: never
+      mode: always
+      platform: h2
+      # 아래 값을 작성 해야 /src/main/resource/*.sql을 실행 하지 않음
+      schema-locations: classpath:/schema-h2.sql
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     defer-datasource-initialization: true
     properties:
       hibernate:
@@ -61,6 +64,9 @@ logging:
 ---
 
 swagger:
+  server: http://localhost:8080
+
+client:
   server: http://localhost:8080
 
 sign-up:
