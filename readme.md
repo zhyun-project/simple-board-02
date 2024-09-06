@@ -58,14 +58,15 @@ http://localhost:8080
 |                |  method  | url                                       |      필요한 권한      |
 |:---------------|:--------:|:------------------------------------------|:----------------:|
 | 회원가입           |  `POST`  | http://localhost:8080/api/user/sign-up    |                  |
-| 회원탈퇴           |  `POST`  | http://localhost:8080/api/user/withdrawal | `MEMBER`,`ADMIN` |
-| 로그아웃           | `POST` | http://localhost:8080/api/user/logout     | `MEMBER`,`ADMIN` |
+| 회원탈퇴           |  `POST`  | http://localhost:8080/api/user/member/withdrawal | `MEMBER`,`ADMIN` |
 | 로그인            | `POST` | http://localhost:8080/api/user/login      |                  |
-| 모든 회원 조회       | `GET`    | http://localhost:8080/api/user/all        |     `ADMIN`      |
-| 내 계정 조회        |  `GET`   | http://localhost:8080/api/user/{id}       | `MEMBER`,`ADMIN` |
-| 내 계정 수정        |  `PUT`   | http://localhost:8080/api/user/{id}       | `MEMBER`,`ADMIN` |
-| 계정 권한 수정       |  `PUT`   | http://localhost:8080/api/user/role       |     `ADMIN`      |
-| 이메일, 닉네임 중복 확인 |  `GET`   | http://localhost:8080/api/user/check      |                  |
+| 로그아웃           | `POST` | http://localhost:8080/api/user/member/logout     | `MEMBER`,`ADMIN` |
+| 모든 회원 조회       | `GET`    | http://localhost:8080/api/user/member/all        |     `ADMIN`      |
+| 내 계정 조회        |  `GET`   | http://localhost:8080/api/user/member/{id}       | `MEMBER`,`ADMIN` |
+| 내 계정 수정        |  `PUT`   | http://localhost:8080/api/user/member/{id}       | `MEMBER`,`ADMIN` |
+| 계정 권한 수정       |  `PUT`   | http://localhost:8080/api/user/member/role       |     `ADMIN`      |
+| 이메일 중복 확인 |  `GET`   | http://localhost:8080/api/user/check/duplicate-email      |                  |
+| 닉네임 중복 확인 |  `GET`   | http://localhost:8080/api/user/check/duplicate-nickname      |                  |
 | 이메일 인증코드 전송    |  `POST`  | http://localhost:8080/api/user/check/auth |                  |
 | 메일 인증코드 검증     |  `GET`   | http://localhost:8080/api/user/check/auth|                  |
 
