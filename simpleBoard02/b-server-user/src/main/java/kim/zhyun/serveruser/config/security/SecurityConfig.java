@@ -1,4 +1,4 @@
-package kim.zhyun.serveruser.config;
+package kim.zhyun.serveruser.config.security;
 
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.jwt.filter.ExceptionHandlerFilter;
@@ -6,11 +6,12 @@ import kim.zhyun.jwt.filter.JwtFilter;
 import kim.zhyun.serveruser.filter.AuthenticationFilter;
 import kim.zhyun.serveruser.filter.SessionCheckFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -35,6 +36,15 @@ public class SecurityConfig {
     private final SessionCheckFilter sessionCheckFilter;
     private final ExceptionHandlerFilter exceptionHandlerFilter;
     private final JwtFilter jwtFilter;
+
+    @Value("${spring.security.debug:false}")
+    private boolean securityDebug;
+
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.debug(securityDebug);
+    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {

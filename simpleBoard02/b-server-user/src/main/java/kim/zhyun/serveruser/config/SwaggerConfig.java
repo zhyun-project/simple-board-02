@@ -31,6 +31,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_HEADER;
 import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_PREFIX;
@@ -45,6 +46,9 @@ public class SwaggerConfig {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
+    @Value("${spring.security.debug}")
+    private boolean enableSecurityDebugMode;
+
     private final ApplicationContext applicationContext;
 
     private final String LOGIN_API_REQUEST_BODY_USERNAME = "email";
@@ -53,7 +57,6 @@ public class SwaggerConfig {
     private final String LOGIN_API_DESCRIPTION = "로그인 후 인증키는 header에서 `x-token` 확인";
 
 
-    @Bean
     public OpenApiCustomizer securityLoginEndpointCustomiser() {
         FilterChainProxy filterChainProxy = applicationContext.getBean(AbstractSecurityWebApplicationInitializer.DEFAULT_FILTER_NAME, FilterChainProxy.class);
         return openAPI -> {
@@ -102,9 +105,6 @@ public class SwaggerConfig {
     }
 
 
-    // https://velog.io/@suzhanlee/Swagger-GroupedOpenApi-설정-방법
-    // https://github.com/springdoc/springdoc-openapi/issues/2087
-
     @Bean
     public GroupedOpenApi signUpGroupedOpenApi() {
         return GroupedOpenApi.builder()
@@ -115,11 +115,16 @@ public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi memberGroupedOpenApi() {
-        return GroupedOpenApi.builder()
+        GroupedOpenApi groupedOpenApi = GroupedOpenApi.builder()
                 .group("2. 회원 API")
                 .pathsToExclude("/sign-up", "/check/auth", "/check/duplicate-email", "/member/all", "/member/role")
-                .addOpenApiCustomizer(securityLoginEndpointCustomiser())
                 .build();
+
+        if (!enableSecurityDebugMode) {
+            groupedOpenApi.addAllOpenApiCustomizer(Set.of(securityLoginEndpointCustomiser()));
+        }
+
+        return groupedOpenApi;
     }
 
     @Bean
