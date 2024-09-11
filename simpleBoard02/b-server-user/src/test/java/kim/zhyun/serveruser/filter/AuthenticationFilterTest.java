@@ -2,7 +2,7 @@ package kim.zhyun.serveruser.filter;
 
 import kim.zhyun.jwt.filter.JwtFilter;
 import kim.zhyun.jwt.provider.JwtProvider;
-import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
+import kim.zhyun.serveruser.config.security.SecurityAuthenticationManager;
 import kim.zhyun.serveruser.config.TestSecurityConfig;
 import kim.zhyun.serveruser.filter.model.SignInRequest;
 import org.junit.jupiter.api.BeforeEach;

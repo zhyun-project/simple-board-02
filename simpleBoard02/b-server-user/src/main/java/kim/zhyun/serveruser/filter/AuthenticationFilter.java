@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.jwt.provider.JwtProvider;
-import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
+import kim.zhyun.serveruser.config.security.SecurityAuthenticationManager;
 import kim.zhyun.serveruser.filter.model.SignInRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

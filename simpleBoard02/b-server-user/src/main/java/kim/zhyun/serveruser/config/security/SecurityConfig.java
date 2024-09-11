@@ -52,6 +52,7 @@ public class SecurityConfig {
 
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
+                "http://192.168.219.105:8080",
                 "http://127.0.0.1:8080",
                 "http://localhost:8080",
                 "http://zhyun.kim:8080"));
@@ -96,6 +97,7 @@ public class SecurityConfig {
                 }));
 
 
+        http.cors(withDefaults());
         http.httpBasic(withDefaults());
         http.csrf(AbstractHttpConfigurer::disable);
         http.headers(AbstractHttpConfigurer::disable);
