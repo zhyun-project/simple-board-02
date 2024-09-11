@@ -15,4 +15,15 @@ public class JwtUserInfoConverter {
                 .build();
     }
 
+    public static JwtUserInfoDto toDto(Object principal) {
+        return (JwtUserInfoDto) principal;
+
+//        if (principal instanceof JwtUserInfoDto source) {
+//            return source;
+//        }
+//
+//        log.info("⚠️ == `principal` 객체가 `JwtUserInfoDto`가 아님");
+//        return new JwtUserInfoDto();
+    }
+
 }

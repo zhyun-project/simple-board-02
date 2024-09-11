@@ -81,7 +81,7 @@ public class MemberApiController {
     }
 
     @Operation(tags = "3. 본인 계정 정보 조회")
-    @PostAuthorize("returnObject.body.result.email == T(kim.zhyun.jwt.domain.dto.JwtUserInfoDto).from(principal).email")
+    @PostAuthorize("returnObject.body.result.email == T(kim.zhyun.jwt.domain.converter.JwtUserInfoConverter).toDto(principal).email")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> findById(
             @PathVariable long id
@@ -97,7 +97,7 @@ public class MemberApiController {
 
     // tag `4.`: CheckApiController - 닉네임 중복 확인
     @Operation(tags = "5. 본인 계정 정보 수정", description =  "닉네임, 비밀번호만 변경 - 변경할 값만 입력")
-    @PreAuthorize("#request.email == T(kim.zhyun.jwt.domain.dto.JwtUserInfoDto).from(principal).email")
+    @PreAuthorize("#request.email == T(kim.zhyun.jwt.domain.converter.JwtUserInfoConverter).toDto(principal).email")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> updateById(
             HttpServletRequest http,

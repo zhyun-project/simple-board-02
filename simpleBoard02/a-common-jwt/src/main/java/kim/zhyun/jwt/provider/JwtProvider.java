@@ -138,21 +138,21 @@ public class JwtProvider implements InitializingBean {
      * authentication -> email 추출
      */
     public String emailFrom(Authentication authentication) {
-        return ((JwtUserInfoDto) authentication.getPrincipal()).getEmail();
+        return getProvider(authentication).getEmail();
     }
     
     /**
      * authentication -> nickname 추출
      */
     public String nicknameFrom(Authentication authentication) {
-        return ((JwtUserInfoDto) authentication.getPrincipal()).getNickname();
+        return getProvider(authentication).getNickname();
     }
     
     /**
      * authentication -> id 추출
      */
     private Long idFrom(Authentication authentication) {
-        return ((JwtUserInfoDto) authentication.getPrincipal()).getId();
+        return getProvider(authentication).getId();
     }
     
     /**
@@ -162,5 +162,9 @@ public class JwtProvider implements InitializingBean {
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR));
+    }
+
+    private JwtUserInfoDto getProvider(Authentication authentication) {
+        return (JwtUserInfoDto) authentication.getPrincipal();
     }
 }
