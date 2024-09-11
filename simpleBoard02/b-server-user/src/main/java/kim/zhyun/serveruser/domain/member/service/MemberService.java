@@ -15,9 +15,6 @@ import kim.zhyun.serveruser.domain.signup.repository.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +29,7 @@ import static org.springframework.data.domain.Sort.Order.asc;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class MemberService implements UserDetailsService {
+public class MemberService {
     private final UserRepository userRepository;
     
     private final JwtProvider jwtProvider;
@@ -41,7 +38,7 @@ public class MemberService implements UserDetailsService {
     
     private final JwtUserInfoRepository jwtUserInfoRepository;
     private final RoleRepository roleRepository;
-    
+
     /**
      * 회원 정보 id 오름차순 조회
      */
@@ -133,19 +130,7 @@ public class MemberService implements UserDetailsService {
         
         return updated;
     }
-    
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        
-        UserEntity userEntity = findByEmailWithThrow(username);
-        
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(userEntity.getEmail())
-                .password(userEntity.getPassword())
-                .roles(userEntity.getRole().getGrade())
-                .build();
-    }
-    
+
     
     
     /**
