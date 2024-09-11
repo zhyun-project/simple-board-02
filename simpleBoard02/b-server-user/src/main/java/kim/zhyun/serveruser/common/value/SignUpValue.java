@@ -8,7 +8,7 @@ import java.util.List;
 @Component
 public class SignUpValue {
     
-    public List<String> adminEmails;
+    public final List<String> adminEmails;
 
     
     
