@@ -1,4 +1,4 @@
-package kim.zhyun.serveruser.config;
+package kim.zhyun.serveruser.config.security;
 
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.exception.ApiException;
