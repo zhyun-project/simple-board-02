@@ -88,7 +88,7 @@ public class MemberBusiness {
      */
     public String logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        JwtUserInfoDto jwtUserInfoDto = JwtUserInfoConverter.toDto(authentication.getPrincipal());
+        JwtUserInfoDto jwtUserInfoDto = JwtUserInfoConverter.toDto(authentication);
         String jwt = (String) authentication.getCredentials();
 
         memberService.logout(jwt, jwtUserInfoDto);
@@ -105,8 +105,8 @@ public class MemberBusiness {
      * 회원 탈퇴
      */
     public String withdrawal() {
-        String token = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
-        UserEntity userEntity = memberService.withdrawal(token);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserEntity userEntity = memberService.withdrawal(JwtUserInfoConverter.toDto(authentication).getId());
         UserResponse response = userConverter.toResponse(userEntity);
         
         return String.format(

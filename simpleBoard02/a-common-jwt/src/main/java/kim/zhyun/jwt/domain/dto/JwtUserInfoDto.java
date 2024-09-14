@@ -18,6 +18,7 @@ public class JwtUserInfoDto {
     private String email;
 
     private String nickname;
+    private String grade;
 
 
     @Override
@@ -26,7 +27,8 @@ public class JwtUserInfoDto {
         if (!(o instanceof JwtUserInfoDto userDto)) return false;
         return Objects.equals(getId(), userDto.getId())
                 && Objects.equals(getEmail(), userDto.getEmail())
-                && Objects.equals(getNickname(), userDto.getNickname());
+                && Objects.equals(getNickname(), userDto.getNickname())
+                && Objects.equals(getGrade(), userDto.getGrade());
     }
     
 }

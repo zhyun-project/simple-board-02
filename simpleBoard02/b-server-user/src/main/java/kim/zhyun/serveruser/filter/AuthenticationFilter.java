@@ -69,12 +69,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtProvider.tokenFrom(authResult);
         response.addHeader(JWT_HEADER, token);
 
-        JwtUserInfoDto userInfoDto = JwtUserInfoConverter.toDto(authResult.getPrincipal());
+        JwtUserInfoDto userInfoDto = JwtUserInfoConverter.toDto(authResult);
 
         sendMessage(response,
                 SC_OK,
                 true,
-                RESPONSE_SUCCESS_FORMAT_SIGN_IN.formatted(jwtProvider.nicknameFrom(authResult), jwtProvider.emailFrom(authResult)),
+                RESPONSE_SUCCESS_FORMAT_SIGN_IN.formatted(userInfoDto.getNickname(), userInfoDto.getEmail()),
                 userInfoDto);
     }
     

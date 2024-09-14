@@ -12,9 +12,9 @@ public class JwtLogoutService {
     private final RedisTemplate<String, String> redisTemplate;
     private final JwtProvider jwtProvider;
     
-    public boolean isLogoutToken(String token, String email) {
+    public boolean isLogoutToken(String token) {
         token = token.trim();
-        return redisTemplate.hasKey(token) ? redisTemplate.opsForSet().isMember(token, email) : false;
+        return redisTemplate.hasKey(token);
     }
     
     public void setLogoutToken(String token, JwtUserInfoDto jwtUserInfoDto) {

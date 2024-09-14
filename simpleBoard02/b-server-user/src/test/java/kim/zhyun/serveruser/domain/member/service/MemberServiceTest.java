@@ -371,10 +371,7 @@ class MemberServiceTest {
         // given
         String jwt = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug";
         long userId = 1L;
-        
-        // token에서 id 추출
-        given(jwtProvider.idFrom(jwt)).willReturn(userId);
-        
+
         // find user entity
         UserEntity userEntity = getUserEntity(userId);
         given(userRepository.findById(userEntity.getId())).willReturn(Optional.of(userEntity));
@@ -401,12 +398,11 @@ class MemberServiceTest {
         
         
         // when
-        UserEntity resultUserEntity = memberService.withdrawal(jwt);
+        UserEntity resultUserEntity = memberService.withdrawal(userId);
         
         // then
         assertNotNull(resultUserEntity);
         
-        then(jwtProvider).should(times(1)).idFrom(jwt);
         then(userRepository).should(times(1)).findById(userEntity.getId());
         then(roleRepository).should(times(1)).findByGrade(RoleType.TYPE_WITHDRAWAL);
         then(userRepository).should(times(1)).save(userEntity);

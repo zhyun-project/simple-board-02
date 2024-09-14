@@ -120,8 +120,8 @@ public class MemberService {
     /**
      * 회원 탈퇴
      */
-    public UserEntity withdrawal(String jwt) {
-        UserEntity userEntity = findByIdWithThrow(jwtProvider.idFrom(jwt));
+    public UserEntity withdrawal(long userId) {
+        UserEntity userEntity = findByIdWithThrow(userId);
 
         userSetRole(userEntity, TYPE_WITHDRAWAL);
         
