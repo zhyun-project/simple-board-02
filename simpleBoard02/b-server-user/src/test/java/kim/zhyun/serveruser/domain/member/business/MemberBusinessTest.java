@@ -2,7 +2,6 @@ package kim.zhyun.serveruser.domain.member.business;
 
 import kim.zhyun.jwt.common.constants.type.RoleType;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
-import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserResponse;
@@ -236,14 +235,7 @@ class MemberBusinessTest {
                 .id(requestUserId)
                 .email("member@mail.ail")
                 .nickname("nickname")
-                .build();
-        
-        // -- 로그인 상태 셋팅 (security)
-        JwtUserInfoEntity jwtUserInfoEntity = JwtUserInfoEntity.builder()
-                .id(jwtUserInfoDto.getId())
-                .email(jwtUserInfoDto.getEmail())
                 .grade(RoleType.TYPE_MEMBER)
-                .nickname(jwtUserInfoDto.getNickname())
                 .build();
 
         // -- 로그아웃
@@ -253,9 +245,9 @@ class MemberBusinessTest {
         TestSecurityContextHolder.getContext()
                 .setAuthentication(UsernamePasswordAuthenticationToken
                         .authenticated(
-                                jwtUserInfoEntity,
+                                jwtUserInfoDto,
                                 jwt,
-                                List.of(new SimpleGrantedAuthority(jwtUserInfoEntity.getGrade()))));
+                                List.of(new SimpleGrantedAuthority(jwtUserInfoDto.getGrade()))));
 
         willDoNothing().given(memberService).logout(jwt, jwtUserInfoDto);
 
@@ -277,27 +269,32 @@ class MemberBusinessTest {
     void withdrawal() {
         String jwtHeader = "Bearer ";
         String jwt = jwtHeader + "jwt-json-web-token";
+        long userId = 123L;
 
-        UserEntity withdrawalUserEntity = getUserEntity(123L, "member@mail.ail", "password", "nickname", true);
-        given(memberService.withdrawal(jwt)).willReturn(withdrawalUserEntity);
-        
-        UserResponse userResponse = getUserResponse(withdrawalUserEntity);
-        given(userConverter.toResponse(withdrawalUserEntity)).willReturn(userResponse);
+        UserEntity withdrawalUserEntity = getUserEntity(userId, "member@mail.ail", "password", "nickname", true);
+
+        JwtUserInfoDto jwtUserInfoDto = JwtUserInfoDto.builder()
+                .id(withdrawalUserEntity.getId())
+                .email(withdrawalUserEntity.getEmail())
+                .nickname(withdrawalUserEntity.getNickname())
+                .grade(withdrawalUserEntity.getRole().getGrade())
+                .build();
 
         TestSecurityContextHolder.getContext().setAuthentication(
                 UsernamePasswordAuthenticationToken
                         .authenticated(
-                                JwtUserInfoEntity.builder()
-                                        .id(withdrawalUserEntity.getId())
-                                        .email(withdrawalUserEntity.getEmail())
-                                        .nickname(withdrawalUserEntity.getNickname())
-                                        .grade(withdrawalUserEntity.getRole().getGrade())
-                                        .build(),
+                                jwtUserInfoDto,
                                 jwt,
                                 List.of(new SimpleGrantedAuthority(RoleType.TYPE_MEMBER))
                         )
-                );
-        
+        );
+
+        given(memberService.withdrawal(userId)).willReturn(withdrawalUserEntity);
+
+        UserResponse userResponse = getUserResponse(withdrawalUserEntity);
+        given(userConverter.toResponse(withdrawalUserEntity)).willReturn(userResponse);
+
+
         // when
         String responseMessage = memberBusiness.withdrawal();
         
