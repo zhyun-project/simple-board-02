@@ -1,5 +1,6 @@
 package kim.zhyun.serveruser.domain.member.business;
 
+import kim.zhyun.jwt.domain.converter.JwtUserInfoConverter;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserResponse;
@@ -26,7 +27,7 @@ public class MemberBusiness {
     private final SessionUserService sessionUserService;
     
     private final UserConverter userConverter;
-    
+
     
     public UserResponse findById(long userId) {
         UserEntity userEntity = memberService.findByIdWithThrow(userId);
@@ -87,8 +88,7 @@ public class MemberBusiness {
      */
     public String logout() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Object principal = authentication.getPrincipal();
-        JwtUserInfoDto jwtUserInfoDto = JwtUserInfoDto.from(principal);
+        JwtUserInfoDto jwtUserInfoDto = JwtUserInfoConverter.toDto(authentication);
         String jwt = (String) authentication.getCredentials();
 
         memberService.logout(jwt, jwtUserInfoDto);
@@ -105,8 +105,8 @@ public class MemberBusiness {
      * 회원 탈퇴
      */
     public String withdrawal() {
-        String token = (String) SecurityContextHolder.getContext().getAuthentication().getCredentials();
-        UserEntity userEntity = memberService.withdrawal(token);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserEntity userEntity = memberService.withdrawal(JwtUserInfoConverter.toDto(authentication).getId());
         UserResponse response = userConverter.toResponse(userEntity);
         
         return String.format(

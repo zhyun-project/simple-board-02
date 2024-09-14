@@ -141,6 +141,7 @@ spring:
     activate:
       on-profile: common
 
+# `security debug: true` 사용 시 `springdoc.show-login-endpoint: false` 설정 필요
   security:
     debug: false
 

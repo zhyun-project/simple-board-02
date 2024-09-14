@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import kim.zhyun.jwt.common.constants.JwtConstants;
+import kim.zhyun.jwt.domain.converter.JwtUserInfoConverter;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
@@ -14,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +37,7 @@ public class JwtProvider implements InitializingBean {
     
     private final JwtUserInfoRepository jwtUserInfoRepository;
     private final JwtConstants jwtItems;
+    private final JwtUserInfoConverter jwtUserInfoConverter;
     private SecretKey key;
     
     public Long expiredTime;
@@ -61,10 +62,11 @@ public class JwtProvider implements InitializingBean {
         
         if (expiredTime == null || expiredTimeUnit == null)
             throw new JwtException(JWT_EXPIRED_IS_NULL);
-        
+
+        JwtUserInfoDto userInfoDto = JwtUserInfoConverter.toDto(authentication);
         return Jwts.builder()
-                .subject(emailFrom(authentication))
-                .claim(JWT_CLAIM_KEY_USER_ID, idFrom(authentication))
+                .subject(userInfoDto.getEmail())
+                .claim(JWT_CLAIM_KEY_USER_ID, userInfoDto.getId())
                 .expiration(expiredDate())
                 .signWith(key)
                 .compact();
@@ -78,43 +80,24 @@ public class JwtProvider implements InitializingBean {
         Claims claims = claimsFrom(token);
         
         Long id = claims.get(JWT_CLAIM_KEY_USER_ID, Long.class);
-        String email = claims.getSubject();
-        
+
         Optional<JwtUserInfoEntity> userInfoContainer = jwtUserInfoRepository.findById(id);
         
         if (userInfoContainer.isEmpty())
             throw new JwtException(JWT_EXPIRED);
         
         JwtUserInfoEntity userInfo = userInfoContainer.get();
-        String nickname = userInfo.getNickname();
-        String grade = userInfo.getGrade();
-        
+        JwtUserInfoDto userInfoDto = jwtUserInfoConverter.toDto(userInfo);
+
         return new UsernamePasswordAuthenticationToken(
-                JwtUserInfoDto.builder()
-                        .id(id)
-                        .email(email)
-                        .nickname(nickname).build(),
+                userInfoDto,
                 token,
-                Arrays.stream(grade.split(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR))
+                Arrays.stream(userInfo.getGrade().split(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toSet()));
     }
-    
-    /**
-     * token -> email 추출
-     */
-    public String emailFrom(String token) {
-        return claimsFrom(token.trim()).getSubject();
-    }
-    
-    /**
-     * token -> id 추출
-     */
-    public Long idFrom(String token) {
-        return claimsFrom(token.trim()).get(JWT_CLAIM_KEY_USER_ID, Long.class);
-    }
-    
-    
+
+
     /**
      * token -> claim 추출
      */
@@ -133,34 +116,5 @@ public class JwtProvider implements InitializingBean {
                         .toInstant()
                         .plus(expiredTime, expiredTimeUnit.toChronoUnit()));
     }
-    
-    /**
-     * authentication -> email 추출
-     */
-    public String emailFrom(Authentication authentication) {
-        return ((JwtUserInfoDto) authentication.getPrincipal()).getEmail();
-    }
-    
-    /**
-     * authentication -> nickname 추출
-     */
-    public String nicknameFrom(Authentication authentication) {
-        return ((JwtUserInfoDto) authentication.getPrincipal()).getNickname();
-    }
-    
-    /**
-     * authentication -> id 추출
-     */
-    private Long idFrom(Authentication authentication) {
-        return ((JwtUserInfoDto) authentication.getPrincipal()).getId();
-    }
-    
-    /**
-     * authentication -> 권한(grade) 추출
-     */
-    public String gradeFrom(Authentication authentication) {
-        return authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR));
-    }
+
 }

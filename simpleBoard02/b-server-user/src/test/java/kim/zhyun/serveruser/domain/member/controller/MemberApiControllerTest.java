@@ -2,7 +2,7 @@ package kim.zhyun.serveruser.domain.member.controller;
 
 import kim.zhyun.jwt.common.constants.JwtConstants;
 import kim.zhyun.jwt.common.constants.type.RoleType;
-import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
+import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.exception.message.CommonExceptionMessage;
 import kim.zhyun.jwt.filter.JwtFilter;
 import kim.zhyun.serveruser.common.message.ResponseMessage;
@@ -608,7 +608,7 @@ class MemberApiControllerTest {
                 .setAuthentication(
                         UsernamePasswordAuthenticationToken
                                 .authenticated(
-                                        JwtUserInfoEntity.builder()
+                                        JwtUserInfoDto.builder()
                                                 .id(requestUserId)
                                                 .email(requestEmail)
                                                 .nickname(requestNickname)
@@ -624,7 +624,7 @@ class MemberApiControllerTest {
                 .setAuthentication(
                         UsernamePasswordAuthenticationToken
                                 .authenticated(
-                                        JwtUserInfoEntity.builder()
+                                        JwtUserInfoDto.builder()
                                                 .id(requestUserId)
                                                 .email(requestEmail)
                                                 .nickname(requestNickname)

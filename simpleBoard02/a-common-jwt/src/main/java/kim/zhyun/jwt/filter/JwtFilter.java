@@ -7,6 +7,8 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import kim.zhyun.jwt.common.constants.JwtConstants;
+import kim.zhyun.jwt.domain.converter.JwtUserInfoConverter;
+import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.domain.service.JwtLogoutService;
 import kim.zhyun.jwt.provider.JwtProvider;
 import lombok.RequiredArgsConstructor;
@@ -40,16 +42,17 @@ public class JwtFilter extends GenericFilterBean {
         if (jwtHeaderContainer.isPresent()) {
             String jwt = jwtHeaderContainer.get().split(" ")[1];
 
-            if (jwtLogoutService.isLogoutToken(jwt, provider.emailFrom(jwt)))
+            if (jwtLogoutService.isLogoutToken(jwt))
                 throw new JwtException(JWT_EXPIRED);
 
             Authentication authentication = provider.authenticationFrom(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            JwtUserInfoDto userInfoDto = JwtUserInfoConverter.toDto(authentication);
 
             log.info("Security Context에 {} {}({}) 인증 정보를 저장했습니다. uri: {}",
-                    provider.gradeFrom(authentication),
-                    provider.nicknameFrom(authentication),
-                    provider.emailFrom(authentication),
+                    userInfoDto.getGrade(),
+                    userInfoDto.getNickname(),
+                    userInfoDto.getEmail(),
                     requestURI
             );
         }

@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class SessionUserValue {
     
-    public String KEY_SESSION_USER;
-    public String KEY_EMAIL;
-    public String KEY_NICKNAME;
-    public long SESSION_EXPIRE_TIME;
+    public final String KEY_SESSION_USER;
+    public final String KEY_EMAIL;
+    public final String KEY_NICKNAME;
+    public final long SESSION_EXPIRE_TIME;
     
     public SessionUserValue(
             @Value("${sign-up.key.session}")    String KEY_SESSION_USER,

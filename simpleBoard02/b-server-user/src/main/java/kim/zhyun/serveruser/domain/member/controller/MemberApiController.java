@@ -1,8 +1,6 @@
 package kim.zhyun.serveruser.domain.member.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kim.zhyun.jwt.common.model.ApiResponse;
@@ -19,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_HEADER;
-import static kim.zhyun.serveruser.common.message.ResponseMessage.*;
 import static kim.zhyun.jwt.common.constants.type.RoleType.TYPE_ADMIN;
+import static kim.zhyun.serveruser.common.message.ResponseMessage.RESPONSE_USER_REFERENCE_ALL;
+import static kim.zhyun.serveruser.common.message.ResponseMessage.RESPONSE_USER_REFERENCE_ME;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentContextPath;
 import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequestUri;
 
@@ -81,7 +79,7 @@ public class MemberApiController {
     }
 
     @Operation(tags = "3. 본인 계정 정보 조회")
-    @PostAuthorize("returnObject.body.result.email == T(kim.zhyun.jwt.domain.dto.JwtUserInfoDto).from(principal).email")
+    @PostAuthorize("returnObject.body.result.email == T(kim.zhyun.jwt.domain.converter.JwtUserInfoConverter).toDto(authentication).getEmail()")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> findById(
             @PathVariable long id
@@ -97,7 +95,7 @@ public class MemberApiController {
 
     // tag `4.`: CheckApiController - 닉네임 중복 확인
     @Operation(tags = "5. 본인 계정 정보 수정", description =  "닉네임, 비밀번호만 변경 - 변경할 값만 입력")
-    @PreAuthorize("#request.email == T(kim.zhyun.jwt.domain.dto.JwtUserInfoDto).from(principal).email")
+    @PreAuthorize("#request.email == T(kim.zhyun.jwt.domain.converter.JwtUserInfoConverter).toDto(authentication).getEmail()")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> updateById(
             HttpServletRequest http,

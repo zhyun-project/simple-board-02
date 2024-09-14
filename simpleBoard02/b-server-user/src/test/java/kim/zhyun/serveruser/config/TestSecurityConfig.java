@@ -4,11 +4,13 @@ package kim.zhyun.serveruser.config;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.jwt.filter.ExceptionHandlerFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
@@ -24,8 +26,17 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @TestConfiguration
 public class TestSecurityConfig {
     private final ExceptionHandlerFilter exceptionHandlerFilter;
-    
-    
+
+    @Value("${spring.security.debug:false}")
+    private boolean securityDebug;
+
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.debug(securityDebug);
+    }
+
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         

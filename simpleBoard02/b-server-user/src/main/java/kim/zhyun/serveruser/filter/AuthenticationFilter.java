@@ -5,10 +5,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import kim.zhyun.jwt.domain.converter.JwtUserInfoConverter;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.jwt.provider.JwtProvider;
-import kim.zhyun.serveruser.config.SecurityAuthenticationManager;
+import kim.zhyun.serveruser.config.security.SecurityAuthenticationManager;
 import kim.zhyun.serveruser.filter.model.SignInRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,12 +69,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtProvider.tokenFrom(authResult);
         response.addHeader(JWT_HEADER, token);
 
-        JwtUserInfoDto userInfoDto = JwtUserInfoDto.from(authResult.getPrincipal());
+        JwtUserInfoDto userInfoDto = JwtUserInfoConverter.toDto(authResult);
 
         sendMessage(response,
                 SC_OK,
                 true,
-                String.format(RESPONSE_SUCCESS_FORMAT_SIGN_IN, jwtProvider.nicknameFrom(authResult), jwtProvider.emailFrom(authResult)),
+                RESPONSE_SUCCESS_FORMAT_SIGN_IN.formatted(userInfoDto.getNickname(), userInfoDto.getEmail()),
                 userInfoDto);
     }
     

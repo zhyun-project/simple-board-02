@@ -1,9 +1,9 @@
 package kim.zhyun.serverarticle.domain.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kim.zhyun.jwt.common.model.ApiResponse;
+import kim.zhyun.jwt.domain.converter.JwtUserInfoConverter;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.serverarticle.domain.business.ArticleBusiness;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleResponse;
@@ -81,7 +81,7 @@ public class ArticleController {
             @RequestBody @Valid ArticleSaveRequest request,
             Authentication authentication
     ) {
-        JwtUserInfoDto userInfo = JwtUserInfoDto.from(authentication.getPrincipal());
+        JwtUserInfoDto userInfo = JwtUserInfoConverter.toDto(authentication);
         ArticleResponse response = articlebusiness.save(request, userInfo.getId());
 
         return ResponseEntity.created(ServletUriComponentsBuilder.fromPath("/all/user/{id}").build(userInfo.getId()))
@@ -93,7 +93,7 @@ public class ArticleController {
     }
     
     @Operation(tags = "2. 게시글 수정")
-    @PreAuthorize("(#request.getUserId() == T(kim.zhyun.jwt.domain.dto.JwtUserInfoDto).from(principal).id)")
+    @PreAuthorize("(#request.getUserId() == T(kim.zhyun.jwt.domain.converter.JwtUserInfoConverter).toDto(authentication).id)")
     @PutMapping("/update")
     public ResponseEntity<Object> updateByArticleId(
             @RequestBody @Valid ArticleUpdateRequest request
@@ -107,7 +107,7 @@ public class ArticleController {
     }
     
     @Operation(tags = "3. 게시글 삭제")
-    @PreAuthorize("(#request.getUserId() == T(kim.zhyun.jwt.domain.dto.JwtUserInfoDto).from(principal).id)")
+    @PreAuthorize("(#request.getUserId() == T(kim.zhyun.jwt.domain.converter.JwtUserInfoConverter).toDto(authentication).id)")
     @PostMapping("/delete")
     public ResponseEntity<Object> deleteByArticleId(
             @RequestBody ArticlesDeleteRequest request

@@ -2,7 +2,6 @@ package kim.zhyun.serverarticle.domain.controller;
 
 import kim.zhyun.jwt.common.constants.type.RoleType;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
-import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.jwt.exception.message.CommonExceptionMessage;
 import kim.zhyun.jwt.filter.JwtFilter;
@@ -692,7 +691,7 @@ class ArticleControllerTest {
                 .setAuthentication(
                         UsernamePasswordAuthenticationToken
                                 .authenticated(
-                                        JwtUserInfoEntity.builder()
+                                        JwtUserInfoDto.builder()
                                                 .id(requestUserId)
                                                 .email("user@email.mail")
                                                 .nickname("user")
