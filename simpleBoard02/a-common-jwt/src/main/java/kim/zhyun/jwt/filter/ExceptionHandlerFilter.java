@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static kim.zhyun.jwt.util.FilterApiResponseUtil.sendMessage;
