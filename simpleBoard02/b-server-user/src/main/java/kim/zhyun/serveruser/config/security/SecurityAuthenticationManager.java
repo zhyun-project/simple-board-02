@@ -2,11 +2,14 @@ package kim.zhyun.serveruser.config.security;
 
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.exception.ApiException;
+import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.config.model.UserDto;
 import kim.zhyun.serveruser.domain.member.converter.UserConverter;
 import kim.zhyun.serveruser.domain.member.service.MemberService;
 import kim.zhyun.serveruser.utils.DateTimeUtil;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,7 +30,15 @@ public class SecurityAuthenticationManager implements AuthenticationManager {
     private final MemberService userService;
     private final PasswordEncoder passwordEncoder;
     private final UserConverter userConverter;
-    
+    private final JwtProvider jwtProvider;
+
+    @Value("${token.expiration-time}")
+    private int expiredTime;
+
+    @Value("${token.expiration-time-unit}")
+    private String expiredTimeUnit;
+
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String email = authentication.getName();
@@ -45,15 +56,22 @@ public class SecurityAuthenticationManager implements AuthenticationManager {
                     dateTimePeriodDto.hours(),
                     dateTimePeriodDto.minutes()));
         }
-        
+
+        JwtUserInfoDto jwtUserInfoDto = JwtUserInfoDto.builder()
+                .id(userDto.getId())
+                .email(userDto.getEmail())
+                .nickname(userDto.getNickname())
+                .grade(userDto.getRole().getGrade())
+                .build();
+
+        // setJwtExpired()로 토큰 만료 시간 변경 (기본값: 30일)
+        jwtProvider.setJwtExpired(expiredTime, expiredTimeUnit);
+
         return new UsernamePasswordAuthenticationToken(
-                JwtUserInfoDto.builder()
-                        .id(userDto.getId())
-                        .email(userDto.getEmail())
-                        .nickname(userDto.getNickname())
-                        .build(),
-                userDto.getPassword(),
-                Set.of(new SimpleGrantedAuthority("ROLE_" + userDto.getRole().getGrade())));
+                jwtUserInfoDto,
+                jwtProvider.tokenFrom(jwtUserInfoDto),
+                Set.of(new SimpleGrantedAuthority("ROLE_" + userDto.getRole().getGrade()))
+        );
     }
-    
+
 }

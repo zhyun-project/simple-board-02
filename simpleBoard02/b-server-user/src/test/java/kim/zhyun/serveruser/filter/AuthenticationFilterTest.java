@@ -25,7 +25,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.test.context.TestSecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -58,13 +57,7 @@ class AuthenticationFilterTest {
     @MockBean JwtProvider jwtProvider;
     
     @Autowired MockMvc mvc;
-    
-    
-    @BeforeEach
-    void jwtProvider_init() {
-        MockitoAnnotations.openMocks(this);
-        jwtProvider.setJwtExpired(30L, "d");
-    }
+
     
     
     @DisplayName("로그인 요청")
@@ -73,12 +66,14 @@ class AuthenticationFilterTest {
         // given
         SignInRequest request = SignInRequest.of("user@email.mail", "password");
 
+        JwtUserInfoDto jwtUserInfoDto = JwtUserInfoDto.builder()
+                .id(1L)
+                .email(request.getEmail())
+                .nickname("nickname")
+                .build();
+
         UsernamePasswordAuthenticationToken doReturnAuthentication = new UsernamePasswordAuthenticationToken(
-                JwtUserInfoDto.builder()
-                        .id(1L)
-                        .email(request.getEmail())
-                        .nickname("nickname")
-                        .build(), request.getPassword(), Set.of(new SimpleGrantedAuthority(RoleType.ROLE_MEMBER))
+                jwtUserInfoDto, "bearer token", Set.of(new SimpleGrantedAuthority(RoleType.ROLE_MEMBER))
         );
         given(securityAuthenticationManager.authenticate(any(Authentication.class))).willReturn(doReturnAuthentication);
         
@@ -94,7 +89,6 @@ class AuthenticationFilterTest {
         
         // then
         then(securityAuthenticationManager).should(times(1)).authenticate(any(Authentication.class));
-        then(jwtProvider).should(times(1)).tokenFrom(doReturnAuthentication);
     }
     
     
@@ -113,8 +107,6 @@ class AuthenticationFilterTest {
         // then
         then(securityAuthenticationManager).should(times(0))
                 .authenticate(any(UsernamePasswordAuthenticationToken.class));
-        then(jwtProvider).should(times(0))
-                .tokenFrom(TestSecurityContextHolder.getContext().getAuthentication());
     }
     static Stream<RequestBuilder> attemptAuthentication_others() {
         return Stream.of(

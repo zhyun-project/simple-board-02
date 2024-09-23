@@ -36,6 +36,8 @@ services:
     environment:
       swagger.server: http://localhost:8080
       client.server: http://gateway-server:8080
+      token.expiration-time: 1
+      token.expiration-time-unit: m # d: Day , h: Hour, m: Minute, s: Second
 
   article-server:
     build: ./simpleBoard02/c-server-article

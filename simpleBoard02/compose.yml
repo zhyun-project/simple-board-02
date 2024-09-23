@@ -51,6 +51,8 @@ services:
       swagger.server: http://zhyun.kim:8080
       client.server: http://gateway-server:8080
       TZ: "Asia/Seoul"
+      token.expiration-time: 30
+      token.expiration-time-unit: d # d: Day , h: Hour, m: Minute, s: Second
     networks:
       - simple-board-02-network
     depends_on:

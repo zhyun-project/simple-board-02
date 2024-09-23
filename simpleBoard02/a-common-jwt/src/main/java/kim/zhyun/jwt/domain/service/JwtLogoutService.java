@@ -20,7 +20,7 @@ public class JwtLogoutService {
     public void setLogoutToken(String token, JwtUserInfoDto jwtUserInfoDto) {
         token = token.trim();
         redisTemplate.opsForSet().add(token, jwtUserInfoDto.getEmail());
-        redisTemplate.expire(token, jwtProvider.expiredTime, jwtProvider.expiredTimeUnit);
+        redisTemplate.expire(token, jwtProvider.getExpiredTime(), jwtProvider.getExpiredTimeUnit());
     }
     
 }
