@@ -7,6 +7,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.File;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,7 +24,26 @@ class SessionUserRepositoryTest {
     private final String email = "email@email.email";
     private final boolean isEmailVerify = true;
     private final String nickname = "nickname";
-    
+
+
+    @BeforeAll
+    static void h2Init() {
+        String dbFilePath = "./h2/member-test.mv.db";
+        String traceFilePath = "./h2/member-test.trace.db";
+
+        deleteFile(dbFilePath);
+        deleteFile(traceFilePath);
+    }
+    private static void deleteFile(String filePath) {
+        File file = new File(filePath);
+        String fileName = file.getName();
+        String result = file.exists() && file.delete() ? "성공 ⭕️" : "실패 ❌";
+
+        System.out.printf(
+                "======= `%s` \t 삭제 %s =====================================================================================%n",
+                fileName, result);
+    }
+
     @BeforeEach public void saveInit() {
         sessionUserRepository.save(sessionUserBuilder(
                 sessionId,
