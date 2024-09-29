@@ -1,6 +1,6 @@
 package kim.zhyun.serveruser.domain.member.business;
 
-import kim.zhyun.jwt.domain.converter.JwtUserInfoConverter;
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserResponse;
@@ -11,7 +11,6 @@ import kim.zhyun.serveruser.domain.member.service.MemberService;
 import kim.zhyun.serveruser.domain.member.service.SessionUserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -87,9 +86,9 @@ public class MemberBusiness {
      * 로그아웃
      */
     public String logout() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        JwtUserInfoDto jwtUserInfoDto = JwtUserInfoConverter.toDto(authentication);
-        String jwt = (String) authentication.getCredentials();
+        JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        JwtUserInfoDto jwtUserInfoDto = authentication.jwtUserInfoDto();
+        String jwt = authentication.token();
 
         memberService.logout(jwt, jwtUserInfoDto);
         
@@ -105,8 +104,8 @@ public class MemberBusiness {
      * 회원 탈퇴
      */
     public String withdrawal() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserEntity userEntity = memberService.withdrawal(JwtUserInfoConverter.toDto(authentication).getId());
+        JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
+        UserEntity userEntity = memberService.withdrawal(authentication.jwtUserInfoDto().getId());
         UserResponse response = userConverter.toResponse(userEntity);
         
         return String.format(

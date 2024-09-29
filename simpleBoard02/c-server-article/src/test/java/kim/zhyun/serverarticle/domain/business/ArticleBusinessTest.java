@@ -1,5 +1,7 @@
 package kim.zhyun.serverarticle.domain.business;
 
+import kim.zhyun.jwt.common.constants.type.RoleType;
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.jwt.exception.message.CommonExceptionMessage;
@@ -17,6 +19,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.context.TestSecurityContextHolder;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -183,10 +187,14 @@ class ArticleBusinessTest {
         JwtUserInfoDto jwtUserInfoDto = getJwtUserInfoDto(savedArticleEntity);
         ArticleResponse articleResponse = getArticleResponse(savedArticleEntity, jwtUserInfoDto);
         given(articleConverter.toResponse(eq(savedArticleEntity))).willReturn(articleResponse);
-        
-        
+
+        TestSecurityContextHolder.setAuthentication(new JwtAuthentication(
+                jwtUserInfoDto, "this-is-jwt", Set.of(new SimpleGrantedAuthority(RoleType.ROLE_MEMBER))
+        ));
+
+
         // when
-        ArticleResponse resultArticleResponse = articleBusiness.save(articleSaveRequest, userId);
+        ArticleResponse resultArticleResponse = articleBusiness.save(articleSaveRequest);
         
         
         // then

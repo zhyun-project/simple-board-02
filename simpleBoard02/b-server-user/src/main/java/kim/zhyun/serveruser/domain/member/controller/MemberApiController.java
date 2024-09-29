@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import kim.zhyun.jwt.common.model.ApiResponse;
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.serveruser.domain.member.business.MemberBusiness;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserResponse;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,13 +81,13 @@ public class MemberApiController {
     }
 
     @Operation(tags = "3. 본인 계정 정보 조회")
-    @PostAuthorize("returnObject.body.result.email == T(kim.zhyun.jwt.domain.converter.JwtUserInfoConverter).toDto(authentication).getEmail()")
+    @PreAuthorize("#id == authentication.principal.id")
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> findById(
             @PathVariable long id
     ) {
         UserResponse response = memberBusiness.findById(id);
-        
+
         return ResponseEntity.ok(ApiResponse.<UserResponse>builder()
                 .status(true)
                 .message(RESPONSE_USER_REFERENCE_ME)
@@ -95,7 +97,7 @@ public class MemberApiController {
 
     // tag `4.`: CheckApiController - 닉네임 중복 확인
     @Operation(tags = "5. 본인 계정 정보 수정", description =  "닉네임, 비밀번호만 변경 - 변경할 값만 입력")
-    @PreAuthorize("#request.email == T(kim.zhyun.jwt.domain.converter.JwtUserInfoConverter).toDto(authentication).getEmail()")
+    @PreAuthorize("#request.id == authentication.principal.id")
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> updateById(
             HttpServletRequest http,

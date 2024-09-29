@@ -203,7 +203,7 @@ class ArticleControllerTest {
                 234L, 53L, loginUserId,
                 articleSaveRequest.getTitle(), articleSaveRequest.getContent()
         );
-        given(articleBusiness.save(articleSaveRequest, loginUserId)).willReturn(doArticleResponse);
+        given(articleBusiness.save(articleSaveRequest)).willReturn(doArticleResponse);
         
         String responseMessage = ResponseMessage.RESPONSE_ARTICLE_INSERT;
         
@@ -269,7 +269,7 @@ class ArticleControllerTest {
                 234L, 53L, loginUserId,
                 articleSaveRequest.getTitle(), articleSaveRequest.getContent()
         );
-        given(articleBusiness.save(articleSaveRequest, loginUserId)).willReturn(doArticleResponse);
+        given(articleBusiness.save(articleSaveRequest)).willReturn(doArticleResponse);
         
         String responseMessage = CommonExceptionMessage.EXCEPTION_VALID_FORMAT;
         String responseDetailMessage = ExceptionMessage.EXCEPTION_TITLE_FORMAT;
@@ -318,7 +318,7 @@ class ArticleControllerTest {
                 234L, 53L, loginUserId,
                 articleSaveRequest.getTitle(), articleSaveRequest.getContent()
         );
-        given(articleBusiness.save(articleSaveRequest, loginUserId)).willReturn(doArticleResponse);
+        given(articleBusiness.save(articleSaveRequest)).willReturn(doArticleResponse);
         
         String responseMessage = CommonExceptionMessage.EXCEPTION_VALID_FORMAT;
         String responseDetailMessage = ExceptionMessage.EXCEPTION_CONTENT_IS_NULL;
