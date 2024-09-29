@@ -1,7 +1,9 @@
 package kim.zhyun.jwt.domain.converter;
 
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +20,7 @@ public class JwtUserInfoConverter {
     }
 
     public static JwtUserInfoDto toDto(Authentication authentication) {
-        return (JwtUserInfoDto) authentication.getPrincipal();
+        return ((JwtAuthentication) authentication).jwtUserInfoDto();
     }
 
 }

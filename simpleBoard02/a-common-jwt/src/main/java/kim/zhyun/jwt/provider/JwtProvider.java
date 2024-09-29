@@ -7,6 +7,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import kim.zhyun.jwt.common.constants.JwtConstants;
 import kim.zhyun.jwt.domain.converter.JwtUserInfoConverter;
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
@@ -14,8 +15,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
@@ -80,7 +79,7 @@ public class JwtProvider implements InitializingBean {
     /**
      * jwt -> security context
      */
-    public Authentication authenticationFrom(String token) {
+    public JwtAuthentication authenticationFrom(String token) {
         token = token.trim();
         Claims claims = claimsFrom(token);
         
@@ -94,7 +93,7 @@ public class JwtProvider implements InitializingBean {
         JwtUserInfoEntity userInfo = userInfoContainer.get();
         JwtUserInfoDto userInfoDto = jwtUserInfoConverter.toDto(userInfo);
 
-        return new UsernamePasswordAuthenticationToken(
+        return new JwtAuthentication(
                 userInfoDto,
                 token,
                 Arrays.stream(userInfo.getGrade().split(JwtConstants.JWT_CLAIM_GRADE_SEPARATOR))

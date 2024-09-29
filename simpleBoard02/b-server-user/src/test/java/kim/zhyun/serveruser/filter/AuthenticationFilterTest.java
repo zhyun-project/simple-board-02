@@ -5,15 +5,14 @@ import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.filter.JwtFilter;
 import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.config.TestSecurityConfig;
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.serveruser.config.security.SecurityAuthenticationManager;
 import kim.zhyun.serveruser.filter.model.SignInRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -72,7 +71,7 @@ class AuthenticationFilterTest {
                 .nickname("nickname")
                 .build();
 
-        UsernamePasswordAuthenticationToken doReturnAuthentication = new UsernamePasswordAuthenticationToken(
+        JwtAuthentication doReturnAuthentication = new JwtAuthentication(
                 jwtUserInfoDto, "bearer token", Set.of(new SimpleGrantedAuthority(RoleType.ROLE_MEMBER))
         );
         given(securityAuthenticationManager.authenticate(any(Authentication.class))).willReturn(doReturnAuthentication);

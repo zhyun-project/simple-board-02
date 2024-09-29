@@ -1,5 +1,6 @@
 package kim.zhyun.serveruser.config.security;
 
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.jwt.provider.JwtProvider;
@@ -7,11 +8,9 @@ import kim.zhyun.serveruser.config.model.UserDto;
 import kim.zhyun.serveruser.domain.member.converter.UserConverter;
 import kim.zhyun.serveruser.domain.member.service.MemberService;
 import kim.zhyun.serveruser.utils.DateTimeUtil;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -40,7 +39,7 @@ public class SecurityAuthenticationManager implements AuthenticationManager {
 
 
     @Override
-    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+    public JwtAuthentication authenticate(Authentication authentication) throws AuthenticationException {
         String email = authentication.getName();
         String password = (String) authentication.getCredentials();
         UserDto userDto = userConverter.toDto(userService.findByEmailWithThrow(email));
@@ -67,7 +66,7 @@ public class SecurityAuthenticationManager implements AuthenticationManager {
         // setJwtExpired()로 토큰 만료 시간 변경 (기본값: 30일)
         jwtProvider.setJwtExpired(expiredTime, expiredTimeUnit);
 
-        return new UsernamePasswordAuthenticationToken(
+        return new JwtAuthentication(
                 jwtUserInfoDto,
                 jwtProvider.tokenFrom(jwtUserInfoDto),
                 Set.of(new SimpleGrantedAuthority("ROLE_" + userDto.getRole().getGrade()))

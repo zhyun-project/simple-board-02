@@ -1,6 +1,7 @@
 package kim.zhyun.serverarticle.domain.controller;
 
 import kim.zhyun.jwt.common.constants.type.RoleType;
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.jwt.exception.message.CommonExceptionMessage;
@@ -689,17 +690,16 @@ class ArticleControllerTest {
     private void setSecurityContext(long requestUserId, String roleType) {
         TestSecurityContextHolder.getContext()
                 .setAuthentication(
-                        UsernamePasswordAuthenticationToken
-                                .authenticated(
-                                        JwtUserInfoDto.builder()
-                                                .id(requestUserId)
-                                                .email("user@email.mail")
-                                                .nickname("user")
-                                                .grade(roleType)
-                                                .build(),
-                                        null,
-                                        List.of(new SimpleGrantedAuthority(roleType))
-                                )
+                        new JwtAuthentication(
+                                JwtUserInfoDto.builder()
+                                        .id(requestUserId)
+                                        .email("user@email.mail")
+                                        .nickname("user")
+                                        .grade(roleType)
+                                        .build(),
+                                null,
+                                List.of(new SimpleGrantedAuthority(roleType))
+                        )
                 );
     }
 }

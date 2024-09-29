@@ -7,13 +7,12 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import kim.zhyun.jwt.common.constants.JwtConstants;
-import kim.zhyun.jwt.domain.converter.JwtUserInfoConverter;
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.domain.service.JwtLogoutService;
 import kim.zhyun.jwt.provider.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
@@ -45,9 +44,9 @@ public class JwtFilter extends GenericFilterBean {
             if (jwtLogoutService.isLogoutToken(jwt))
                 throw new JwtException(JWT_EXPIRED);
 
-            Authentication authentication = provider.authenticationFrom(jwt);
+            JwtAuthentication authentication = provider.authenticationFrom(jwt);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-            JwtUserInfoDto userInfoDto = JwtUserInfoConverter.toDto(authentication);
+            JwtUserInfoDto userInfoDto = authentication.jwtUserInfoDto();
 
             log.info("Security Context에 {} {}({}) 인증 정보를 저장했습니다. uri: {}",
                     userInfoDto.getGrade(),

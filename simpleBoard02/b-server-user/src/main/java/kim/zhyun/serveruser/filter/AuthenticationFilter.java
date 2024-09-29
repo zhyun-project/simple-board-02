@@ -5,7 +5,7 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kim.zhyun.jwt.domain.converter.JwtUserInfoConverter;
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.serveruser.config.security.SecurityAuthenticationManager;
@@ -56,12 +56,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
+        JwtAuthentication jwtAuthResult = (JwtAuthentication) authResult;
+
         response.setContentType("application/json;charset=UTF-8");
 
-        String token = (String) authResult.getCredentials();
+        String token = jwtAuthResult.token();
         response.addHeader(JWT_HEADER, token);
 
-        JwtUserInfoDto userInfoDto = JwtUserInfoConverter.toDto(authResult);
+        JwtUserInfoDto userInfoDto = jwtAuthResult.jwtUserInfoDto();
 
         sendMessage(response,
                 SC_OK,
