@@ -1,7 +1,7 @@
 package kim.zhyun.serverarticle.domain.business;
 
-import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.exception.ApiException;
+import kim.zhyun.jwt.util.SecurityUtil;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleResponse;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleSaveRequest;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleUpdateRequest;
@@ -10,8 +10,6 @@ import kim.zhyun.serverarticle.domain.converter.ArticleConverter;
 import kim.zhyun.serverarticle.domain.respository.ArticleEntity;
 import kim.zhyun.serverarticle.domain.service.ArticleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -50,8 +48,7 @@ public class ArticleBusiness {
     }
     
     public ArticleResponse save(ArticleSaveRequest request) {
-        JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        long userId = authentication.jwtUserInfoDto().getId();
+        long userId = SecurityUtil.getUserId();
 
         ArticleEntity newArticleEntity = articleConverter.toEntity(request, userId);
         ArticleEntity savedArticleEntity = articleService.save(newArticleEntity);

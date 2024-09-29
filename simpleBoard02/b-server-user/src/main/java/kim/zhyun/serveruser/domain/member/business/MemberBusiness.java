@@ -1,7 +1,7 @@
 package kim.zhyun.serveruser.domain.member.business;
 
-import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
+import kim.zhyun.jwt.util.SecurityUtil;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserResponse;
 import kim.zhyun.serveruser.domain.member.controller.model.UserUpdateRequest;
@@ -86,9 +86,8 @@ public class MemberBusiness {
      * 로그아웃
      */
     public String logout() {
-        JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        JwtUserInfoDto jwtUserInfoDto = authentication.jwtUserInfoDto();
-        String jwt = authentication.token();
+        JwtUserInfoDto jwtUserInfoDto = SecurityUtil.getJwtUserInfoDto();
+        String jwt = SecurityUtil.getJwt();
 
         memberService.logout(jwt, jwtUserInfoDto);
         
@@ -104,8 +103,8 @@ public class MemberBusiness {
      * 회원 탈퇴
      */
     public String withdrawal() {
-        JwtAuthentication authentication = (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
-        UserEntity userEntity = memberService.withdrawal(authentication.jwtUserInfoDto().getId());
+        long userId = SecurityUtil.getUserId();
+        UserEntity userEntity = memberService.withdrawal(userId);
         UserResponse response = userConverter.toResponse(userEntity);
         
         return String.format(
