@@ -176,6 +176,6 @@ public class SignUpBusiness {
         // 임시 저장 정보 삭제
         sessionUserService.deleteById(sessionId);
         
-        return String.format(RESPONSE_SUCCESS_FORMAT_SIGN_UP, request.getNickname());
+        return RESPONSE_SUCCESS_FORMAT_SIGN_UP.formatted(request.getNickname());
     }
 }

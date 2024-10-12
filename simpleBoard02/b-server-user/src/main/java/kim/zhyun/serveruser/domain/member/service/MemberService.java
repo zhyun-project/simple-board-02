@@ -1,11 +1,8 @@
 package kim.zhyun.serveruser.domain.member.service;
 
-import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
-import kim.zhyun.jwt.domain.service.JwtLogoutService;
 import kim.zhyun.jwt.exception.ApiException;
-import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserUpdateRequest;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
@@ -31,13 +28,11 @@ import static org.springframework.data.domain.Sort.Order.asc;
 @Service
 public class MemberService {
     private final UserRepository userRepository;
-    
-    private final JwtProvider jwtProvider;
-    private final JwtLogoutService jwtLogoutService;
-    private final PasswordEncoder passwordEncoder;
-    
     private final JwtUserInfoRepository jwtUserInfoRepository;
     private final RoleRepository roleRepository;
+
+    private final PasswordEncoder passwordEncoder;
+
 
     /**
      * 회원 정보 id 오름차순 조회
@@ -108,15 +103,7 @@ public class MemberService {
         jwtUserInfoUpdate(saved);
         return saved;
     }
-    
-    /**
-     * 로그아웃
-     * - `redis`에 로그아웃 한 `jwt`를 저장하여 재사용 하지 못하도록 기능
-     */
-    public void logout(String jwt, JwtUserInfoDto jwtUserInfoDto) {
-        jwtLogoutService.setLogoutToken(jwt, jwtUserInfoDto);
-    }
-    
+
     /**
      * 회원 탈퇴
      */
