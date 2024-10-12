@@ -1,7 +1,6 @@
 package kim.zhyun.jwt.provider;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -11,6 +10,7 @@ import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
+import kim.zhyun.jwt.exception.ApiException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static kim.zhyun.jwt.common.constants.JwtConstants.JWT_CLAIM_KEY_USER_ID;
-import static kim.zhyun.jwt.common.constants.JwtExceptionMessageConstants.JWT_EXPIRED;
+import static kim.zhyun.jwt.exception.message.CommonExceptionMessage.EXCEPTION_NOT_FOUND;
 import static kim.zhyun.jwt.util.TimeUnitUtil.timeUnitFrom;
 
 @Slf4j
@@ -88,7 +88,7 @@ public class JwtProvider implements InitializingBean {
         Optional<JwtUserInfoEntity> userInfoContainer = jwtUserInfoRepository.findById(id);
         
         if (userInfoContainer.isEmpty())
-            throw new JwtException(JWT_EXPIRED);
+            throw new ApiException(EXCEPTION_NOT_FOUND);
         
         JwtUserInfoEntity userInfo = userInfoContainer.get();
         JwtUserInfoDto userInfoDto = jwtUserInfoConverter.toDto(userInfo);
