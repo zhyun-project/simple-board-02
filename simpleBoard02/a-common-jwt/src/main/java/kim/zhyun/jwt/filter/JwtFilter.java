@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import static kim.zhyun.jwt.common.constants.JwtExceptionMessageConstants.JWT_EXPIRED;
@@ -28,7 +29,15 @@ import static kim.zhyun.jwt.common.constants.JwtExceptionMessageConstants.JWT_EX
 public class JwtFilter extends GenericFilterBean {
     private final JwtProvider provider;
     private final JwtLogoutService jwtLogoutService;
-    
+
+    private final List<String> jwtCheckApis = List.of(
+            "/api/user/member",
+            "/api/article/save",
+            "/api/article/delete",
+            "/api/article/update"
+    );
+
+
     @Override
     public void doFilter(ServletRequest request,
                          ServletResponse response,
@@ -38,7 +47,9 @@ public class JwtFilter extends GenericFilterBean {
         String requestURI = httpServletRequest.getRequestURI();
         Optional<String> jwtHeaderContainer  = Optional.ofNullable(httpServletRequest.getHeader(JwtConstants.JWT_HEADER));
 
-        if (jwtHeaderContainer.isPresent()) {
+        boolean isJwtRequiredApi = jwtCheckApis.stream().anyMatch(requestURI::contains);
+
+        if (isJwtRequiredApi && jwtHeaderContainer.isPresent()) {
             String jwt = jwtHeaderContainer.get().split(" ")[1];
 
             if (jwtLogoutService.isLogoutToken(jwt))
@@ -55,7 +66,6 @@ public class JwtFilter extends GenericFilterBean {
                     requestURI
             );
         }
-
 
         chain.doFilter(request, response);
     }
