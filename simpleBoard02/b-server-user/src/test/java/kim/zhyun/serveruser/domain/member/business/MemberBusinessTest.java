@@ -1,7 +1,9 @@
 package kim.zhyun.serveruser.domain.member.business;
 
 import kim.zhyun.jwt.common.constants.type.RoleType;
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
+import kim.zhyun.jwt.domain.service.JwtLogoutService;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserResponse;
@@ -21,7 +23,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.test.context.TestSecurityContextHolder;
 
@@ -43,7 +44,9 @@ import static org.mockito.Mockito.times;
 class MemberBusinessTest {
     
     @InjectMocks MemberBusiness memberBusiness;
-    
+
+    @Mock JwtLogoutService jwtLogoutService;
+
     @Mock MemberService memberService;
     @Mock SessionUserService sessionUserService;
     @Mock UserConverter userConverter;
@@ -243,13 +246,12 @@ class MemberBusinessTest {
         String jwt = jwtHeader + "jwt-json-web-token";
 
         TestSecurityContextHolder.getContext()
-                .setAuthentication(UsernamePasswordAuthenticationToken
-                        .authenticated(
-                                jwtUserInfoDto,
-                                jwt,
-                                List.of(new SimpleGrantedAuthority(jwtUserInfoDto.getGrade()))));
+                .setAuthentication(new JwtAuthentication(
+                        jwtUserInfoDto,
+                        jwt,
+                        List.of(new SimpleGrantedAuthority(jwtUserInfoDto.getGrade()))));
 
-        willDoNothing().given(memberService).logout(jwt, jwtUserInfoDto);
+        willDoNothing().given(jwtLogoutService).setLogoutToken(jwt, jwtUserInfoDto);
 
         
         // when
@@ -281,12 +283,11 @@ class MemberBusinessTest {
                 .build();
 
         TestSecurityContextHolder.getContext().setAuthentication(
-                UsernamePasswordAuthenticationToken
-                        .authenticated(
-                                jwtUserInfoDto,
-                                jwt,
-                                List.of(new SimpleGrantedAuthority(RoleType.TYPE_MEMBER))
-                        )
+                new JwtAuthentication(
+                        jwtUserInfoDto,
+                        jwt,
+                        List.of(new SimpleGrantedAuthority(RoleType.TYPE_MEMBER))
+                )
         );
 
         given(memberService.withdrawal(userId)).willReturn(withdrawalUserEntity);

@@ -2,6 +2,7 @@ package kim.zhyun.serveruser.domain.member.controller;
 
 import kim.zhyun.jwt.common.constants.JwtConstants;
 import kim.zhyun.jwt.common.constants.type.RoleType;
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.exception.message.CommonExceptionMessage;
 import kim.zhyun.jwt.filter.JwtFilter;
@@ -606,17 +607,16 @@ class MemberApiControllerTest {
     private void setSecurityContext(long requestUserId, String requestEmail, String requestNickname, String roleType) {
         TestSecurityContextHolder.getContext()
                 .setAuthentication(
-                        UsernamePasswordAuthenticationToken
-                                .authenticated(
-                                        JwtUserInfoDto.builder()
-                                                .id(requestUserId)
-                                                .email(requestEmail)
-                                                .nickname(requestNickname)
-                                                .grade(roleType)
-                                                .build(),
-                                        null,
-                                        List.of(new SimpleGrantedAuthority(roleType))
-                                )
+                        new JwtAuthentication(
+                                JwtUserInfoDto.builder()
+                                        .id(requestUserId)
+                                        .email(requestEmail)
+                                        .nickname(requestNickname)
+                                        .grade(roleType)
+                                        .build(),
+                                null,
+                                List.of(new SimpleGrantedAuthority(roleType))
+                        )
                 );
     }
     private void setSecurityContext(long requestUserId, String requestEmail, String requestNickname, String roleType, String credentials) {

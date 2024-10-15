@@ -1,12 +1,9 @@
 package kim.zhyun.serveruser.domain.member.service;
 
 import kim.zhyun.jwt.common.constants.type.RoleType;
-import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoEntity;
 import kim.zhyun.jwt.domain.repository.JwtUserInfoRepository;
-import kim.zhyun.jwt.domain.service.JwtLogoutService;
 import kim.zhyun.jwt.exception.ApiException;
-import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserUpdateRequest;
 import kim.zhyun.serveruser.domain.member.repository.UserEntity;
@@ -34,7 +31,8 @@ import static kim.zhyun.serveruser.common.message.ExceptionMessage.EXCEPTION_SIG
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 import static org.springframework.data.domain.Sort.Order.asc;
 
@@ -43,16 +41,13 @@ import static org.springframework.data.domain.Sort.Order.asc;
 class MemberServiceTest {
 
     @InjectMocks MemberService memberService;
-    
-    @Mock JwtLogoutService jwtLogoutService;
-    
+
     @Mock UserRepository userRepository;
     @Mock JwtUserInfoRepository jwtUserInfoRepository;
     @Mock RoleRepository roleRepository;
     
     @Mock PasswordEncoder passwordEncoder;
-    @Mock JwtProvider jwtProvider;
-    
+
     
     
     @DisplayName("회원 정보 id 전체 조회(id 오름차순 정렬)")
@@ -341,28 +336,7 @@ class MemberServiceTest {
                         RoleType.TYPE_WITHDRAWAL)
         );
     }
-    
-    
-    @DisplayName("로그아웃")
-    @Test
-    void logout() {
-        // given
-        String jwt = "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJnaW13bGd1c0BnbWFpbC5jb20iLCJpZCI6MiwiZXhwIjoxNzA3NDE3NTc2fQ.3p1pk4Il-lmtq8jlYS5xyKd_78ehPYt-WyVHkN6XrvYq6fGCfnLdRmZrPOvC52nZBcYfGLzz7wUxR8dXOzlQug";
-        JwtUserInfoDto jwtUserInfoDto = JwtUserInfoDto.builder()
-                .id(1L)
-                .email("gimwlgus@email.mail")
-                .nickname("nickname")
-                .build();
-        
-        willDoNothing().given(jwtLogoutService).setLogoutToken(jwt, jwtUserInfoDto);
-        
-        // when
-        memberService.logout(jwt, jwtUserInfoDto);
-        
-        // then
-        then(jwtLogoutService).should(times(1)).setLogoutToken(jwt, jwtUserInfoDto);
-    }
-    
+
     
     
     @DisplayName("회원 탈퇴")

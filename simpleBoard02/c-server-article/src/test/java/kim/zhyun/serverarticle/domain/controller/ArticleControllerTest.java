@@ -1,6 +1,7 @@
 package kim.zhyun.serverarticle.domain.controller;
 
 import kim.zhyun.jwt.common.constants.type.RoleType;
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.exception.ApiException;
 import kim.zhyun.jwt.exception.message.CommonExceptionMessage;
@@ -202,7 +203,7 @@ class ArticleControllerTest {
                 234L, 53L, loginUserId,
                 articleSaveRequest.getTitle(), articleSaveRequest.getContent()
         );
-        given(articleBusiness.save(articleSaveRequest, loginUserId)).willReturn(doArticleResponse);
+        given(articleBusiness.save(articleSaveRequest)).willReturn(doArticleResponse);
         
         String responseMessage = ResponseMessage.RESPONSE_ARTICLE_INSERT;
         
@@ -268,7 +269,7 @@ class ArticleControllerTest {
                 234L, 53L, loginUserId,
                 articleSaveRequest.getTitle(), articleSaveRequest.getContent()
         );
-        given(articleBusiness.save(articleSaveRequest, loginUserId)).willReturn(doArticleResponse);
+        given(articleBusiness.save(articleSaveRequest)).willReturn(doArticleResponse);
         
         String responseMessage = CommonExceptionMessage.EXCEPTION_VALID_FORMAT;
         String responseDetailMessage = ExceptionMessage.EXCEPTION_TITLE_FORMAT;
@@ -317,7 +318,7 @@ class ArticleControllerTest {
                 234L, 53L, loginUserId,
                 articleSaveRequest.getTitle(), articleSaveRequest.getContent()
         );
-        given(articleBusiness.save(articleSaveRequest, loginUserId)).willReturn(doArticleResponse);
+        given(articleBusiness.save(articleSaveRequest)).willReturn(doArticleResponse);
         
         String responseMessage = CommonExceptionMessage.EXCEPTION_VALID_FORMAT;
         String responseDetailMessage = ExceptionMessage.EXCEPTION_CONTENT_IS_NULL;
@@ -689,17 +690,16 @@ class ArticleControllerTest {
     private void setSecurityContext(long requestUserId, String roleType) {
         TestSecurityContextHolder.getContext()
                 .setAuthentication(
-                        UsernamePasswordAuthenticationToken
-                                .authenticated(
-                                        JwtUserInfoDto.builder()
-                                                .id(requestUserId)
-                                                .email("user@email.mail")
-                                                .nickname("user")
-                                                .grade(roleType)
-                                                .build(),
-                                        null,
-                                        List.of(new SimpleGrantedAuthority(roleType))
-                                )
+                        new JwtAuthentication(
+                                JwtUserInfoDto.builder()
+                                        .id(requestUserId)
+                                        .email("user@email.mail")
+                                        .nickname("user")
+                                        .grade(roleType)
+                                        .build(),
+                                null,
+                                List.of(new SimpleGrantedAuthority(roleType))
+                        )
                 );
     }
 }

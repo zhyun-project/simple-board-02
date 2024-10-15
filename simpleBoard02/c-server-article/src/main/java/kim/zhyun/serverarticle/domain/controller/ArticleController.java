@@ -3,8 +3,6 @@ package kim.zhyun.serverarticle.domain.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import kim.zhyun.jwt.common.model.ApiResponse;
-import kim.zhyun.jwt.domain.converter.JwtUserInfoConverter;
-import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.serverarticle.domain.business.ArticleBusiness;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleResponse;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleSaveRequest;
@@ -14,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -36,10 +33,11 @@ public class ArticleController {
     @Operation(tags = "1. 전체 게시글 조회")
     @GetMapping("/all")
     public ResponseEntity<ApiResponse<List<ArticleResponse>>> findAll() {
-        return ResponseEntity.ok(ApiResponse.<List<ArticleResponse>>builder()
-                .status(true)
-                .message(RESPONSE_ARTICLE_FIND_ALL)
-                .result(articlebusiness.findAll()).build());
+        return ResponseEntity
+                .ok(ApiResponse.<List<ArticleResponse>>builder()
+                        .status(true)
+                        .message(RESPONSE_ARTICLE_FIND_ALL)
+                        .result(articlebusiness.findAll()).build());
     }
     
     @Operation(tags = "2. 유저 전체 게시글 조회")
@@ -48,12 +46,12 @@ public class ArticleController {
             @PathVariable long userId
     ) {
         List<ArticleResponse> response = articlebusiness.findAllByUser(userId);
-        
-        return ResponseEntity.ok(ApiResponse.<List<ArticleResponse>>builder()
-                .status(true)
-                .message(RESPONSE_ARTICLE_FIND_ALL_BY_USER.formatted(userId))
-                .result(response)
-                .build());
+        return ResponseEntity
+                .ok(ApiResponse.<List<ArticleResponse>>builder()
+                        .status(true)
+                        .message(RESPONSE_ARTICLE_FIND_ALL_BY_USER.formatted(userId))
+                        .result(response)
+                        .build());
     }
 
     @Operation(tags = "3. 유저 게시글 상세 조회")
@@ -63,12 +61,12 @@ public class ArticleController {
             @PathVariable long articleId
     ) {
         ArticleResponse response = articlebusiness.findByArticleId(userId, articleId);
-
-        return ResponseEntity.ok(ApiResponse.<ArticleResponse>builder()
-                .status(true)
-                .message(RESPONSE_ARTICLE_FIND_ONE_BY_USER.formatted(userId, articleId))
-                .result(response)
-                .build());
+        return ResponseEntity
+                .ok(ApiResponse.<ArticleResponse>builder()
+                        .status(true)
+                        .message(RESPONSE_ARTICLE_FIND_ONE_BY_USER.formatted(userId, articleId))
+                        .result(response)
+                        .build());
     }
 
 
@@ -78,13 +76,11 @@ public class ArticleController {
     @Operation(tags = "1. 게시글 등록")
     @PostMapping("/save")
     public ResponseEntity<ApiResponse<ArticleResponse>> save(
-            @RequestBody @Valid ArticleSaveRequest request,
-            Authentication authentication
+            @RequestBody @Valid ArticleSaveRequest request
     ) {
-        JwtUserInfoDto userInfo = JwtUserInfoConverter.toDto(authentication);
-        ArticleResponse response = articlebusiness.save(request, userInfo.getId());
-
-        return ResponseEntity.created(ServletUriComponentsBuilder.fromPath("/all/user/{id}").build(userInfo.getId()))
+        ArticleResponse response = articlebusiness.save(request);
+        return ResponseEntity
+                .created(ServletUriComponentsBuilder.fromPath("/all/user/{id}").build(response.getUser().getId()))
                 .body(ApiResponse.<ArticleResponse>builder()
                         .status(true)
                         .message(RESPONSE_ARTICLE_INSERT)
@@ -93,27 +89,30 @@ public class ArticleController {
     }
     
     @Operation(tags = "2. 게시글 수정")
-    @PreAuthorize("(#request.getUserId() == T(kim.zhyun.jwt.domain.converter.JwtUserInfoConverter).toDto(authentication).id)")
+    @PreAuthorize("(#request.userId == authentication.principal.id)")
     @PutMapping("/update")
     public ResponseEntity<Object> updateByArticleId(
             @RequestBody @Valid ArticleUpdateRequest request
     ) {
-        articlebusiness.update(request);
-        return ResponseEntity.created(ServletUriComponentsBuilder.fromPath("/{articleId}/user/{id}")
-                        .build(request.getArticleId(), request.getUserId()))
+        var articleResponse = articlebusiness.update(request);
+        var locationUri = ServletUriComponentsBuilder.fromPath("/{articleId}/user/{id}").build(request.getArticleId(), request.getUserId());
+        return ResponseEntity
+                .created(locationUri)
                 .body(ApiResponse.builder()
-                .status(true)
-                .message(RESPONSE_ARTICLE_UPDATE).build());
+                        .status(true)
+                        .message(RESPONSE_ARTICLE_UPDATE)
+                        .result(articleResponse).build());
     }
     
     @Operation(tags = "3. 게시글 삭제")
-    @PreAuthorize("(#request.getUserId() == T(kim.zhyun.jwt.domain.converter.JwtUserInfoConverter).toDto(authentication).id)")
+    @PreAuthorize("(#request.userId == authentication.principal.id)")
     @PostMapping("/delete")
     public ResponseEntity<Object> deleteByArticleId(
             @RequestBody ArticlesDeleteRequest request
     ) {
         articlebusiness.delete(request);
-        return ResponseEntity.ok(ApiResponse.builder()
+        return ResponseEntity
+                .ok(ApiResponse.builder()
                         .status(true)
                         .message(RESPONSE_ARTICLE_DELETE).build());
     }
@@ -128,12 +127,12 @@ public class ArticleController {
             @RequestBody Collection<Long> userIds
     ) {
         String failMessage = articlebusiness.deleteUserAll(userIds);
-        
-        return ResponseEntity.ok(ApiResponse.<String>builder()
-                .status(true)
-                .message(RESPONSE_ARTICLE_DELETE_FOR_WITHDRAWAL)
-                .result(failMessage)
-                .build());
+        return ResponseEntity
+                .ok(ApiResponse.<String>builder()
+                        .status(true)
+                        .message(RESPONSE_ARTICLE_DELETE_FOR_WITHDRAWAL)
+                        .result(failMessage)
+                        .build());
     }
     
 }

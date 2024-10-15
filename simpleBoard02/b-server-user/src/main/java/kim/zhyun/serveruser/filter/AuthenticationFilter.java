@@ -5,14 +5,12 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import kim.zhyun.jwt.domain.converter.JwtUserInfoConverter;
+import kim.zhyun.jwt.domain.dto.JwtAuthentication;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
 import kim.zhyun.jwt.exception.ApiException;
-import kim.zhyun.jwt.provider.JwtProvider;
 import kim.zhyun.serveruser.config.security.SecurityAuthenticationManager;
 import kim.zhyun.serveruser.filter.model.SignInRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -30,18 +28,12 @@ import static kim.zhyun.serveruser.common.message.ResponseMessage.RESPONSE_SUCCE
 @Slf4j
 @Component
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private final JwtProvider jwtProvider;
-    
-    public AuthenticationFilter(SecurityAuthenticationManager securityAuthenticationManager,
-                                JwtProvider jwtProvider,
-                                @Value("${token.expiration-time-unit}") String expiredTimeUnit,
-                                @Value("${token.expiration-time}") Long expiredTime) {
+
+    public AuthenticationFilter(SecurityAuthenticationManager securityAuthenticationManager) {
         super(securityAuthenticationManager);
-        
-        this.jwtProvider = jwtProvider;
-        this.jwtProvider.setJwtExpired(expiredTime, expiredTimeUnit);
     }
-    
+
+
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
             throws AuthenticationException {
@@ -64,12 +56,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                                             HttpServletResponse response,
                                             FilterChain chain,
                                             Authentication authResult) throws IOException, ServletException {
+        JwtAuthentication jwtAuthResult = (JwtAuthentication) authResult;
+
         response.setContentType("application/json;charset=UTF-8");
 
-        String token = jwtProvider.tokenFrom(authResult);
+        String token = jwtAuthResult.token();
         response.addHeader(JWT_HEADER, token);
 
-        JwtUserInfoDto userInfoDto = JwtUserInfoConverter.toDto(authResult);
+        JwtUserInfoDto userInfoDto = jwtAuthResult.jwtUserInfoDto();
 
         sendMessage(response,
                 SC_OK,

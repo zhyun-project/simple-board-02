@@ -1,7 +1,8 @@
 package kim.zhyun.serveruser.domain.member.business;
 
-import kim.zhyun.jwt.domain.converter.JwtUserInfoConverter;
 import kim.zhyun.jwt.domain.dto.JwtUserInfoDto;
+import kim.zhyun.jwt.domain.service.JwtLogoutService;
+import kim.zhyun.jwt.util.SecurityUtil;
 import kim.zhyun.serveruser.domain.member.controller.model.UserGradeUpdateRequest;
 import kim.zhyun.serveruser.domain.member.controller.model.UserResponse;
 import kim.zhyun.serveruser.domain.member.controller.model.UserUpdateRequest;
@@ -11,7 +12,6 @@ import kim.zhyun.serveruser.domain.member.service.MemberService;
 import kim.zhyun.serveruser.domain.member.service.SessionUserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +25,8 @@ public class MemberBusiness {
     
     private final MemberService memberService;
     private final SessionUserService sessionUserService;
-    
+    private final JwtLogoutService jwtLogoutService;
+
     private final UserConverter userConverter;
 
     
@@ -66,9 +67,7 @@ public class MemberBusiness {
         // 임시 저장정보(session) 삭제
         sessionUserService.deleteById(sessionId);
 
-        return String.format(
-                RESPONSE_USER_INFO_UPDATE,
-                updatedUserEntity.getNickname());
+        return RESPONSE_USER_INFO_UPDATE.formatted(updatedUserEntity.getNickname());
     }
     
     /**
@@ -77,41 +76,32 @@ public class MemberBusiness {
     public String updateUserGrade(UserGradeUpdateRequest request) {
         UserEntity userEntity = memberService.updateUserGrade(request);
         
-        return String.format(
-                RESPONSE_USER_GRADE_UPDATE,
-                userEntity.getNickname(),
-                userEntity.getRole().getGrade());
+        return RESPONSE_USER_GRADE_UPDATE.formatted(userEntity.getNickname(), userEntity.getRole().getGrade());
     }
     
     /**
      * 로그아웃
+     * - 로그아웃한 jwt를 재사용하지 못하도록 redis에 저장
      */
     public String logout() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        JwtUserInfoDto jwtUserInfoDto = JwtUserInfoConverter.toDto(authentication);
-        String jwt = (String) authentication.getCredentials();
+        JwtUserInfoDto jwtUserInfoDto = SecurityUtil.getJwtUserInfoDto();
+        String jwt = SecurityUtil.getJwt();
 
-        memberService.logout(jwt, jwtUserInfoDto);
-        
+        jwtLogoutService.setLogoutToken(jwt, jwtUserInfoDto);
+
         SecurityContextHolder.clearContext();
         
-        return String.format(
-                RESPONSE_SUCCESS_FORMAT_SIGN_OUT,
-                jwtUserInfoDto.getNickname(),
-                jwtUserInfoDto.getEmail());
+        return RESPONSE_SUCCESS_FORMAT_SIGN_OUT.formatted(jwtUserInfoDto.getNickname(), jwtUserInfoDto.getEmail());
     }
     
     /**
      * 회원 탈퇴
      */
     public String withdrawal() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserEntity userEntity = memberService.withdrawal(JwtUserInfoConverter.toDto(authentication).getId());
+        long userId = SecurityUtil.getUserId();
+        UserEntity userEntity = memberService.withdrawal(userId);
         UserResponse response = userConverter.toResponse(userEntity);
         
-        return String.format(
-                RESPONSE_USER_WITHDRAWAL,
-                response.getNickname(),
-                response.getEmail());
+        return RESPONSE_USER_WITHDRAWAL.formatted(response.getNickname(), response.getEmail());
     }
 }

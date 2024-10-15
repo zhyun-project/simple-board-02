@@ -1,6 +1,7 @@
 package kim.zhyun.serverarticle.domain.business;
 
 import kim.zhyun.jwt.exception.ApiException;
+import kim.zhyun.jwt.util.SecurityUtil;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleResponse;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleSaveRequest;
 import kim.zhyun.serverarticle.domain.controller.model.ArticleUpdateRequest;
@@ -46,7 +47,9 @@ public class ArticleBusiness {
         return articleConverter.toResponse(articleEntity);
     }
     
-    public ArticleResponse save(ArticleSaveRequest request, long userId) {
+    public ArticleResponse save(ArticleSaveRequest request) {
+        long userId = SecurityUtil.getUserId();
+
         ArticleEntity newArticleEntity = articleConverter.toEntity(request, userId);
         ArticleEntity savedArticleEntity = articleService.save(newArticleEntity);
         
